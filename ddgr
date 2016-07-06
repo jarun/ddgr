@@ -1045,7 +1045,11 @@ class GoogleParser(html.parser.HTMLParser):
         {
             'tag': 'div',
             'class': 'related-question-pair'
-        }
+        },
+        {
+            'tag': 'div',
+            'class': 'result--ad'
+        },
     ]
 
     ### Tag handlers ###
