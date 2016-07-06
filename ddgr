@@ -860,79 +860,41 @@ class GoogleParser(html.parser.HTMLParser):
     # - Outermost starttag and endtag handler methods: root_*. The whole
     #   parser starts and ends in this state.
     #
-    # - Each result is wrapped in a <div> tag with class "g".
+    # - Each result is wrapped in a <div> tag with class "links_main".
     #
     #   <!-- within the scope of root_* -->
-    #   <div class="g">  <!-- annotate as 'result', hand over to result_* -->
-    #   </div>           <!-- hand back to root_*, register result -->
+    #   <div class="links_main">  <!-- annotate as 'result', hand over to result_* -->
+    #   </div>                    <!-- hand back to root_*, register result -->
     #
-    # - For each result, the first <h3> tag with class "r" contains the
-    #   hyperlinked title, and the (optional) first <div> tag with class
-    #   "s" contains the abstract of the result.
+    # - For each result, the first <h2> tag with class "result__title" contains the
+    #   hyperlinked title.
     #
     #   <!-- within the scope of result_* -->
-    #   <h3 class="r">   <!-- annotate as 'title', hand over to title_* -->
-    #   </h3>            <!-- hand back to result_* -->
-    #   <div class="s">  <!-- annotate as 'abstract', hand over to abstract_* -->
-    #   </div>           <!-- hand back to result_* -->
+    #   <h2 class="result__title">  <!-- annotate as 'title', hand over to title_* -->
+    #   </h2>                       <!-- hand back to result_* -->
+    #
+    # - Abstracts are within the scope of <div> tag with class "links_main". Links in
+    #   abstract are ignored as they are available within <h2> tag.
+    #
+    #   <!-- within the scope of result_* -->
+    #   <a class="result__snippet">  <!-- annotate as 'abstract', hand over to abstract_* -->
+    #   </a>                         <!-- hand back to result_* -->
     #
     # - Each title looks like
     #
-    #   <h3 class="r">
+    #   <h2 class="result__title">
     #     <!-- within the scope of title_* -->
-    #     <span>                 <!-- filetype (optional), annotate as title_filetype,
-    #                                 start_populating_textbuf -->
-    #       file type (e.g. [PDF])
-    #     </span>                <!-- stop_populating_textbuf -->
     #     <a href="result url">  <!-- register self.url, annotate as 'title_link',
     #                                 start_populating_textbuf -->
     #       result title
-    #     </a>                   <!-- stop_populating_textbuf, pop to self.title -->
-    #   </h3>
-    #
-    # - For each abstract, the first <span> tag with class "st" contains
-    #   the body text of the abstract.
-    #
-    #   <!-- within the scope of abstract_* -->
-    #   <span class="st">  <!-- annotate as 'abstract_text', start_populating_textbuf -->
-    #     abstract text with <em> markup on keywords
-    #   </span>            <!-- stop_populating_textbuf, pop to self.abstract -->
-    #
-    # - Certain results may come with sitelinks, secondary results that
-    #   are usually subdomains or deep links within the primary
-    #   result. They are organized into a <table> tag, and each sitelink
-    #   is in a separate <td>:
-    #
-    #   <!-- within the scope of result_* -->
-    #   <table>    <!-- annotate as 'sitelink_table', hand over to sitelink_table_* -->
-    #     <tr>
-    #       <td>   <!-- annotate as 'sitelink', hand over to sitelink_* -->
-    #       </td>  <!-- append to self.sitelinks, hand back to sitelink_table_* -->
-    #       <td></td>
-    #       ...
-    #     </tr>
-    #     <tr></tr>
-    #     ...
-    #   </table>   <!-- hand back to result_* -->
-    #
-    #   Then for each sitelink, the hyperlinked title is in an <h3> tag
-    #   with class "r", and the abstract is in a <div> tag with class
-    #   "st". They are not necessarily on the same level, but we don't
-    #   really care.
-    #
-    #   <!-- within the scope of sitelink_* -->
-    #   <h3 class="r">             <!-- annotate as 'sitelink_title',
-    #                                   hand over to sitelink_title_* -->
-    #     <a href="sitelink url">  <!-- register sitelink url, annotate as 'sitelink_title_link',
-    #                                   start_populating_textbuf -->
-    #       sitelink title
-    #     </a>                     <!-- stop_populating_textbuf, pop to sitelink title -->
-    #   </h3>                      <!-- hand back to sitelink_* -->
-    #
-    #   <!-- still within the scope of sitelink_* -->
-    #   <div class="st">  <!-- annotate as 'sitelink_abstract', start_populating_textbuf -->
-    #     abstract text
-    #   </div>            <!-- stop_populating_textbuf, pop to sitelink abstract -->
+    #       <span>               <!-- filetype (optional), annotate as title_filetype,
+    #                                 start_populating_textbuf -->
+    #         file type (e.g. [PDF])
+    #       </span>              <!-- stop_populating_textbuf, update self.filetype,
+    #                                 start_populating_tetbuf -->
+    #     </a>                   <!-- stop_populating_textbuf, pop to self.title
+    #                                 prepend self.filetype, if available -->
+    #   </h2>
     #
     # - Sometimes Google omits similar (more like duplicate) result
     #   entries. Whenever this happens there will be a notice in p#ofr. The way
@@ -965,12 +927,9 @@ class GoogleParser(html.parser.HTMLParser):
     # Ignore List
     #
     # - As good as our result criteria might be, sometimes results of
-    #   dubious value (usually from Google's value-add features) slip
-    #   through. The "People also ask" feature is a good example of this
-    #   type (a sample query is "VPN"; see screenshot
-    #   https://i.imgur.com/yfcsoQz.png). In these cases, we may want to
-    #   skip enclosing containers entirely. The ignore list feature is
-    #   designed for this purpose.
+    #   dubious value (usually from value-add features) slip through.
+    #   In these cases, we may want to skip enclosing containers
+    #   entirely. The ignore list feature is designed for this purpose.
     #
     #   The current ignore list is available in self.IGNORE_LIST. Each
     #   entry (called a "selector") is a dict of attribute-value
@@ -986,42 +945,6 @@ class GoogleParser(html.parser.HTMLParser):
     #   title, etc.), and the scope is switched to 'ignore'. All
     #   descendants of the tag are ignored. When the corresponding end
     #   tag is finally reach, the former scope is restored.
-    #
-    #
-    # User Agent disabled (differences)
-    #
-    #   1. For Google News results, <div class="g"> is followed by <table> tag
-    #       <div class="g">
-    #           <table>
-    #
-    #   2. File mime type follows <div class="g">
-    #       <div class="g"><span style="float:left"><span class="mime">[PDF]</span>&nbsp;</span>
-    #
-    #   3. News metadata (source and time) comes within a single tag
-    #       <div class="slp"><span class="f">Reuters - 3 hours ago</span>
-    #
-    #   4. URLs are wrapped
-    #       <a href="/url?q=http://...&sa=...">
-    #
-    #   5. URLs are quoted
-    #       'https://vk.com/doc206446660_429188746%3Fhash%3D6097a8b0a41185cb90%26dl%3D03c63c1be5c02e8620'
-    #
-    #   6. Google Services links are returned as regular results,
-    #      start with '/search?q=' but no following 'http' or 'https'
-    #       <div class="g">
-    #           <div>
-    #               <h3 class="r"><a href="/search?q=india&...&sa=...">News for <b>india</b></a></h3>
-    #
-    #   7. YouTube specific results are returned within (.e.g search - '3 hours youtube')
-    #       <table class="ts">
-    #
-    #      TODO: In addition, the text is returned within multi-level <span> tags:
-    #       <span class="st">
-    #           <span class="f"><span class="nobr">10 Jun 2014</span> - <span class="nobr">179 min</span> -
-    #               <span class="nobr">Uploaded by Meditation Relax Music</span>
-    #           </span>
-    #           <br><b>3 HOURS Best Relaxing Music</b> &#39;Romantic <b>Piano</b>&quot; Background <b>Music</b> for Stress ... 3:03 <b>...</b>
-    #       </span>
 
     def __init__(self, news=False):
         html.parser.HTMLParser.__init__(self)
