@@ -1010,31 +1010,14 @@ class GoogleParser(html.parser.HTMLParser):
 
     @annotate_tag
     def result_start(self, tag, attrs):
-        if '' == USER_AGENT and tag == 'span' and 'mime' in self.classes(attrs):
-            self.start_populating_textbuf()
-            return 'title_filetype'
-
         if not self.title_registered and tag == 'h2' and 'result__title' in self.classes(attrs):
             self.set_handlers_to('title')
             return 'title'
 
-        if not self.abstract_registered and tag == 'div' and 's' in self.classes(attrs):
-            self.set_handlers_to('abstract')
-            return 'abstract'
-
-        if not self.sitelinks and tag == 'table':
-            if '' != USER_AGENT or (not self.news and 'ts' not in self.classes(attrs)):
-                self.set_handlers_to('sitelink_table')
-                return 'sitelink_table'
-
         if self.news:
             if not self.metadata_registered and tag == 'div' and 'slp' in self.classes(attrs):
                 # Change metadata field separator from '-' to ', ' for better appearance
-                if '' != USER_AGENT:
-                    self.start_populating_textbuf(lambda text: ', ' if text == '-' else text)
-                else:
-                    self.start_populating_textbuf(lambda text:
-                                              text.replace(' -', ',', 1) if ' - ' in text else text)
+                self.start_populating_textbuf(lambda text: ', ' if text == '-' else text)
                 return 'news_metadata'
 
             if not self.abstract_registered and tag == 'div' and 'st' in self.classes(attrs):
@@ -1062,7 +1045,7 @@ class GoogleParser(html.parser.HTMLParser):
 
     @annotate_tag
     def title_start(self, tag, attrs):
-        if '' != USER_AGENT and tag == 'span':
+        if tag == 'span':
             # Print a space after the filetype indicator
             self.start_populating_textbuf(lambda text: '[' + text + ']')
             return 'title_filetype'
@@ -1110,59 +1093,6 @@ class GoogleParser(html.parser.HTMLParser):
             self.abstract_registered = False
         elif annotation == 'abstract':
             self.set_handlers_to('result')
-
-    @annotate_tag
-    def sitelink_table_start(self, tag, attrs):
-        if tag == 'td':
-            # Initialize a new sitelink
-            self.current_sitelink = Sitelink('', '', '')
-            self.set_handlers_to('sitelink')
-            return 'sitelink'
-
-    @retrieve_tag_annotation
-    def sitelink_table_end(self, tag, annotation):
-        if annotation == 'sitelink_table':
-            self.set_handlers_to('result')
-
-    @annotate_tag
-    def sitelink_start(self, tag, attrs):
-        if tag == 'h3' and 'r' in self.classes(attrs):
-            self.set_handlers_to('sitelink_title')
-            return 'sitelink_title'
-        if tag == 'div' and 'st' in self.classes(attrs):
-            self.start_populating_textbuf()
-            return 'sitelink_abstract'
-
-    @retrieve_tag_annotation
-    def sitelink_end(self, tag, annotation):
-        if annotation == 'sitelink_abstract':
-            self.stop_populating_textbuf()
-            self.current_sitelink.abstract = self.pop_textbuf()
-        elif annotation == 'sitelink':
-            if self.current_sitelink.url:
-                self.sitelinks.append(self.current_sitelink)
-            self.set_handlers_to('sitelink_table')
-
-    @annotate_tag
-    def sitelink_title_start(self, tag, attrs):
-        if tag == 'a' and 'href' in attrs:
-            self.current_sitelink.url = attrs['href']
-            try:
-                start = self.current_sitelink.url.index('?q=') + len('?q=')
-                end = self.current_sitelink.url.index('&sa=', start)
-                self.current_sitelink.url = urllib.parse.unquote_plus(self.current_sitelink.url[start:end])
-            except ValueError:
-                pass
-            self.start_populating_textbuf()
-            return 'sitelink_title_link'
-
-    @retrieve_tag_annotation
-    def sitelink_title_end(self, tag, annotation):
-        if annotation == 'sitelink_title_link':
-            self.stop_populating_textbuf()
-            self.current_sitelink.title = self.pop_textbuf()
-        elif annotation == 'sitelink_title':
-            self.set_handlers_to('sitelink')
 
     ### Generic methods ###
 
