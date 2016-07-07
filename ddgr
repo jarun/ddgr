@@ -186,6 +186,7 @@ class GoogleUrl(object):
         self.path = '/html/'
         self.params = ''
         # self.query is a calculated property
+        # self.region is a calculated property
         self.fragment = ''
 
         self._tld = None
@@ -324,6 +325,7 @@ class GoogleUrl(object):
             self._start = opts['start']
         if 'tld' in opts:
             self._tld = opts['tld']
+            qd['kl'] = self.region
 
     def set_queries(self, **kwargs):
         """Forcefully set queries outside the normal `update` mechanism.
@@ -465,10 +467,13 @@ class GoogleUrl(object):
     def netloc(self):
         """The hostname."""
         return 'duckduckgo.com'
+
+    @property
+    def region(self):
         try:
             return 'www.' + self.TLD_TO_DOMAIN_MAP[self._tld]
         except KeyError:
-            return 'www.google.com'
+            return 'us-en'
 
     @property
     def query(self):
