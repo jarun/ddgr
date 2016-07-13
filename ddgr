@@ -135,9 +135,9 @@ class TLS1_2Connection(HTTPSConnection):
         else:
             HTTPSConnection.connect(self)
 
-class GoogleUrl(object):
+class DdgUrl(object):
     """
-    This class constructs the Google Search/News URL.
+    This class constructs the DuckDuckGo Search/News URL.
 
     This class is modeled on urllib.parse.ParseResult for familiarity,
     which means it supports reading of all six attributes -- scheme,
@@ -205,7 +205,7 @@ class GoogleUrl(object):
 
     @property
     def url(self):
-        """The full Google URL you want."""
+        """The full DuckDuckGo URL you want."""
         return self.full()
 
     @property
@@ -228,7 +228,7 @@ class GoogleUrl(object):
 
     @property
     def news(self):
-        """Whether the URL is for Google News."""
+        """Whether the URL is for DuckDuckGo News."""
         return 'tbm' in self._query_dict and self._query_dict['tbm'] == 'nws'
 
     def full(self):
@@ -271,11 +271,11 @@ class GoogleUrl(object):
         Parameters
         ----------
         opts : dict or argparse.Namespace, optional
-            Carries options that affect the Google Search/News URL. The
+            Carries options that affect the DuckDuckGo Search/News URL. The
             list of currently recognized option keys with expected value
             types:
 
-                duration: str (GooglerArgumentParser.is_duration)
+                duration: str (DdgArgumentParser.is_duration)
                 exact: bool
                 keywords: str or list of strs
                 lang: str
@@ -498,13 +498,13 @@ class GoogleUrl(object):
         return '&'.join(['%s=%s' % (k, qd[k]) for k in sorted(qd.keys())])
 
 
-class GoogleConnectionError(Exception):
+class DDGConnectionError(Exception):
     pass
 
 
-class GoogleConnection(object):
+class DdgConnection(object):
     """
-    This class facilitates connecting to and fetching from Google.
+    This class facilitates connecting to and fetching from DuckDuckGo.
 
     Parameters
     ----------
@@ -513,7 +513,7 @@ class GoogleConnection(object):
 
     Raises
     ------
-    GoogleConnectionError
+    DDGConnectionError
 
     Attributes
     ----------
@@ -554,7 +554,7 @@ class GoogleConnection(object):
 
         Raises
         ------
-        GoogleConnectionError
+        DDGConnectionError
 
         """
         if self._conn:
@@ -579,7 +579,7 @@ class GoogleConnection(object):
                 self._conn.connect()
             except Exception as e:
                 msg = 'Failed to connect to proxy server %s: %s.' % (proxy, e)
-                raise GoogleConnectionError(msg)
+                raise DDGConnectionError(msg)
         else:
             logger.debug('Connecting to new host %s', host_display)
             self._conn = TLS1_2Connection(host, port=port, timeout=timeout)
@@ -587,7 +587,7 @@ class GoogleConnection(object):
                 self._conn.connect()
             except Exception as e:
                 msg = 'Failed to connect to %s: %s.' % (host_display, e)
-                raise GoogleConnectionError(msg)
+                raise DDGConnectionError(msg)
 
     def renew_connection(self, timeout=45):
         """Renew current connection.
@@ -601,7 +601,7 @@ class GoogleConnection(object):
         """Fetch a URL.
 
         Allows one reconnection and one redirection before failing and
-        raising GoogleConnectionError.
+        raising DDGConnectionError.
 
         Parameters
         ----------
@@ -610,9 +610,9 @@ class GoogleConnection(object):
 
         Raises
         ------
-        GoogleConnectionError
+        DDGConnectionError
             When not getting HTTP 200 even after the allowed one
-            reconnection and/or one redirection, or when Google is
+            reconnection and/or one redirection, or when DuckDuckGo is
             blocking query due to unsual activity.
 
         Returns
@@ -631,18 +631,18 @@ class GoogleConnection(object):
                 self._raw_get(url)
             except http.client.HTTPException as e:
                 logger.debug('Got exception: %s.', e)
-                raise GoogleConnectionError("Failed to get '%s'." % url)
+                raise DDGConnectionError("Failed to get '%s'." % url)
 
         resp = self._resp
         if resp.status in {301, 302, 303, 307, 308}:
             redirection_url = resp.getheader('location', '')
             if 'sorry/IndexRedirect?' in redirection_url:
-                raise GoogleConnectionError('Connection blocked due to unusual activity.')
+                raise DDGConnectionError('Connection blocked due to unusual activity.')
             self._redirect(redirection_url)
             resp = self._resp
 
         if resp.status != 200:
-            raise GoogleConnectionError('Got HTTP %d: %s' % (resp.status, resp.reason))
+            raise DDGConnectionError('Got HTTP %d: %s' % (resp.status, resp.reason))
 
         payload = resp.read()
         try:
@@ -665,7 +665,7 @@ class GoogleConnection(object):
 
         Raises
         ------
-        GoogleConnectionError
+        DDGConnectionError
 
         """
         logger.debug('Redirecting to URL %s', url)
@@ -680,7 +680,7 @@ class GoogleConnection(object):
             self._raw_get(relurl)
         except http.client.HTTPException as e:
             logger.debug('Got exception: %s.', e)
-            raise GoogleConnectionError("Failed to get '%s'." % url)
+            raise DDGConnectionError("Failed to get '%s'." % url)
 
     def _raw_get(self, url):
         """Make a raw HTTP GET request.
@@ -1204,7 +1204,7 @@ class Result(object):
     url : str
     abstract : str
     metadata : str, optional
-        Only applicable to Google News results, with publisher name and
+        Only applicable to DuckDuckGo News results, with publisher name and
         publishing time.
     sitelinks : list, optional
         List of ``SiteLink`` objects.
@@ -1328,16 +1328,16 @@ class Result(object):
         return self._urltable
 
 
-class GooglerCmdException(Exception):
+class DdgCmdException(Exception):
     pass
 
 
-class NoKeywordsException(GooglerCmdException):
+class NoKeywordsException(DdgCmdException):
     pass
 
 
 def require_keywords(method):
-    # Require keywords to be set before we run a GooglerCmd method. If
+    # Require keywords to be set before we run a DdgCmd method. If
     # no keywords have been set, raise a NoKeywordsException.
     @functools.wraps(method)
     def enforced_method(self, *args, **kwargs):
@@ -1348,7 +1348,7 @@ def require_keywords(method):
     return enforced_method
 
 def no_argument(method):
-    # Normalize a do_* method of GooglerCmd that takes no argument to
+    # Normalize a do_* method of DdgCmd that takes no argument to
     # one that takes an arg, but issue a warning when an nonempty
     # argument is given.
     @functools.wraps(method)
@@ -1361,9 +1361,9 @@ def no_argument(method):
 
     return enforced_method
 
-class GooglerCmd(object):
+class DdgCmd(object):
     """
-    Command line interpreter and executor class for googler.
+    Command line interpreter and executor class for ddgr.
 
     Inspired by PSL cmd.Cmd.
 
@@ -1397,9 +1397,9 @@ class GooglerCmd(object):
 
         self._opts = opts
 
-        self._google_url = GoogleUrl(opts)
+        self._ddg_url = DdgUrl(opts)
         proxy = opts.proxy if hasattr(opts, 'proxy') else None
-        self._conn = GoogleConnection(self._google_url.hostname, proxy=proxy)
+        self._conn = DdgConnection(self._ddg_url.hostname, proxy=proxy)
         atexit.register(self._conn.close)
 
         self.results = []
@@ -1414,7 +1414,7 @@ class GooglerCmd(object):
     @property
     def keywords(self):
         """Current keywords."""
-        return self._google_url.keywords
+        return self._ddg_url.keywords
 
     @require_keywords
     def fetch(self):
@@ -1424,7 +1424,7 @@ class GooglerCmd(object):
 
         Raises
         ------
-        GoogleConnectionError
+        DDGConnectionError
 
         See Also
         --------
@@ -1433,7 +1433,7 @@ class GooglerCmd(object):
         """
         # This method also sets self._results_filtered and
         # self._urltable.
-        page = self._conn.fetch_page(self._google_url.relative())
+        page = self._conn.fetch_page(self._ddg_url.relative())
 
         if logger.isEnabledFor(logging.DEBUG):
             import tempfile
@@ -1443,7 +1443,7 @@ class GooglerCmd(object):
                 fp.write(page)
             logger.debug("Response body written to '%s'.", tmpfile)
 
-        parser = GoogleParser(news=self._google_url.news)
+        parser = GoogleParser(news=self._ddg_url.news)
         parser.feed(page)
 
         self.results = parser.results
@@ -1494,7 +1494,7 @@ class GooglerCmd(object):
 
         Raises
         ------
-        GoogleConnectionError
+        DDGConnectionError
 
         See Also
         --------
@@ -1544,19 +1544,19 @@ class GooglerCmd(object):
 
     @staticmethod
     def help():
-        GooglerArgumentParser.print_omniprompt_help(sys.stderr)
+        DdgArgumentParser.print_omniprompt_help(sys.stderr)
         printerr('')
 
     @require_keywords
     @no_argument
     def do_first(self):
-        self._google_url.first_page()
+        self._ddg_url.first_page()
         self.fetch_and_display()
 
     def do_google(self, arg):
         # Update keywords and reconstruct URL
         self._opts.keywords = arg
-        self._google_url = GoogleUrl(self._opts)
+        self._ddg_url = DdgUrl(self._opts)
         self.fetch_and_display()
 
     @require_keywords
@@ -1564,22 +1564,22 @@ class GooglerCmd(object):
     def do_next(self):
         # If > 5 results are being fetched each time,
         # block next when no parsed results in current fetch
-        if not self.results and self._google_url._num > 5:
+        if not self.results and self._ddg_url._num > 5:
             print('No results.', file=sys.stderr)
         else:
-            self._google_url.next_page()
+            self._ddg_url.next_page()
             self.fetch_and_display()
 
     @require_keywords
     @no_argument
     def do_open(self):
-        open_url(self._google_url.full())
+        open_url(self._ddg_url.full())
 
     @require_keywords
     @no_argument
     def do_previous(self):
         try:
-            self._google_url.prev_page()
+            self._ddg_url.prev_page()
         except ValueError as e:
             print(e, file=sys.stderr)
             return
@@ -1590,8 +1590,8 @@ class GooglerCmd(object):
     @no_argument
     def do_unfilter(self):
         # Reset start to 0 when unfilter is applied.
-        self._google_url.update(None, **{'start':0,})
-        self._google_url.set_queries(filter=0)
+        self._ddg_url.update(None, **{'start':0,})
+        self._ddg_url.set_queries(filter=0)
         self.fetch_and_display()
 
     def cmdloop(self):
@@ -1637,7 +1637,7 @@ class GooglerCmd(object):
                 printerr('Initiate a query first.')
 
 
-class GooglerArgumentParser(argparse.ArgumentParser):
+class DdgArgumentParser(argparse.ArgumentParser):
     """Custom argument parser for googler."""
 
     # Print omniprompt help
@@ -1730,7 +1730,7 @@ class GooglerArgumentParser(argparse.ArgumentParser):
 # Miscellaneous functions
 
 def parse_args(args=None, namespace=None):
-    """Parse googler arguments/options.
+    """Parse ddgr arguments/options.
 
     Parameters
     ----------
@@ -1746,9 +1746,9 @@ def parse_args(args=None, namespace=None):
 
     """
 
-    colorstr_env = os.getenv('GOOGLER_COLORS')
+    colorstr_env = os.getenv('DDGR_COLORS')
 
-    argparser = GooglerArgumentParser(description='Google from the command-line.')
+    argparser = DdgArgumentParser(description='DuckDuckGo from the command-line.')
     addarg = argparser.add_argument
     addarg('-s', '--start', dest='start', type=argparser.nonnegative_int,
            default=0, metavar='N',
@@ -1759,8 +1759,7 @@ def parse_args(args=None, namespace=None):
     addarg('-N', '--news', dest='news', action='store_true',
            help='show results from news section')
     addarg('-c', '--tld', dest='tld', metavar='TLD',
-           help="""country-specific search with top-level domain .TLD, e.g., 'in'
-           for India. Ref: https://en.wikipedia.org/wiki/List_of_Google_domains""")
+           help="country-specific search e.g., 'in' for India")
     addarg('-l', '--lang', dest='lang', metavar='LANG',
            help='display in language LANG')
     addarg('-x', '--exact', dest='exact', action='store_true',
@@ -1776,7 +1775,7 @@ def parse_args(args=None, namespace=None):
            help='time limit search '
            '[h5 (5 hrs), d5 (5 days), w5 (5 weeks), m5 (5 months), y5 (5 years)]')
     addarg('-w', '--site', dest='site', metavar='SITE',
-           help='search a site using Google')
+           help='search a site using DuckDuckGo')
     addarg('-p', '--proxy', dest='proxy',
            help='tunnel traffic through an HTTPS proxy (HOST:PORT)')
     addarg('--noua', dest='noua', action='store_true',
@@ -1808,13 +1807,13 @@ def main():
     else:
         colors = None
     Result.colors = colors
-    GooglerCmd.colors = colors
+    DdgCmd.colors = colors
 
     if opts.noua:
         USER_AGENT = ''
 
     try:
-        repl = GooglerCmd(opts)
+        repl = DdgCmd(opts)
 
         if opts.json or opts.lucky or opts.noninteractive:
             # Non-interactive mode
