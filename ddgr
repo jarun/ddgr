@@ -196,6 +196,7 @@ class DdgUrl(object):
         self._query_dict = {
             'ie': 'UTF-8',
             'oe': 'UTF-8',
+            'k1': '-1',
         }
         self.update(opts, **kwargs)
 
