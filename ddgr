@@ -721,7 +721,7 @@ class DdgConnection(object):
 
 
 def annotate_tag(annotated_starttag_handler):
-    # See parser logic within the GoogleParser class for documentation.
+    # See parser logic within the DdgParser class for documentation.
     #
     # In particular, search for "Ignore List" to view detailed
     # documentation of the ignore list.
@@ -773,7 +773,7 @@ def annotate_tag(annotated_starttag_handler):
     return handler
 
 def retrieve_tag_annotation(annotated_endtag_handler):
-    # See parser logic within the GoogleParser class for documentation.
+    # See parser logic within the DdgParser class for documentation.
     #
     # annotated_endtag_handler(self, tag: str, annotation) -> None
     # Returns: HTMLParser.handle_endtag(self, tag: str) -> None
@@ -788,9 +788,9 @@ def retrieve_tag_annotation(annotated_endtag_handler):
 
     return handler
 
-class GoogleParser(html.parser.HTMLParser):
-    """The members of this class parse the result
-    HTML page fetched from Google server for a query.
+class DdgParser(html.parser.HTMLParser):
+    """The members of this class parse the result HTML
+    page fetched from DuckDuckGo server for a query.
 
     The custom parser looks for tags enclosing search
     results and extracts the URL, title and text for
@@ -984,14 +984,12 @@ class GoogleParser(html.parser.HTMLParser):
 
     @annotate_tag
     def root_start(self, tag, attrs):
-        # We omit Google's "smart card" results (term coined by me) by
-        # guarding against the 'g-blk' class (sample response: https://git.io/voJgB)
         if tag == 'div' and 'links_main' in self.classes(attrs):
             # Initialize result field registers
             self.title = ''
             self.url = ''
             self.abstract = ''
-            self.metadata = '' # Only used for Google News
+            self.metadata = '' # Only used for News
             self.filetype = ''
             self.sitelinks = []
 
@@ -1000,7 +998,7 @@ class GoogleParser(html.parser.HTMLParser):
             # sections" (secondary results to the same event).
             self.title_registered = False
             self.abstract_registered = False
-            self.metadata_registered = False # Only used for Google News
+            self.metadata_registered = False # Only used for News
 
             self.set_handlers_to('result')
             return 'result'
@@ -1155,11 +1153,7 @@ class GoogleParser(html.parser.HTMLParser):
         except KeyError:
             # Entity name not found; most likely rather sloppy HTML
             # where a literal ampersand is not escaped; For instance,
-            # the HTML response returned by
-            #
-            #     googler -c au -l ko expected
-            #
-            # contains the following tag
+            # containing the following tag
             #
             #     <p class="_e4b"><a href="...">expected market return s&p 500</a></p>
             #
@@ -1437,13 +1431,13 @@ class DdgCmd(object):
 
         if logger.isEnabledFor(logging.DEBUG):
             import tempfile
-            fd, tmpfile = tempfile.mkstemp(prefix='googler-response-')
+            fd, tmpfile = tempfile.mkstemp(prefix='ddgr-response-')
             os.close(fd)
             with open(tmpfile, 'w', encoding='utf-8') as fp:
                 fp.write(page)
             logger.debug("Response body written to '%s'.", tmpfile)
 
-        parser = GoogleParser(news=self._ddg_url.news)
+        parser = DdgParser(news=self._ddg_url.news)
         parser.feed(page)
 
         self.results = parser.results
@@ -1489,7 +1483,7 @@ class DdgCmd(object):
         json_output : bool, optional
             Whether to dump results in JSON format. Default is False.
         interactive : bool, optional
-            Whether to show contextual instructions, when e.g. Google
+            Whether to show contextual instructions, when e.g. DuckDuckGo
             has filtered the results. Default is True.
 
         Raises
@@ -1505,7 +1499,7 @@ class DdgCmd(object):
         self.fetch()
         self.display_results(prelude=prelude, json_output=json_output)
         if self._results_filtered:
-            printerr('** Enter "unfilter" to show similar results Google omitted.')
+            printerr('** Enter "unfilter" to show similar results DuckDuckGo omitted.')
 
     def read_next_command(self):
         """Show omniprompt and read user command line.
@@ -1520,7 +1514,7 @@ class DdgCmd(object):
 
         """
         colors = self.colors
-        message = 'googler (? for help)'
+        message = 'ddgr (? for help)'
         prompt = (colors.prompt + message + colors.reset + ' ') if colors else (message + ': ')
         enter_count = 0
         while True:
@@ -1553,7 +1547,7 @@ class DdgCmd(object):
         self._ddg_url.first_page()
         self.fetch_and_display()
 
-    def do_google(self, arg):
+    def do_ddg(self, arg):
         # Update keywords and reconstruct URL
         self._opts.keywords = arg
         self._ddg_url = DdgUrl(self._opts)
@@ -1614,7 +1608,7 @@ class DdgCmd(object):
                 if cmd == 'f':
                     self.do_first('')
                 elif cmd.startswith('g '):
-                    self.do_google(cmd[2:])
+                    self.do_ddg(cmd[2:])
                 elif cmd == 'n':
                     self.do_next('')
                 elif cmd == 'o':
@@ -1632,13 +1626,13 @@ class DdgCmd(object):
                 elif self.keywords and cmd.isdigit() and int(cmd) < 100:
                     printerr('Index out of bound. To search for the number, use g.')
                 else:
-                    self.do_google(cmd)
+                    self.do_ddg(cmd)
             except NoKeywordsException:
                 printerr('Initiate a query first.')
 
 
 class DdgArgumentParser(argparse.ArgumentParser):
-    """Custom argument parser for googler."""
+    """Custom argument parser for ddgr."""
 
     # Print omniprompt help
     @staticmethod
@@ -1650,13 +1644,13 @@ class DdgArgumentParser(argparse.ArgumentParser):
           index                 open the result corresponding to index in browser
           f                     jump to the first page
           o                     open the current search in browser
-          g keywords            initiate a new Google search for 'keywords' with original options
-          q, ^D, double Enter   exit googler
+          g keywords            initiate a new search for 'keywords' with original options
+          q, ^D, double Enter   exit ddgr
           ?                     show omniprompt help
           *                     any other string initiates a new search with original options
         """))
 
-    # Print information on googler
+    # Print information on ddgr
     @staticmethod
     def print_general_info(file=None):
         file = sys.stderr if file is None else file
@@ -1702,7 +1696,7 @@ class DdgArgumentParser(argparse.ArgumentParser):
 
     @staticmethod
     def is_duration(arg):
-        """Check if a string is a valid duration accepted by Google.
+        """Check if a string is a valid duration accepted by DuckDuckGo.
 
         A valid duration is of the form dNUM, where d is a single letter h
         (hour), d (day), w (week), m (month), or y (year), and NUM is a
