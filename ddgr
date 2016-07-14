@@ -277,7 +277,6 @@ class DdgUrl(object):
                 duration: str (DdgArgumentParser.is_duration)
                 exact: bool
                 keywords: str or list of strs
-                lang: str
                 news: bool
                 num: int
                 site: str
@@ -309,8 +308,6 @@ class DdgUrl(object):
                 qd.pop('nfpr', None)
         if 'keywords' in opts:
             self._keywords = opts['keywords']
-        if 'lang' in opts and opts['lang']:
-            qd['hl'] = opts['lang']
         if 'news' in opts:
             if opts['news']:
                 qd['ia'] = 'news'
@@ -1675,8 +1672,6 @@ def parse_args(args=None, namespace=None):
            help='show results from news section')
     addarg('-c', '--reg', dest='reg', metavar='REG',
            help="region-specific search e.g. 'in-en' for India; visit https://duckduckgo.com/params")
-    addarg('-l', '--lang', dest='lang', metavar='LANG',
-           help='display in language LANG')
     addarg('-x', '--exact', dest='exact', action='store_true',
            help='disable automatic spelling correction')
     addarg('-C', '--nocolor', dest='colorize', action='store_false',
