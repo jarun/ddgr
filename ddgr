@@ -1694,7 +1694,7 @@ def parse_args(args=None, namespace=None):
     addarg('--json', dest='json', action='store_true',
            help='output in JSON format; implies --noprompt')
     addarg('--np', '--noprompt', dest='noninteractive', action='store_true',
-           help='perform search and exit, do not prompt for further interactions')
+           help='perform search and exit, do not prompt')
     addarg('-d', '--debug', dest='debug', action='store_true',
            help='enable debugging')
     addarg('keywords', nargs='*', metavar='KEYWORD',
