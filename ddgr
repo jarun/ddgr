@@ -910,13 +910,9 @@ class DdgParser(html.parser.HTMLParser):
             self.abstract = ''
             self.metadata = '' # Only used for News
             self.filetype = ''
-            self.sitelinks = []
 
-            # Guard against sitelinks, which also have titles and
-            # abstracts.  In the case of news, guard against "card
+            # In the case of news, guard against "card
             # sections" (secondary results to the same event).
-            self.title_registered = False
-            self.abstract_registered = False
             self.metadata_registered = False # Only used for News
 
             self.set_handlers_to('result')
@@ -932,7 +928,7 @@ class DdgParser(html.parser.HTMLParser):
 
     @annotate_tag
     def result_start(self, tag, attrs):
-        if not self.title_registered and tag == 'h2' and 'result__title' in self.classes(attrs):
+        if tag == 'h2' and 'result__title' in self.classes(attrs):
             self.set_handlers_to('title')
             return 'title'
 
@@ -942,7 +938,7 @@ class DdgParser(html.parser.HTMLParser):
                 self.start_populating_textbuf(lambda text: ', ' if text == '-' else text)
                 return 'news_metadata'
 
-            if not self.abstract_registered and tag == 'div' and 'st' in self.classes(attrs):
+            if tag == 'div' and 'st' in self.classes(attrs):
                 self.start_populating_textbuf()
                 return 'news_abstract'
 
@@ -955,13 +951,11 @@ class DdgParser(html.parser.HTMLParser):
         if annotation == 'abstract':
             self.stop_populating_textbuf()
             self.abstract = self.pop_textbuf()
-            self.abstract_registered = False
         elif annotation == 'result':
             if self.url:
                 self.index += 1
                 result = Result(self.index, self.title, self.url, self.abstract,
-                                metadata=self.metadata if self.metadata else None,
-                                sitelinks=self.sitelinks)
+                                metadata=self.metadata if self.metadata else None)
                 self.results.append(result)
             self.set_handlers_to('root')
 
@@ -997,7 +991,6 @@ class DdgParser(html.parser.HTMLParser):
             self.title = self.pop_textbuf()
             if self.filetype != '':
                 self.title = self.filetype + self.title
-            self.title_registered = True
         elif annotation == 'title':
             self.set_handlers_to('result')
 
@@ -1012,7 +1005,6 @@ class DdgParser(html.parser.HTMLParser):
         if annotation == 'abstract_text':
             self.stop_populating_textbuf()
             self.abstract = self.pop_textbuf()
-            self.abstract_registered = False
         elif annotation == 'abstract':
             self.set_handlers_to('result')
 
@@ -1093,16 +1085,6 @@ class DdgParser(html.parser.HTMLParser):
         return attrs.get('class', '').split()
 
 
-class Sitelink(object):
-    """Container for a sitelink."""
-
-    def __init__(self, title, url, abstract):
-        self.title = title
-        self.url = url
-        self.abstract = abstract
-        self.index = ''
-
-
 Colors = collections.namedtuple('Colors', 'index, title, url, metadata, abstract, prompt, reset')
 
 
@@ -1119,8 +1101,6 @@ class Result(object):
     metadata : str, optional
         Only applicable to DuckDuckGo News results, with publisher name and
         publishing time.
-    sitelinks : list, optional
-        List of ``SiteLink`` objects.
 
     Attributes
     ----------
@@ -1129,7 +1109,6 @@ class Result(object):
     url : str
     abstract : str
     metadata : str or None
-    sitelinks : list
 
     Class Variables
     ---------------
@@ -1140,28 +1119,21 @@ class Result(object):
     print()
     jsonizable_object()
     urltable()
-
     """
 
     # Class variables
     colors = None
 
-    def __init__(self, index, title, url, abstract, metadata=None, sitelinks=None):
+    def __init__(self, index, title, url, abstract, metadata=None):
         index = str(index)
         self.index = index
         self.title = title
         self.url = url
         self.abstract = abstract
         self.metadata = metadata
-        self.sitelinks = [] if sitelinks is None else sitelinks
 
         self._urltable = {index: url}
         subindex = 'a'
-        for sitelink in sitelinks:
-            fullindex = index + subindex
-            sitelink.index = fullindex
-            self._urltable[fullindex] = sitelink.url
-            subindex = chr(ord(subindex) + 1)
 
     def _print_title_and_url(self, index, title, url, indent=0):
         colors = self.colors
@@ -1207,10 +1179,6 @@ class Result(object):
         self._print_title_and_url(self.index, self.title, self.url)
         self._print_metadata_and_abstract(self.abstract, metadata=self.metadata)
 
-        for sitelink in self.sitelinks:
-            self._print_title_and_url(sitelink.index, sitelink.title, sitelink.url, indent=4)
-            self._print_metadata_and_abstract(sitelink.abstract, indent=4)
-
     def jsonizable_object(self):
         """Return a JSON-serializable dict representing the result entry."""
         obj = {
@@ -1220,8 +1188,6 @@ class Result(object):
         }
         if self.metadata:
             obj['metadata'] = self.metadata
-        if self.sitelinks:
-            obj['sitelinks'] = [sitelink.__dict__ for sitelink in self.sitelinks]
         return obj
 
     def urltable(self):
@@ -1233,10 +1199,7 @@ class Result(object):
         Returns
         -------
         dict
-            A dict mapping indices (strs) to URLs (also strs). Indices of
-            sitelinks are the original index appended by lowercase letters a,
-            b, c, etc.
-
+            A dict mapping indices (strs) to URLs (also strs).
         """
         return self._urltable
 
