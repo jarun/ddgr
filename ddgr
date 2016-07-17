@@ -34,13 +34,7 @@ import signal
 import sys
 import textwrap
 import urllib.parse
-
-# Python optional dependency compatibility layer
-try:
-    import readline
-except ImportError:
-    pass
-
+import readline
 
 # Basic setup
 
@@ -52,7 +46,6 @@ def sigint_handler(signum, frame):
     sys.exit(1)
 
 signal.signal(signal.SIGINT, sigint_handler)
-
 
 # Constants
 
@@ -72,7 +65,6 @@ COLORMAP = {k: '\x1b[%sm' % v for k, v in {
 
 # Disguise as Firefox on Ubuntu
 USER_AGENT = ('Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/48.0')
-
 
 # Global helper functions
 
@@ -94,14 +86,12 @@ def open_url(url):
         os.dup2(_stderr, 2)
         os.dup2(_stdout, 1)
 
-
 def printerr(msg):
     """Print message, verbatim, to stderr.
 
     ``msg`` could be any stringifiable value.
     """
     print(msg, file=sys.stderr)
-
 
 # Classes
 
@@ -1119,6 +1109,7 @@ class Result(object):
     print()
     jsonizable_object()
     urltable()
+
     """
 
     # Class variables
@@ -1200,6 +1191,7 @@ class Result(object):
         -------
         dict
             A dict mapping indices (strs) to URLs (also strs).
+
         """
         return self._urltable
 
@@ -1263,6 +1255,7 @@ class DdgCmd(object):
     read_next_command()
     help()
     cmdloop()
+
     """
 
     # Class variables
