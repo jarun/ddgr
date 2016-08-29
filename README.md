@@ -1,10 +1,10 @@
 # ddgr
 DuckDuckGo from the terminal
 
-# License
+## License
 GPLv3
 
-# Current status
+## Current status
 Initial stage. Code (including help) is based on [googler](https://github.com/jarun/googler) at the moment.
 
     $ ddgr KEYWORD [KEYWORD ...]
