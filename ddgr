@@ -35,6 +35,7 @@ import sys
 import textwrap
 import urllib.parse
 import readline
+import webbrowser
 
 # Basic setup
 
@@ -79,7 +80,6 @@ def open_url(url):
     os.dup2(fd, 2)
     os.dup2(fd, 1)
     try:
-        import webbrowser
         webbrowser.open(url)
     finally:
         os.close(fd)
@@ -1426,7 +1426,11 @@ class DdgCmd(object):
         # Update keywords and reconstruct URL
         self._opts.keywords = arg
         self._ddg_url = DdgUrl(self._opts)
-        self.fetch_and_display()
+        # If there is a Bang, let DuckDuckGo do the work
+        if arg[0] == '!':
+            webbrowser.open(self._ddg_url.full())
+        else:
+            self.fetch_and_display()
 
     @require_keywords
     @no_argument
