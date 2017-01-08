@@ -636,43 +636,7 @@ def annotate_tag(annotated_starttag_handler):
     # Returns: HTMLParser.handle_starttag(self, tag: str, attrs: list) -> None
 
     def handler(self, tag, attrs):
-        # Get context; assumes that the handler is called SCOPE_start
-        context = annotated_starttag_handler.__name__[:-6]
-
-        # If context is 'ignore', ignore all tests
-        if context == 'ignore':
-            self.insert_annotation(tag, None)
-            return
-
         attrs = dict(attrs)
-
-        # Compare against ignore list
-        ignored = False
-        for selector in self.IGNORE_LIST:
-            for attr in selector:
-                if attr == 'tag':
-                    if tag != selector['tag']:
-                        break
-                elif attr == 'class':
-                    tag_classes = set(self.classes(attrs))
-                    selector_classes = set(self.classes(selector))
-                    if not selector_classes.issubset(tag_classes):
-                        break
-                else:
-                    if attrs[attr] != selector[attr]:
-                        break
-            else:
-                # Passed all criterions of the selector
-                ignored = True
-                break
-
-        # If tag matches ignore list, annotate and hand over to ignore_*
-        if ignored:
-            self.insert_annotation(tag, context + '_ignored')
-            self.set_handlers_to('ignore')
-            return
-
-        # Standard
         annotation = annotated_starttag_handler(self, tag, attrs)
         self.insert_annotation(tag, annotation)
 
@@ -821,21 +785,6 @@ class DdgParser(html.parser.HTMLParser):
 
         self.set_handlers_to('root')
 
-    ### Ignore list ###
-    IGNORE_LIST = [
-        # "People also ask"
-        # Sample query: VPN
-        # Screenshot: https://i.imgur.com/yfcsoQz.png
-        {
-            'tag': 'div',
-            'class': 'related-question-pair'
-        },
-        {
-            'tag': 'div',
-            'class': 'result--ad'
-        },
-    ]
-
     ### Tag handlers ###
 
     @annotate_tag
@@ -956,18 +905,6 @@ class DdgParser(html.parser.HTMLParser):
         if tag not in self.tag_annotations:
             self.tag_annotations[tag] = []
         self.tag_annotations[tag].append(annotation)
-
-    @annotate_tag
-    def ignore_start(self, tag, attrs):
-        pass
-
-    @retrieve_tag_annotation
-    def ignore_end(self, tag, annotation):
-        if annotation and annotation.endswith('_ignored'):
-            # Strip '-ignore' suffix from annotation to obtain the outer
-            # context name.
-            context = annotation[:-8]
-            self.set_handlers_to(context)
 
     def start_populating_textbuf(self, data_transformer=None):
         if data_transformer is None:
