@@ -632,9 +632,6 @@ class DdgConnection(object):
 def annotate_tag(annotated_starttag_handler):
     # See parser logic within the DdgParser class for documentation.
     #
-    # In particular, search for "Ignore List" to view detailed
-    # documentation of the ignore list.
-    #
     # annotated_starttag_handler(self, tag: str, attrsdict: dict) -> annotation
     # Returns: HTMLParser.handle_starttag(self, tag: str, attrs: list) -> None
 
@@ -809,56 +806,6 @@ class DdgParser(html.parser.HTMLParser):
     #     </a>                   <!-- stop_populating_textbuf, pop to self.title
     #                                 prepend self.filetype, if available -->
     #   </h2>
-    #
-    # - Sometimes Google omits similar (more like duplicate) result
-    #   entries. Whenever this happens there will be a notice in p#ofr. The way
-    #   to unfilter is to simply add '&filter=0' to the query string.
-    #
-    #
-    # Google News
-    #
-    # - Google News results differ from Google Search results in the
-    #   following ways:
-    #
-    #   For each result, the title in the same format, but there's a
-    #   metadata field in a <div> tag with class "slp", and the abstract
-    #   isn't as deeply embedded: it's in a <div> tag on the same level
-    #   with class "st".
-    #
-    #   <!-- within the scope of result_* -->
-    #   <h3 class="r"></h3>  <!-- as before -->
-    #   <div class="slp">    <!-- annotate as 'news_metadata', start_populating_textbuf -->
-    #     ...
-    #     <span>source</span>
-    #     <span>-</span>     <!-- transform to ', ' -->
-    #     <span>publishing time</span>
-    #   </div>               <!-- stop_populating_textbuf, pop to self.metadata -->
-    #   <div class="st">     <!-- annotate as 'news_abstract', start_populating_textbuf -->
-    #     abstract text again with <em> markup on keywords
-    #   </div>               <!-- stop_populating_textbuf, pop to self.abstract -->
-    #
-    #
-    # Ignore List
-    #
-    # - As good as our result criteria might be, sometimes results of
-    #   dubious value (usually from value-add features) slip through.
-    #   In these cases, we may want to skip enclosing containers
-    #   entirely. The ignore list feature is designed for this purpose.
-    #
-    #   The current ignore list is available in self.IGNORE_LIST. Each
-    #   entry (called a "selector") is a dict of attribute-value
-    #   pairs. Each attribute is matched verbatim to a tag's attribute,
-    #   except the "class" attribute, where we test for inclusion
-    #   instead (e.g. "c b a" matches "a b", just like it matches the
-    #   CSS selector ".a.b"). There's also a special "attribute" -- tag,
-    #   the meaning of which is obvious. A tag has to match all given
-    #   attributes to be considered a match for the selector.
-    #
-    #   When a match is found, the tag is annotated as SCOPE_ignored,
-    #   where SCOPE is the current handler scope (e.g., root, result,
-    #   title, etc.), and the scope is switched to 'ignore'. All
-    #   descendants of the tag are ignored. When the corresponding end
-    #   tag is finally reach, the former scope is restored.
 
     def __init__(self, news=False):
         html.parser.HTMLParser.__init__(self)
