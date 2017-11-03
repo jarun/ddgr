@@ -23,13 +23,13 @@ import gzip
 import html.entities
 import html.parser
 import http.client
-from http.client import HTTPSConnection
 import socket
 import ssl
 import io
 import logging
 import os
 import platform
+import requests
 import signal
 import sys
 import textwrap
@@ -41,6 +41,8 @@ import webbrowser
 
 logging.basicConfig(format='[%(levelname)s] %(message)s')
 logger = logging.getLogger()
+logdbg = logger.debug
+logerr = logger.error
 
 def sigint_handler(signum, frame):
     print('\nInterrupted.', file=sys.stderr)
@@ -64,8 +66,8 @@ COLORMAP = {k: '\x1b[%sm' % v for k, v in {
     'x': '0', 'X': '1', 'y': '7', 'Y': '7;1',
 }.items()}
 
-# Disguise as Firefox on Ubuntu
-USER_AGENT = ('Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/48.0')
+# Disguise as Elinks browser
+USER_AGENT = ('ELinks/0.12pre6 (textmode; Linux 4.4.0-98-generic x86_64; 199x55-2)')
 
 # Global helper functions
 
@@ -94,36 +96,6 @@ def printerr(msg):
     print(msg, file=sys.stderr)
 
 # Classes
-
-class TLS1_2Connection(HTTPSConnection):
-    """Overrides HTTPSConnection.connect to specify TLS version
-
-    NOTE: TLS 1.2 is supported from Python 3.4
-    """
-
-    def __init__(self, host, **kwargs):
-        HTTPSConnection.__init__(self, host, **kwargs)
-
-    def connect(self):
-        sock = socket.create_connection((self.host, self.port),
-                self.timeout, self.source_address)
-
-        # Optimizations not available on OS X
-        if platform.system() == 'Linux':
-            sock.setsockopt(socket.SOL_TCP, socket.TCP_DEFER_ACCEPT, 1)
-            sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_QUICKACK, 1)
-            sock.setsockopt(socket.SOL_SOCKET,socket.SO_RCVBUF,524288)
-
-        if getattr(self, '_tunnel_host', None):
-            self.sock = sock
-            self._tunnel()
-            HTTPSConnection.connect(self)
-        elif sys.version_info >= (3,4):
-            # Use TLS 1.2
-            self.sock = ssl.wrap_socket(sock, self.key_file, self.cert_file,
-                    ssl_version=ssl.PROTOCOL_TLSv1_2)
-        else:
-            HTTPSConnection.connect(self)
 
 class DdgUrl(object):
     """
@@ -184,9 +156,6 @@ class DdgUrl(object):
         self._keywords = []
         self._site = None
         self._query_dict = {
-            'ie': 'UTF-8',
-            'oe': 'UTF-8',
-            'k1': '-1',
         }
         self.update(opts, **kwargs)
 
@@ -233,28 +202,6 @@ class DdgUrl(object):
         url += '//' + self.netloc + self.relative()
         return url
 
-    def relative(self):
-        """Return the relative URL (without scheme and authority).
-
-        Authority (see RFC 3986 section 3.2), or netloc in the
-        terminology of urllib.parse, basically means the hostname
-        here. The relative URL is good for making HTTP(S) requests to a
-        known host.
-
-        Returns
-        -------
-        str
-
-        """
-        rel = self.path
-        if self.params:
-            rel += ';' + self.params
-        if self.query:
-            rel += '?' + self.query
-        if self.fragment:
-            rel += '#' + self.fragment
-        return rel
-
     def update(self, opts=None, **kwargs):
         """Update the URL with the given options.
 
@@ -265,14 +212,9 @@ class DdgUrl(object):
             list of currently recognized option keys with expected value
             types:
 
-                duration: str (DdgArgumentParser.is_duration)
-                exact: bool
                 keywords: str or list of strs
-                news: bool
                 num: int
-                site: str
                 start: int
-                reg: str
 
         Other Parameters
         ----------------
@@ -290,29 +232,12 @@ class DdgUrl(object):
         opts.update(kwargs)
 
         qd = self._query_dict
-        if 'duration' in opts and opts['duration']:
-            qd['tbs'] = 'qdr:%s' % opts['duration']
-        if 'exact' in opts:
-            if opts['exact']:
-                qd['nfpr'] = 1
-            else:
-                qd.pop('nfpr', None)
         if 'keywords' in opts:
             self._keywords = opts['keywords']
-        if 'news' in opts:
-            if opts['news']:
-                qd['ia'] = 'news'
-            else:
-                qd.pop('tbm', None)
         if 'num' in opts:
             self._num = opts['num']
-        if 'site' in opts:
-            self._site = opts['site']
         if 'start' in opts:
             self._start = opts['start']
-        if 'reg' in opts:
-            self._reg = opts['reg']
-            qd['kl'] = opts['reg']
 
     def set_queries(self, **kwargs):
         """Forcefully set queries outside the normal `update` mechanism.
@@ -384,7 +309,6 @@ class DdgUrl(object):
         """The hostname."""
         return 'duckduckgo.com'
 
-    @property
     def query(self):
         """The query string."""
         qd = {}
@@ -397,14 +321,12 @@ class DdgUrl(object):
         keywords = self._keywords
         if keywords:
             if isinstance(keywords, list):
-                q += '+'.join([urllib.parse.quote_plus(kw) for kw in keywords])
+                q += ' '.join([urllib.parse.quote_plus(kw) for kw in keywords])
             else:
                 q += urllib.parse.quote_plus(keywords)
-        if self._site:
-            q += '+site:' + urllib.parse.quote_plus(self._site)
         qd['q'] = q
 
-        return '&'.join(['%s=%s' % (k, qd[k]) for k in sorted(qd.keys())])
+        return (q, qd['start'])
 
 
 class DDGConnectionError(Exception):
@@ -444,67 +366,12 @@ class DdgConnection(object):
         self._port = None
         self._proxy = proxy
         self._conn = None
-        self.new_connection(host, port=port, timeout=timeout)
         self.cookie = ''
 
     @property
     def host(self):
         """The host currently connected to."""
         return self._host
-
-    def new_connection(self, host=None, port=None, timeout=45):
-        """Close the current connection (if any) and establish a new one.
-
-        Parameters
-        ----------
-        See http.client.HTTPSConnection for documentation of the
-        parameters. Renew the connection (i.e., reuse the current host
-        and port) if host is None or empty.
-
-        Raises
-        ------
-        DDGConnectionError
-
-        """
-        if self._conn:
-            self._conn.close()
-
-        if not host:
-            host = self._host
-            port = self._port
-        self._host = host
-        self._port = port
-        host_display = host + (':%d' % port if port else '')
-
-        proxy = self._proxy
-        if proxy:
-            logger.debug('Connecting to proxy server %s', proxy)
-            self._conn = TLS1_2Connection(proxy, timeout=timeout)
-
-            logger.debug('Tunneling to host %s' % host_display)
-            self._conn.set_tunnel(host, port=port)
-
-            try:
-                self._conn.connect()
-            except Exception as e:
-                msg = 'Failed to connect to proxy server %s: %s.' % (proxy, e)
-                raise DDGConnectionError(msg)
-        else:
-            logger.debug('Connecting to new host %s', host_display)
-            self._conn = TLS1_2Connection(host, port=port, timeout=timeout)
-            try:
-                self._conn.connect()
-            except Exception as e:
-                msg = 'Failed to connect to %s: %s.' % (host_display, e)
-                raise DDGConnectionError(msg)
-
-    def renew_connection(self, timeout=45):
-        """Renew current connection.
-
-        Equivalent to ``new_connection(timeout=timeout)``.
-
-        """
-        self.new_connection(timeout=timeout)
 
     def fetch_page(self, url):
         """Fetch a URL.
@@ -530,35 +397,45 @@ class DdgConnection(object):
             Response payload, gunzipped (if applicable) and decoded (in UTF-8).
 
         """
+        keywords, start = url.query()
+        print(keywords)
+        print(start)
+
+        proxies = {
+            'https': os.environ.get('https_proxy'),
+        }
+
+        from urllib.parse import quote_plus as qp
+
+        _u = 'https://duckduckgo.com/html'
+
         try:
-            self._raw_get(url)
-        except (http.client.HTTPException, OSError) as e:
-            logger.debug('Got exception: %s.', e)
-            logger.debug('Attempting to reconnect...')
-            self.renew_connection()
-            try:
-                self._raw_get(url)
-            except http.client.HTTPException as e:
-                logger.debug('Got exception: %s.', e)
-                raise DDGConnectionError("Failed to get '%s'." % url)
+            r = requests.post(_u,
+                              headers={
+                                       'authority': 'duckduckgo.com',
+                                       'path': '/html/',
+                                       #'content-type': 'application/json',
+                                       'Cookie': '',
+                                       'Accept-encoding': 'gzip,deflate',
+                                       'User-Agent': USER_AGENT,
+                                       'Connection': 'keep-alive',
+                                       'DNT': '1',
+                                      },
+                             data={
+                                   'q': keywords,
+                                   'b': '',
+                                   'kl': 'us-en'
+                                  },
+                              proxies=proxies)
+        except Exception as e:
+            logerr(e)
+            return None
 
-        resp = self._resp
-        if resp.status in {301, 302, 303, 307, 308}:
-            redirection_url = resp.getheader('location', '')
-            if 'sorry/IndexRedirect?' in redirection_url:
-                raise DDGConnectionError('Connection blocked due to unusual activity.')
-            self._redirect(redirection_url)
-            resp = self._resp
+        if r.status_code != 200:
+            logerr('[%s] %s', r.status_code, r.reason)
+            return None
 
-        if resp.status != 200:
-            raise DDGConnectionError('Got HTTP %d: %s' % (resp.status, resp.reason))
-
-        payload = resp.read()
-        try:
-            return gzip.GzipFile(fileobj=io.BytesIO(payload)).read().decode('utf-8')
-        except OSError:
-            # Not gzipped
-            return payload.decode('utf-8')
+        return r
 
     def _redirect(self, url):
         """Redirect to and fetch a new URL.
@@ -1186,18 +1063,23 @@ class DdgCmd(object):
         """
         # This method also sets self._results_filtered and
         # self._urltable.
-        page = self._conn.fetch_page(self._ddg_url.relative())
+        page = self._conn.fetch_page(self._ddg_url)
+
+        if page == None:
+            return
 
         if logger.isEnabledFor(logging.DEBUG):
             import tempfile
             fd, tmpfile = tempfile.mkstemp(prefix='ddgr-response-')
             os.close(fd)
             with open(tmpfile, 'w', encoding='utf-8') as fp:
-                fp.write(page)
+                fp.write(page.text)
             logger.debug("Response body written to '%s'.", tmpfile)
 
-        parser = DdgParser(news=self._ddg_url.news)
-        parser.feed(page)
+        parser = DdgParser(news=False)
+
+        parser = DdgParser(news=False)
+        parser.feed(page.text)
 
         self.results = parser.results
         self._results_filtered = parser.filtered
@@ -1546,6 +1428,50 @@ def parse_args(args=None, namespace=None):
     return argparser.parse_args(args, namespace)
 
 
+def testreq():
+    proxies = {
+        'https': os.environ.get('https_proxy'),
+    }
+
+    from urllib.parse import quote_plus as qp
+
+    _u = 'https://duckduckgo.com/html'
+
+    try:
+        r = requests.post(_u,
+                          headers={
+                                   'authority': 'duckduckgo.com',
+                                   'path': '/html/',
+                                   #'content-type': 'application/json',
+                                   'User-Agent': USER_AGENT
+                                  },
+                          data={
+                                'q': 'python programming',
+                                's': '0',
+                                'nextParams': '',
+                                'v': 'l',
+                                'o': 'json',
+                                'dc': '1',
+                                'api': '/d.js',
+                                'kl': 'us-en'
+                               },
+                          proxies=proxies)
+    except Exception as e:
+        logerr(e)
+        return
+
+    if r.status_code != 200:
+        logerr('[%s] %s', r.status_code, r.reason)
+        return
+
+    parser = DdgParser(news=False)
+    parser.feed(r.text)
+
+    results = parser.results
+    sys.stderr.write('\n')
+    for r in results:
+        r.print()
+
 def main():
     global USER_AGENT
 
@@ -1568,6 +1494,8 @@ def main():
         USER_AGENT = ''
 
     try:
+        # testreq()
+
         repl = DdgCmd(opts)
 
         if opts.json or opts.lucky or opts.noninteractive:
