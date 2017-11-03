@@ -64,24 +64,67 @@ COLORMAP = {k: '\x1b[%sm' % v for k, v in {
 #USER_AGENT = ('ELinks/0.12pre6 (textmode; Linux 4.4.0-98-generic x86_64; 199x55-2)')
 USER_AGENT = ('Mozilla/5.0 (Linux; Android 7.1.2; Nexus 6P Build/N2G48C) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.116 Mobile Safari/537.36')
 
+text_browsers = ['elinks', 'links', 'lynx', 'w3m', 'www-browser']
+
 # Global helper functions
 
 def open_url(url):
-    """Open an URL in the user's default web browser."""
+    """Open an URL in the user's default web browser.
+
+    The string attribute ``open_url.url_handler`` can be used to open URLs
+    in a custom CLI script or utility. A subprocess is spawned with url as
+    the parameter in this case instead of the usual webbrowser.open() call.
+
+    Whether the browser's output (both stdout and stderr) are suppressed
+    depends on the boolean attribute ``open_url.suppress_browser_output``.
+    If the attribute is not set upon a call, set it to a default value,
+    which means False if BROWSER is set to a known text-based browser --
+    elinks, links, lynx, w3m or 'www-browser'; or True otherwise.
+
+    The string attribute ``open_url.override_text_browser`` can be used to
+    ignore env var BROWSER as well as some known text-based browsers and
+    attempt to open url in a GUI browser available.
+    Note: If a GUI browser is indeed found, this option ignores the program
+          option `show-browser-logs`
+    """
     logger.debug('Opening %s', url)
-    _stderr = os.dup(2)
-    os.close(2)
-    _stdout = os.dup(1)
-    os.close(1)
-    fd = os.open(os.devnull, os.O_RDWR)
-    os.dup2(fd, 2)
-    os.dup2(fd, 1)
+
+    # Custom URL handler gets max priority
+    if hasattr(open_url, 'url_handler'):
+        p = subprocess.Popen([open_url.url_handler, url], stdin=subprocess.PIPE)
+        p.communicate()
+        return
+
+    browser = webbrowser.get()
+    if open_url.override_text_browser:
+        browser_output = open_url.suppress_browser_output
+        for name in [b for b in webbrowser._tryorder if b not in text_browsers]:
+            browser = webbrowser.get(name)
+            logger.debug(browser)
+
+            # Found a GUI browser, suppress browser output
+            open_url.suppress_browser_output = True
+            break
+
+    if open_url.suppress_browser_output:
+        _stderr = os.dup(2)
+        os.close(2)
+        _stdout = os.dup(1)
+        os.close(1)
+        fd = os.open(os.devnull, os.O_RDWR)
+        os.dup2(fd, 2)
+        os.dup2(fd, 1)
     try:
-        webbrowser.open(url)
+        browser.open(url, new=2)
     finally:
-        os.close(fd)
-        os.dup2(_stderr, 2)
-        os.dup2(_stdout, 1)
+        if open_url.suppress_browser_output:
+            os.close(fd)
+            os.dup2(_stderr, 2)
+            os.dup2(_stdout, 1)
+
+    if open_url.override_text_browser:
+        open_url.suppress_browser_output = browser_output
+
 
 def printerr(msg):
     """Print message, verbatim, to stderr.
@@ -127,7 +170,6 @@ class DdgUrl(object):
     Methods
     -------
     full()
-    relative()
     update(opts=None, **kwargs)
     set_queries(**kwargs)
     unset_queries(*args)
@@ -513,11 +555,11 @@ class DdgParser(html.parser.HTMLParser):
     #
     #   1. Tag handlers are contextual;
     #
-    #   2. Contexual starttag and endtag handlers should come in pairs
+    #   2. Contextual starttag and endtag handlers should come in pairs
     #      and have a clear hierarchy;
     #
-    #   3. Starttag handlers should only yield control to a pair of
-    #      child handlers (that is, one level down the hierachy), and
+    #   3. starttag handlers should only yield control to a pair of
+    #      child handlers (that is, one level down the hierarchy), and
     #      correspondingly, endtag handlers should only return control
     #      to the parent (that is, the pair of handlers that gave it
     #      control in the first place).
@@ -906,7 +948,7 @@ class Result(object):
         """Return a index-to-URL table for the current result.
 
         Normally, the table contains only a single entry, but when the result
-        contains sidelinks, all sidelinks are included in this table.
+        contains sitelinks, all sitelinks are included in this table.
 
         Returns
         -------
@@ -1100,6 +1142,7 @@ class DdgCmd(object):
 
         """
         self.fetch()
+        colors = self.colors
         self.display_results(prelude=prelude, json_output=json_output)
         if self._results_filtered:
             printerr('** Enter "unfilter" to show similar results DuckDuckGo omitted.')
@@ -1171,9 +1214,36 @@ class DdgCmd(object):
             self.fetch_and_display()
 
     @require_keywords
-    @no_argument
-    def do_open(self):
-        open_url(self._ddg_url.full())
+    def do_open(self, *args):
+        if not args:
+            printerr('Index or range missing.')
+            return
+
+        for nav in args:
+            if nav == 'a':
+                for key, value in sorted(self._urltable.items()):
+                    open_url(self._urltable[key])
+            elif nav in self._urltable:
+                open_url(self._urltable[nav])
+            elif '-' in nav:
+                try:
+                    vals = [int(x) for x in nav.split('-')]
+                    if (len(vals) != 2):
+                        printerr('Invalid range %s.' % nav)
+                        continue
+
+                    if vals[0] > vals[1]:
+                        vals[0], vals[1] = vals[1], vals[0]
+
+                    for _id in range(vals[0], vals[1] + 1):
+                        if str(_id) in self._urltable:
+                            open_url(self._urltable[str(_id)])
+                        else:
+                            printerr('Invalid index %s.' % _id)
+                except ValueError:
+                    printerr('Invalid range %s.' % nav)
+            else:
+                printerr('Invalid index %s.' % nav)
 
     @require_keywords
     @no_argument
@@ -1190,7 +1260,7 @@ class DdgCmd(object):
     @no_argument
     def do_unfilter(self):
         # Reset start to 0 when unfilter is applied.
-        self._ddg_url.update(None, **{'start':0,})
+        self._ddg_url.update(start=0)
         self._ddg_url.set_queries(filter=0)
         self.fetch_and_display()
 
@@ -1206,7 +1276,7 @@ class DdgCmd(object):
             # TODO: Automatic dispatcher
             #
             # We can't write a dispatcher for now because that could
-            # change behaviors of the prompt. However, we have already
+            # change behaviour of the prompt. However, we have already
             # laid a lot of ground work for the dispatcher, e.g., the
             # `no_argument' decorator.
             try:
@@ -1218,7 +1288,13 @@ class DdgCmd(object):
                 elif cmd == 'n':
                     self.do_next('')
                 elif cmd == 'o':
-                    self.do_open('')
+                    self.do_open()
+                elif cmd.startswith('o '):
+                    self.do_open(*cmd[2:].split())
+                elif cmd.startswith('O '):
+                    open_url.override_text_browser = True
+                    self.do_open(*cmd[2:].split())
+                    open_url.override_text_browser = False
                 elif cmd == 'p':
                     self.do_previous('')
                 elif cmd == 'q':
@@ -1249,11 +1325,15 @@ class DdgArgumentParser(argparse.ArgumentParser):
           n, p                  fetch the next or previous set of search results
           index                 open the result corresponding to index in browser
           f                     jump to the first page
-          o                     open the current search in browser
-          g keywords            fire a new search for 'keywords' with original options
-          q, ^D, double Enter   exit ddgr
+          o [index|range|a ...] open space-separated result indices, numeric ranges
+                                (sitelinks unsupported in ranges), or all, in browser
+                                open the current search in browser, if no arguments
+          O [index|range|a ...] like key 'o', but try to open in a GUI browser
+          g keywords            new Google search for 'keywords' with original options
+                                should be used to search omniprompt keys and indices
+          q, ^D, double Enter   exit googler
           ?                     show omniprompt help
-          *                     any other string fires a new search with original options
+          *                     other inputs issue a new search with original options
         """))
 
     # Print information on ddgr
@@ -1262,7 +1342,7 @@ class DdgArgumentParser(argparse.ArgumentParser):
         file = sys.stderr if file is None else file
         file.write(textwrap.dedent("""
         Version %s
-        Copyright (C) 2016 Arun Prakash Jana <engineerarun@gmail.com>
+        Copyright © 2016-2017 Arun Prakash Jana <engineerarun@gmail.com>
         License: GPLv3
         Webpage: https://github.com/jarun/ddgr
         """ % _VERSION_))
@@ -1329,6 +1409,86 @@ class DdgArgumentParser(argparse.ArgumentParser):
 
 # Miscellaneous functions
 
+def python_version():
+    return '%d.%d.%d' % sys.version_info[:3]
+
+
+def https_proxy_from_environment():
+    return os.getenv('https_proxy')
+
+
+def parse_proxy_spec(proxyspec):
+    if '://' in proxyspec:
+        pos = proxyspec.find('://')
+        scheme = proxyspec[:pos]
+        proxyspec = proxyspec[pos+3:]
+        if scheme.lower() != 'http':
+            # Only support HTTP proxies.
+            #
+            # In particular, we don't support HTTPS proxies since we
+            # only speak plain HTTP to the proxy server, so don't give
+            # users a false sense of security.
+            raise NotImplementedError('Unsupported proxy scheme %s.' % scheme)
+
+    if '@' in proxyspec:
+        pos = proxyspec.find('@')
+        user_passwd = urllib.parse.unquote(proxyspec[:pos])
+        host_port = proxyspec[pos+1:]
+    else:
+        user_passwd = None
+        host_port = proxyspec
+
+    if ':' not in host_port:
+        # Use port 1080 as default, following curl.
+        host_port += ':1080'
+
+    return user_passwd, host_port
+
+
+# Query autocompleter
+
+# This function is largely experimental and could raise any exception;
+# you should be prepared to catch anything. When it works though, it
+# returns a list of strings the prefix could autocomplete to (however,
+# it is not guaranteed that they start with the specified prefix; for
+# instance, they won't if the specified prefix ends in a punctuation
+# mark.)
+def completer_fetch_completions(prefix):
+    import json
+    import re
+    import urllib.request
+
+    # One can pass the 'hl' query param to specify the language. We
+    # ignore that for now.
+    api_url = ('https://www.google.com/complete/search?client=psy-ab&q=%s' %
+               urllib.parse.quote(prefix, safe=''))
+    # A timeout of 3 seconds seems to be overly generous already.
+    resp = urllib.request.urlopen(api_url, timeout=3)
+    respobj = json.loads(resp.read().decode('utf-8'))
+
+    # The response object, once parsed as JSON, should look like
+    #
+    # ['git',
+    #  [['git<b>hub</b>', 0],
+    #   ['git', 0],
+    #   ['git<b>lab</b>', 0],
+    #   ['git<b> stash</b>', 0]],
+    #  {'q': 'oooAhRzoChqNmMbNaaDKXk1YY4k', 't': {'bpc': False, 'tlw': False}}]
+    #
+    # Note the each result entry need not have two members; e.g., for
+    # 'gi', there is an entry ['gi<b>f</b>', 0, [131]].
+    HTML_TAG = re.compile(r'<[^>]+>')
+    return [HTML_TAG.sub('', entry[0]) for entry in respobj[1]]
+
+
+def completer_run(prefix):
+    if prefix:
+        completions = completer_fetch_completions(prefix)
+        if completions:
+            print('\n'.join(completions))
+    sys.exit(0)
+
+
 def parse_args(args=None, namespace=None):
     """Parse ddgr arguments/options.
 
@@ -1380,6 +1540,10 @@ def parse_args(args=None, namespace=None):
            help='disable user agent')
     addarg('--json', dest='json', action='store_true',
            help='output in JSON format; implies --noprompt')
+    addarg('--url-handler', metavar='UTIL',
+           help='custom script or cli utility to open results')
+    addarg('--show-browser-logs', action='store_true',
+           help='do not suppress browser output (stdout and stderr)')
     addarg('--np', '--noprompt', dest='noninteractive', action='store_true',
            help='perform search and exit, do not prompt')
     addarg('-d', '--debug', dest='debug', action='store_true',
@@ -1442,6 +1606,12 @@ def main():
     if opts.debug:
         logger.setLevel(logging.DEBUG)
         logger.debug('Version %s', _VERSION_)
+        if opts.keywords:
+            try:
+                # Add cmdline args to readline history
+                readline.add_history(' '.join(opts.keywords))
+            except Exception:
+                pass
 
     # Set colors
     if opts.colorize:
@@ -1450,6 +1620,18 @@ def main():
         colors = None
     Result.colors = colors
     DdgCmd.colors = colors
+
+    if opts.url_handler is not None:
+        open_url.url_handler = opts.url_handler
+    else:
+        # Set text browser override to False
+        open_url.override_text_browser = False
+
+        # Handle browser output suppression
+        if opts.show_browser_logs or (os.getenv('BROWSER') in text_browsers):
+            open_url.suppress_browser_output = False
+        else:
+            open_url.suppress_browser_output = True
 
     if opts.noua:
         USER_AGENT = ''
@@ -1484,4 +1666,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    atexit.register(logging.shutdown)
