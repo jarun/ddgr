@@ -19,16 +19,10 @@ import argparse
 import atexit
 import collections
 import functools
-import gzip
 import html.entities
 import html.parser
-import http.client
-import socket
-import ssl
-import io
 import logging
 import os
-import platform
 import requests
 import signal
 import sys
@@ -67,7 +61,8 @@ COLORMAP = {k: '\x1b[%sm' % v for k, v in {
 }.items()}
 
 # Disguise as Elinks browser
-USER_AGENT = ('ELinks/0.12pre6 (textmode; Linux 4.4.0-98-generic x86_64; 199x55-2)')
+#USER_AGENT = ('ELinks/0.12pre6 (textmode; Linux 4.4.0-98-generic x86_64; 199x55-2)')
+USER_AGENT = ('Mozilla/5.0 (Linux; Android 7.1.2; Nexus 6P Build/N2G48C) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.116 Mobile Safari/537.36')
 
 # Global helper functions
 
@@ -151,7 +146,8 @@ class DdgUrl(object):
         self.fragment = ''
 
         self._reg = None
-        self._num = 10
+        self._lastnum = 0
+        self._totalnum = 1
         self._start = 0
         self._keywords = []
         self._site = None
@@ -231,11 +227,10 @@ class DdgUrl(object):
             opts = opts.__dict__
         opts.update(kwargs)
 
-        qd = self._query_dict
         if 'keywords' in opts:
             self._keywords = opts['keywords']
         if 'num' in opts:
-            self._num = opts['num']
+            self._lastnum = 0
         if 'start' in opts:
             self._start = opts['start']
 
@@ -274,7 +269,12 @@ class DdgUrl(object):
 
     def next_page(self):
         """Navigate to the next page."""
-        self._start += self._num
+        self._start = self._start + 1
+
+        if self._totalnum > 0:
+            self._totalnum = self._totalnum + self._lastnum
+        else:
+            self._totalnum = -self._totalnum
 
     def prev_page(self):
         """Navigate to the previous page.
@@ -288,7 +288,11 @@ class DdgUrl(object):
         """
         if self._start == 0:
             raise ValueError('Already at the first page.')
-        self._start = (self._start - self._num) if self._start > self._num else 0
+        self._start = self._start - 1
+        if self._totalnum > 0:
+            self._totalnum = -self._totalnum
+        else:
+            self._totalnum = self._totalnum + self._lastnum
 
     def first_page(self):
         """Navigate to the first page.
@@ -303,6 +307,8 @@ class DdgUrl(object):
         if self._start == 0:
             raise ValueError('Already at the first page.')
         self._start = 0
+        self._lastnum = 0
+        self._totalnum = 1
 
     @property
     def netloc(self):
@@ -313,7 +319,7 @@ class DdgUrl(object):
         """The query string."""
         qd = {}
         qd.update(self._query_dict)
-        qd['num'] = self._num
+        qd['totalnum'] = self._totalnum
         qd['start'] = self._start
 
         # Construct the q query
@@ -326,7 +332,10 @@ class DdgUrl(object):
                 q += urllib.parse.quote_plus(keywords)
         qd['q'] = q
 
-        return (q, qd['start'])
+        return (q, qd['start'], qd['totalnum'])
+
+    def update_num(self, count):
+        self._lastnum = count
 
 
 class DDGConnectionError(Exception):
@@ -354,10 +363,7 @@ class DdgConnection(object):
 
     Methods
     -------
-    new_connection(host=None, port=None, timeout=45)
-    renew_connection(timeout=45)
     fetch_page(url)
-    close()
 
     """
 
@@ -397,9 +403,7 @@ class DdgConnection(object):
             Response payload, gunzipped (if applicable) and decoded (in UTF-8).
 
         """
-        keywords, start = url.query()
-        print(keywords)
-        print(start)
+        keywords, start, curresindex = url.query()
 
         proxies = {
             'https': os.environ.get('https_proxy'),
@@ -410,23 +414,47 @@ class DdgConnection(object):
         _u = 'https://duckduckgo.com/html'
 
         try:
-            r = requests.post(_u,
-                              headers={
-                                       'authority': 'duckduckgo.com',
-                                       'path': '/html/',
-                                       #'content-type': 'application/json',
-                                       'Cookie': '',
-                                       'Accept-encoding': 'gzip,deflate',
-                                       'User-Agent': USER_AGENT,
-                                       'Connection': 'keep-alive',
-                                       'DNT': '1',
-                                      },
-                             data={
-                                   'q': keywords,
-                                   'b': '',
-                                   'kl': 'us-en'
-                                  },
-                              proxies=proxies)
+            if start == 0:
+                r = requests.post(_u,
+                                  headers={
+                                           'authority': 'duckduckgo.com',
+                                           'path': '/html/',
+                                           #'content-type': 'application/json',
+                                           #'Cookie': '',
+                                           'Accept-encoding': 'gzip,deflate',
+                                           'User-Agent': USER_AGENT,
+                                           'Connection': 'keep-alive',
+                                           'DNT': '1',
+                                          },
+                                  data={
+                                        'q': keywords,
+                                        'b': '',
+                                        'kl': 'us-en'
+                                       },
+                                  proxies=proxies)
+            else:
+                r = requests.post(_u,
+                                  headers={
+                                           'authority': 'duckduckgo.com',
+                                           'path': '/html/',
+                                           #'content-type': 'application/json',
+                                           #'Cookie': '',
+                                           'Accept-encoding': 'gzip,deflate',
+                                           'User-Agent': USER_AGENT,
+                                           'Connection': 'keep-alive',
+                                           'DNT': '1',
+                                          },
+                                  data={
+                                        'q': keywords,
+                                        's': str(start * (50 * (start - 1) + 30)),
+                                        'nextParams': '',
+                                        'v': 'l',
+                                        'o': 'json',
+                                        'dc': str(curresindex),
+                                        'api': '/d.js',
+                                        'kl': 'us-en'
+                                       },
+                                  proxies=proxies)
         except Exception as e:
             logerr(e)
             return None
@@ -436,74 +464,6 @@ class DdgConnection(object):
             return None
 
         return r
-
-    def _redirect(self, url):
-        """Redirect to and fetch a new URL.
-
-        Like `_raw_get`, the response is stored in ``self._resp``. A new
-        connection is made if redirecting to a different host.
-
-        Parameters
-        ----------
-        url : str
-            If absolute and points to a different host, make a new
-            connection.
-
-        Raises
-        ------
-        DDGConnectionError
-
-        """
-        logger.debug('Redirecting to URL %s', url)
-        segments = urllib.parse.urlparse(url)
-
-        host = segments.netloc
-        if host != self._host:
-            self.new_connection(host)
-
-        relurl = urllib.parse.urlunparse(('', '') + segments[2:])
-        try:
-            self._raw_get(relurl)
-        except http.client.HTTPException as e:
-            logger.debug('Got exception: %s.', e)
-            raise DDGConnectionError("Failed to get '%s'." % url)
-
-    def _raw_get(self, url):
-        """Make a raw HTTP GET request.
-
-        No status check (which implies no redirection). Response can be
-        accessed from ``self._resp``.
-
-        Parameters
-        ----------
-        url : str
-            URL relative to the host, used in the GET request.
-
-        Raises
-        ------
-        http.client.HTTPException
-
-        """
-        logger.debug('Fetching URL %s', url)
-        self._conn.request('GET', url, None, {
-            'Accept-Encoding': 'gzip',
-            'User-Agent': USER_AGENT,
-            'Cookie': self.cookie,
-            'Connection': 'keep-alive',
-            'DNT': '1',
-        })
-        self._resp = self._conn.getresponse()
-        if self.cookie == '':
-            complete_cookie = self._resp.getheader('Set-Cookie')
-            # Cookie won't be available is already blocked
-            if complete_cookie is not None:
-                self.cookie = complete_cookie[:complete_cookie.find(';')]
-                logger.debug('Cookie: %s' % self.cookie)
-
-    def close(self):
-        """Close the connection (if one is active)."""
-        if self._conn:
-            self._conn.close()
 
 
 def annotate_tag(annotated_starttag_handler):
@@ -1030,7 +990,6 @@ class DdgCmd(object):
         self._ddg_url = DdgUrl(opts)
         proxy = opts.proxy if hasattr(opts, 'proxy') else None
         self._conn = DdgConnection(self._ddg_url.hostname, proxy=proxy)
-        atexit.register(self._conn.close)
 
         self.results = []
         self._results_filtered = False
@@ -1084,8 +1043,11 @@ class DdgCmd(object):
         self.results = parser.results
         self._results_filtered = parser.filtered
         self._urltable = {}
+
         for r in self.results:
             self._urltable.update(r.urltable())
+
+        self._ddg_url.update_num(len(self.results))
 
     @require_keywords
     def display_results(self, prelude='\n', json_output=False):
@@ -1201,9 +1163,8 @@ class DdgCmd(object):
     @require_keywords
     @no_argument
     def do_next(self):
-        # If > 5 results are being fetched each time,
-        # block next when no parsed results in current fetch
-        if not self.results and self._ddg_url._num > 5:
+        # If no results were fetched last time, we have hit the last page already
+        if self._ddg_url._lastnum == 0:
             print('No results.', file=sys.stderr)
         else:
             self._ddg_url.next_page()
