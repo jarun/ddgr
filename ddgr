@@ -16,7 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
-import atexit
 import collections
 import functools
 import html.entities
@@ -25,6 +24,7 @@ import logging
 import os
 import requests
 import signal
+import subprocess
 import sys
 import textwrap
 import urllib.parse
@@ -661,7 +661,7 @@ class DdgParser(html.parser.HTMLParser):
 
         self.set_handlers_to('root')
 
-    ### Tag handlers ###
+    # Tag handlers
 
     @annotate_tag
     def root_start(self, tag, attrs):
@@ -670,12 +670,12 @@ class DdgParser(html.parser.HTMLParser):
             self.title = ''
             self.url = ''
             self.abstract = ''
-            self.metadata = '' # Only used for News
+            self.metadata = ''  # Only used for News
             self.filetype = ''
 
             # In the case of news, guard against "card
             # sections" (secondary results to the same event).
-            self.metadata_registered = False # Only used for News
+            self.metadata_registered = False  # Only used for News
 
             self.set_handlers_to('result')
             return 'result'
@@ -766,7 +766,7 @@ class DdgParser(html.parser.HTMLParser):
         elif annotation == 'abstract':
             self.set_handlers_to('result')
 
-    ### Generic methods ###
+    # Generic methods
 
     # Set handle_starttag to SCOPE_start, and handle_endtag to SCOPE_end.
     def set_handlers_to(self, scope):
@@ -880,7 +880,6 @@ class Result(object):
         self.metadata = metadata
 
         self._urltable = {index: url}
-        subindex = 'a'
 
     def _print_title_and_url(self, index, title, url, indent=0):
         colors = self.colors
@@ -1057,7 +1056,7 @@ class DdgCmd(object):
         # This method also sets self._urltable.
         page = self._conn.fetch_page(self._ddg_url)
 
-        if page == None:
+        if page is None:
             return
 
         if logger.isEnabledFor(logging.DEBUG):
@@ -1127,7 +1126,6 @@ class DdgCmd(object):
 
         """
         self.fetch()
-        colors = self.colors
         self.display_results(prelude=prelude, json_output=json_output)
 
     def read_next_command(self):
