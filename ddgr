@@ -190,7 +190,7 @@ class DdgUrl(object):
         # self.query is a calculated property
         self.fragment = ''
 
-        self._reg = None
+        self._region = ''
         self._lastnum = 0
         self._totalnum = 1
         self._start = 0
@@ -274,6 +274,8 @@ class DdgUrl(object):
 
         if 'keywords' in opts:
             self._keywords = opts['keywords']
+        if 'region' in opts:
+            self._region = opts['region']
         if 'num' in opts:
             self._lastnum = 0
         if 'sites' in opts:
@@ -366,6 +368,7 @@ class DdgUrl(object):
         """The query string."""
         qd = {}
         qd.update(self._query_dict)
+        qd['region'] = self._region
         qd['totalnum'] = self._totalnum
         qd['start'] = self._start
 
@@ -455,7 +458,7 @@ class DdgConnection(object):
         """
         dic = url.query()
         start = dic['start']
-        logdbg('q:[%s], start:[%d], current:[%d]', dic['q'], start, dic['totalnum'])
+        logdbg('q:[%s], region:[%s], start:[%d], current:[%d]', dic['q'], dic['region'], start, dic['totalnum'])
 
         proxies = {
             'https': os.environ.get('https_proxy'),
@@ -477,7 +480,7 @@ class DdgConnection(object):
                                         'b': '',
                                         'kf': '-1',
                                         'kh': '1',
-                                        'kl': 'us-en',
+                                        'kl': dic['region'],
                                         'k1': '-1',
                                        },
                                   proxies=proxies)
@@ -499,7 +502,7 @@ class DdgConnection(object):
                                         'api': '/d.js',
                                         'kf': '-1',  # Disable favicons
                                         'kh': '1',  # HTTPS always ON
-                                        'kl': 'us-en',  # Region code
+                                        'kl': dic['region'],  # Region code
                                         'k1': '-1',  # Advertisements off
                                        },
                                   proxies=proxies)
@@ -660,13 +663,10 @@ class DdgParser(html.parser.HTMLParser):
         html.parser.HTMLParser.__init__(self)
 
         self.news = news
-
         self.results = []
-
         self.index = 0
         self.textbuf = ''
         self.tag_annotations = {}
-
         self.set_handlers_to('root')
 
     # Tag handlers
@@ -1504,7 +1504,7 @@ def parse_args(args=None, namespace=None):
     addarg('-n', '--count', dest='num', type=argparser.positive_int,
            default=10, metavar='N',
            help='show N results (default 10)')
-    addarg('-r', '--reg', dest='reg', metavar='REG',
+    addarg('-r', '--reg', dest='region', default='us-en', metavar='REG',
            help="region-specific search e.g. 'us-en' for US (default); visit https://duckduckgo.com/params")
     addarg('-l', '--lang', metavar='LANG', help='display in language LANG')
     addarg('-C', '--nocolor', dest='colorize', action='store_false',
