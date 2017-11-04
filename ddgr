@@ -1520,48 +1520,6 @@ def parse_args(args=None, namespace=None):
     return argparser.parse_args(args, namespace)
 
 
-def testreq():
-    proxies = {
-        'https': os.environ.get('https_proxy'),
-    }
-
-    _u = 'https://duckduckgo.com/html'
-
-    try:
-        r = requests.post(_u,
-                          headers={
-                                   'authority': 'duckduckgo.com',
-                                   'path': '/html/',
-                                   #'content-type': 'application/json',
-                                   'User-Agent': USER_AGENT
-                                  },
-                          data={
-                                'q': 'python programming',
-                                's': '0',
-                                'nextParams': '',
-                                'v': 'l',
-                                'o': 'json',
-                                'dc': '1',
-                                'api': '/d.js',
-                                'kl': 'us-en'
-                               },
-                          proxies=proxies)
-    except Exception as e:
-        logerr(e)
-        return
-
-    if r.status_code != 200:
-        logerr('[%s] %s', r.status_code, r.reason)
-        return
-
-    parser = DdgParser(news=False)
-    parser.feed(r.text)
-
-    results = parser.results
-    sys.stderr.write('\n')
-    for r in results:
-        r.print()
-
 def main():
     global USER_AGENT
 
@@ -1602,8 +1560,6 @@ def main():
         USER_AGENT = ''
 
     try:
-        # testreq()
-
         repl = DdgCmd(opts)
 
         if opts.json or opts.lucky or opts.noninteractive:
