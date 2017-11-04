@@ -1504,15 +1504,15 @@ def parse_args(args=None, namespace=None):
            default=10, metavar='N',
            help='show N results (default 10)')
     addarg('-c', '--reg', dest='reg', metavar='REG',
-           help="region-specific search e.g. 'in-en' for India; visit https://duckduckgo.com/params")
+           help="region-specific search e.g. 'us-en' for US (default); visit https://duckduckgo.com/params")
     addarg('-l', '--lang', metavar='LANG', help='display in language LANG')
     addarg('-C', '--nocolor', dest='colorize', action='store_false',
            help='disable color output')
     addarg('--colors', dest='colorstr', type=argparser.is_colorstr,
            default=colorstr_env if colorstr_env else 'oCdgxy', metavar='COLORS',
            help='set output colors (see man page for details)')
-    addarg('-j', '--first', '--lucky', dest='lucky', action='store_true',
-           help='open the first result in a web browser; implies --noprompt')
+    addarg('-j', '--ducky', dest='ducky', action='store_true',
+           help='open the first result in a web browser; implies --np')
     addarg('-w', '--site', dest='sites', action='append', metavar='SITE',
            help='search sites using DuckDuckGo')
     addarg('-x', '--expand', dest='expand', action='store_true',
@@ -1585,10 +1585,10 @@ def main():
     try:
         repl = DdgCmd(opts)
 
-        if opts.json or opts.lucky or opts.noninteractive:
+        if opts.json or opts.ducky or opts.noninteractive:
             # Non-interactive mode
             repl.fetch()
-            if opts.lucky:
+            if opts.ducky:
                 if repl.results:
                     open_url(repl.results[0].url)
                 else:
