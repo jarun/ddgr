@@ -64,8 +64,7 @@ COLORMAP = {k: '\x1b[%sm' % v for k, v in {
 }.items()}
 
 # Disguise as Elinks browser
-#USER_AGENT = ('ELinks/0.12pre6 (textmode; Linux 4.4.0-98-generic x86_64; 199x55-2)')
-USER_AGENT = ('Mozilla/5.0 (Linux; Android 7.1.2; Nexus 6P Build/N2G48C) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.116 Mobile Safari/537.36')
+USER_AGENT = ('ELinks/0.12pre6 (textmode; Linux 4.4.0-98-generic x86_64; 199x55-2)')
 
 text_browsers = ['elinks', 'links', 'lynx', 'w3m', 'www-browser']
 
