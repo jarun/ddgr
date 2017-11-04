@@ -90,7 +90,7 @@ def open_url(url):
     Note: If a GUI browser is indeed found, this option ignores the program
           option `show-browser-logs`
     """
-    logger.debug('Opening %s', url)
+    logdbg('Opening %s', url)
 
     # Custom URL handler gets max priority
     if hasattr(open_url, 'url_handler'):
@@ -103,7 +103,7 @@ def open_url(url):
         browser_output = open_url.suppress_browser_output
         for name in [b for b in webbrowser._tryorder if b not in text_browsers]:
             browser = webbrowser.get(name)
-            logger.debug(browser)
+            logdbg(browser)
 
             # Found a GUI browser, suppress browser output
             open_url.suppress_browser_output = True
@@ -455,6 +455,7 @@ class DdgConnection(object):
         """
         dic = url.query()
         start = dic['start']
+        logdbg('q:[%s], start:[%d], current:[%d]', dic['q'], start, dic['totalnum'])
 
         proxies = {
             'https': os.environ.get('https_proxy'),
@@ -1084,7 +1085,7 @@ class DdgCmd(object):
             os.close(fd)
             with open(tmpfile, 'w', encoding='utf-8') as fp:
                 fp.write(page.text)
-            logger.debug("Response body written to '%s'.", tmpfile)
+            logdbg("Response body written to '%s'.", tmpfile)
 
         parser = DdgParser()
         parser.feed(page.text)
@@ -1543,7 +1544,7 @@ def main():
     # Set logging level
     if opts.debug:
         logger.setLevel(logging.DEBUG)
-        logger.debug('Version %s', _VERSION_)
+        logdbg('Version %s', _VERSION_)
         if opts.keywords:
             try:
                 # Add cmdline args to readline history
@@ -1605,7 +1606,7 @@ def main():
         if logger.isEnabledFor(logging.DEBUG):
             raise
         else:
-            logger.error(e)
+            logerr(e)
             sys.exit(1)
 
 if __name__ == '__main__':
