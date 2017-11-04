@@ -1288,8 +1288,6 @@ class DdgCmd(object):
                     self.do_ddg(cmd[2:])
                 elif cmd == 'n':
                     self.do_next('')
-                elif cmd == 'o':
-                    self.do_open()
                 elif cmd.startswith('o '):
                     self.do_open(*cmd[2:].split())
                 elif cmd.startswith('O '):
@@ -1325,8 +1323,7 @@ class DdgArgumentParser(argparse.ArgumentParser):
           index                 open the result corresponding to index in browser
           f                     jump to the first page
           o [index|range|a ...] open space-separated result indices, numeric ranges
-                                (sitelinks unsupported in ranges), or all, in browser
-                                open the current search in browser, if no arguments
+                                or all, in browser
           O [index|range|a ...] like key 'o', but try to open in a GUI browser
           d keywords            new DDG search for 'keywords' with original options
                                 should be used to search omniprompt keys and indices
