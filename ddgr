@@ -896,10 +896,12 @@ class Result(object):
             url = '  [' + parse_url(url).netloc + ']'
 
         # Pad index and url with `indent` number of spaces
-        index = ' ' * indent + str(index)
-        url = ' ' * indent + url
+        if indent:
+            index = ' ' * indent + str(index)
+            url = ' ' * indent + url
+
         if colors:
-            print(colors.index + index + '.' + colors.reset, end='')
+            print(colors.index + ' (' + index + ')' + colors.reset, end='')
             if not self.urlexpand:
                 print(' ' + colors.title + title + colors.reset + colors.url + url + colors.reset)
             else:
@@ -907,9 +909,9 @@ class Result(object):
                 print(colors.url + url + colors.reset)
         else:
             if self.urlexpand:
-                print(' %s. %s\n%s' % (index, title, url))
+                print(' (%s) %s\n%s' % (index, title, url))
             else:
-                print(' %s. %s%s' % (index, title, url))
+                print(' (%s) %s%s' % (index, title, url))
 
     def _print_metadata_and_abstract(self, abstract, metadata=None, indent=0):
         colors = self.colors
@@ -1507,7 +1509,7 @@ def parse_args(args=None, namespace=None):
     addarg('-C', '--nocolor', dest='colorize', action='store_false',
            help='disable color output')
     addarg('--colors', dest='colorstr', type=argparser.is_colorstr,
-           default=colorstr_env if colorstr_env else 'GKlgxy', metavar='COLORS',
+           default=colorstr_env if colorstr_env else 'oCdgxy', metavar='COLORS',
            help='set output colors (see man page for details)')
     addarg('-j', '--first', '--lucky', dest='lucky', action='store_true',
            help='open the first result in a web browser; implies --noprompt')
