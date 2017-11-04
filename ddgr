@@ -473,7 +473,10 @@ class DdgConnection(object):
                                   data={
                                         'q': dic['q'],
                                         'b': '',
+                                        'kf': '-1',
+                                        'kh': '1',
                                         'kl': 'us-en',
+                                        'k1': '-1',
                                        },
                                   proxies=proxies)
             else:
@@ -485,14 +488,17 @@ class DdgConnection(object):
                                            'DNT': '1',
                                           },
                                   data={
-                                        'q': dic['q'],
-                                        's': str(start * (50 * (start - 1) + 30)),
+                                        'q': dic['q'],  # The query string
+                                        's': str(start * (50 * (start - 1) + 30)),  # Start page index
                                         'nextParams': '',
                                         'v': 'l',
                                         'o': 'json',
-                                        'dc': str(dic['totalnum']),
+                                        'dc': str(dic['totalnum']),  # Start from result number
                                         'api': '/d.js',
-                                        'kl': 'us-en',
+                                        'kf': '-1',  # Disable favicons
+                                        'kh': '1',  # HTTPS always ON
+                                        'kl': 'us-en',  # Region code
+                                        'k1': '-1',  # Advertisements off
                                        },
                                   proxies=proxies)
         except Exception as e:
