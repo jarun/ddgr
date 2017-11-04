@@ -1509,37 +1509,24 @@ def parse_args(args=None, namespace=None):
 
     argparser = DdgArgumentParser(description='DuckDuckGo from the command-line.')
     addarg = argparser.add_argument
-    addarg('-n', '--count', dest='num', type=argparser.positive_int,
-           default=10, metavar='N',
-           help='show N results (default 10)')
+    addarg('-n', '--count', dest='num', type=argparser.positive_int, default=10, metavar='N', help='show N results (default 10)')
     addarg('-r', '--reg', dest='region', default='us-en', metavar='REG',
            help="region-specific search e.g. 'us-en' for US (default); visit https://duckduckgo.com/params")
-    addarg('-C', '--nocolor', dest='colorize', action='store_false',
-           help='disable color output')
-    addarg('--colors', dest='colorstr', type=argparser.is_colorstr,
-           default=colorstr_env if colorstr_env else 'oCdgxy', metavar='COLORS',
+    addarg('-C', '--nocolor', dest='colorize', action='store_false', help='disable color output')
+    addarg('--colors', dest='colorstr', type=argparser.is_colorstr, default=colorstr_env if colorstr_env else 'oCdgxy', metavar='COLORS',
            help='set output colors (see man page for details)')
-    addarg('-j', '--ducky', dest='ducky', action='store_true',
-           help='open the first result in a web browser; implies --np')
-    addarg('-w', '--site', dest='sites', action='append', metavar='SITE',
-           help='search sites using DuckDuckGo')
-    addarg('-x', '--expand', dest='expand', action='store_true',
-           help='Show complete url in search results')
-    addarg('-p', '--proxy', dest='proxy',
-           help='tunnel traffic through an HTTPS proxy (HOST:PORT)')
+    addarg('-j', '--ducky', action='store_true', help='open the first result in a web browser; implies --np')
+    addarg('-w', '--site', dest='sites', action='append', metavar='SITE', help='search sites using DuckDuckGo')
+    addarg('-x', '--expand', action='store_true', help='Show complete url in search results')
+    addarg('-p', '--proxy', help='tunnel traffic through an HTTPS proxy (HOST:PORT)')
     addarg('--unsafe', action='store_true', help='disable safe search')
-    addarg('--noua', dest='noua', action='store_true',
-           help='disable user agent')
-    addarg('--json', dest='json', action='store_true',
-           help='output in JSON format; implies --np')
-    addarg('--url-handler', metavar='UTIL',
-           help='custom script or cli utility to open results')
-    addarg('--show-browser-logs', action='store_true',
-           help='do not suppress browser output (stdout and stderr)')
-    addarg('--np', '--noprompt', dest='noninteractive', action='store_true',
-           help='perform search and exit, do not prompt')
-    addarg('-d', '--debug', dest='debug', action='store_true',
-           help='enable debugging')
+    addarg('--noua', action='store_true', help='disable user agent')
+    addarg('--json', action='store_true', help='output in JSON format; implies --np')
+    addarg('--url-handler', metavar='UTIL', help='custom script or cli utility to open results')
+    addarg('--show-browser-logs', action='store_true', help='do not suppress browser output (stdout and stderr)')
+    addarg('--np', '--noprompt', dest='noninteractive', action='store_true', help='perform search and exit, do not prompt')
+    addarg('-v', '--version', action='version', version=_VERSION_)
+    addarg('-d', '--debug', action='store_true', help='enable debugging')
     addarg('keywords', nargs='*', metavar='KEYWORD', help='search keywords')
     return argparser.parse_args(args, namespace)
 
@@ -1552,17 +1539,12 @@ def main():
     # Set logging level
     if opts.debug:
         logger.setLevel(logging.DEBUG)
-        logdbg('Version %s', _VERSION_)
-        if opts.keywords:
-            try:
-                # Add cmdline args to readline history
-                readline.add_history(' '.join(opts.keywords))
-            except Exception:
-                pass
+        logdbg('ddgr version %s', _VERSION_)
+        logdbg('Python version %s', python_version())
 
+    # Add cmdline args to readline history
     if opts.keywords:
         try:
-            # Add cmdline args to readline history
             readline.add_history(' '.join(opts.keywords))
         except Exception:
             pass
