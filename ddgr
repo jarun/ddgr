@@ -381,7 +381,7 @@ class DdgUrl(object):
             q += ' site:' + ','.join(urllib.parse.quote_plus(site) for site in sites)
         qd['q'] = q
 
-        return (q, qd['start'], qd['totalnum'])
+        return qd
 
     def update_num(self, count):
         self._lastnum = count
@@ -452,7 +452,8 @@ class DdgConnection(object):
             Response payload, gunzipped (if applicable) and decoded (in UTF-8).
 
         """
-        keywords, start, curresindex = url.query()
+        dic = url.query()
+        start = dic['start']
 
         proxies = {
             'https': os.environ.get('https_proxy'),
@@ -470,9 +471,9 @@ class DdgConnection(object):
                                            'DNT': '1',
                                           },
                                   data={
-                                        'q': keywords,
+                                        'q': dic['q'],
                                         'b': '',
-                                        'kl': 'us-en'
+                                        'kl': 'us-en',
                                        },
                                   proxies=proxies)
             else:
@@ -484,14 +485,14 @@ class DdgConnection(object):
                                            'DNT': '1',
                                           },
                                   data={
-                                        'q': keywords,
+                                        'q': dic['q'],
                                         's': str(start * (50 * (start - 1) + 30)),
                                         'nextParams': '',
                                         'v': 'l',
                                         'o': 'json',
-                                        'dc': str(curresindex),
+                                        'dc': str(dic['totalnum']),
                                         'api': '/d.js',
-                                        'kl': 'us-en'
+                                        'kl': 'us-en',
                                        },
                                   proxies=proxies)
         except Exception as e:
