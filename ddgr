@@ -192,7 +192,7 @@ class DdgUrl(object):
         self._totalnum = 1
         self._start = 0
         self._keywords = []
-        self._site = None
+        self._sites = None
         self._query_dict = {
         }
         self.update(opts, **kwargs)
@@ -273,6 +273,8 @@ class DdgUrl(object):
             self._keywords = opts['keywords']
         if 'num' in opts:
             self._lastnum = 0
+        if 'sites' in opts:
+            self._sites = opts['sites']
         if 'start' in opts:
             self._start = opts['start']
 
@@ -367,11 +369,14 @@ class DdgUrl(object):
         # Construct the q query
         q = ''
         keywords = self._keywords
+        sites = self._sites
         if keywords:
             if isinstance(keywords, list):
                 q += ' '.join([urllib.parse.quote_plus(kw) for kw in keywords])
             else:
                 q += urllib.parse.quote_plus(keywords)
+        if sites:
+            q += ' site:' + ','.join(urllib.parse.quote_plus(site) for site in sites)
         qd['q'] = q
 
         return (q, qd['start'], qd['totalnum'])
@@ -1252,7 +1257,7 @@ class DdgCmd(object):
                 cmd = self.cmd
                 if cmd == 'f':
                     self.do_first('')
-                elif cmd.startswith('g '):
+                elif cmd.startswith('d '):
                     self.do_ddg(cmd[2:])
                 elif cmd == 'n':
                     self.do_next('')
@@ -1273,7 +1278,7 @@ class DdgCmd(object):
                 elif cmd in self._urltable:
                     open_url(self._urltable[cmd])
                 elif self.keywords and cmd.isdigit() and int(cmd) < 100:
-                    printerr('Index out of bound. To search for the number, use g.')
+                    printerr('Index out of bound. To search for the number, use d.')
                 else:
                     self.do_ddg(cmd)
             except NoKeywordsException:
@@ -1296,9 +1301,9 @@ class DdgArgumentParser(argparse.ArgumentParser):
                                 (sitelinks unsupported in ranges), or all, in browser
                                 open the current search in browser, if no arguments
           O [index|range|a ...] like key 'o', but try to open in a GUI browser
-          g keywords            new Google search for 'keywords' with original options
+          d keywords            new DDG search for 'keywords' with original options
                                 should be used to search omniprompt keys and indices
-          q, ^D, double Enter   exit googler
+          q, ^D, double Enter   exit ddgr
           ?                     show omniprompt help
           *                     other inputs issue a new search with original options
         """))
@@ -1477,18 +1482,12 @@ def parse_args(args=None, namespace=None):
 
     argparser = DdgArgumentParser(description='DuckDuckGo from the command-line.')
     addarg = argparser.add_argument
-    addarg('-s', '--start', dest='start', type=argparser.nonnegative_int,
-           default=0, metavar='N',
-           help='start at the Nth result')
     addarg('-n', '--count', dest='num', type=argparser.positive_int,
            default=10, metavar='N',
            help='show N results (default 10)')
-    addarg('-N', '--news', dest='news', action='store_true',
-           help='show results from news section')
     addarg('-c', '--reg', dest='reg', metavar='REG',
            help="region-specific search e.g. 'in-en' for India; visit https://duckduckgo.com/params")
-    addarg('-x', '--exact', dest='exact', action='store_true',
-           help='disable automatic spelling correction')
+    addarg('-l', '--lang', metavar='LANG', help='display in language LANG')
     addarg('-C', '--nocolor', dest='colorize', action='store_false',
            help='disable color output')
     addarg('--colors', dest='colorstr', type=argparser.is_colorstr,
@@ -1496,11 +1495,8 @@ def parse_args(args=None, namespace=None):
            help='set output colors (see man page for details)')
     addarg('-j', '--first', '--lucky', dest='lucky', action='store_true',
            help='open the first result in a web browser; implies --noprompt')
-    addarg('-t', '--time', dest='duration', type=argparser.is_duration, metavar='dN',
-           help='time limit search '
-           '[h5 (5 hrs), d5 (5 days), w5 (5 weeks), m5 (5 months), y5 (5 years)]')
-    addarg('-w', '--site', dest='site', metavar='SITE',
-           help='search a site using DuckDuckGo')
+    addarg('-w', '--site', dest='sites', action='append', metavar='SITE',
+           help='search sites using DuckDuckGo')
     addarg('-p', '--proxy', dest='proxy',
            help='tunnel traffic through an HTTPS proxy (HOST:PORT)')
     addarg('--noua', dest='noua', action='store_true',
@@ -1515,8 +1511,7 @@ def parse_args(args=None, namespace=None):
            help='perform search and exit, do not prompt')
     addarg('-d', '--debug', dest='debug', action='store_true',
            help='enable debugging')
-    addarg('keywords', nargs='*', metavar='KEYWORD',
-           help='search keywords')
+    addarg('keywords', nargs='*', metavar='KEYWORD', help='search keywords')
     return argparser.parse_args(args, namespace)
 
 
