@@ -1504,7 +1504,7 @@ def parse_args(args=None, namespace=None):
     addarg('-n', '--count', dest='num', type=argparser.positive_int,
            default=10, metavar='N',
            help='show N results (default 10)')
-    addarg('-c', '--reg', dest='reg', metavar='REG',
+    addarg('-r', '--reg', dest='reg', metavar='REG',
            help="region-specific search e.g. 'us-en' for US (default); visit https://duckduckgo.com/params")
     addarg('-l', '--lang', metavar='LANG', help='display in language LANG')
     addarg('-C', '--nocolor', dest='colorize', action='store_false',
