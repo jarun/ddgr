@@ -1,0 +1,376 @@
+.TH "DDGR" "1" "4 Nov 2017" "Version 0.1" "User Commands"
+.SH NAME
+ddgr \- DuckDuckGo from the terminal
+.SH SYNOPSIS
+.B ddgr [OPTIONS] [KEYWORD [KEYWORD ...]]
+.SH DESCRIPTION
+.B ddgr
+is a command-line tool to search DuckDuckGo from the terminal. \fBddgr\fR shows the title, URL and text context for each result. Results are fetched in pages. Next or previous page navigation is possible using keyboard shortcuts. Results are indexed and a result URL can be opened in a browser using the index number. There is no configuration file as aliases serve the same purpose for this utility. Supports sequential searches in a single instance.
+.PP
+.B Features
+.PP
+  * Fast and clean (no ads, stray URLs or clutter), custom color
+  * Navigate result pages from omniprompt, open URLs in browser
+  * Open the first result directly in browser (as in I'm Feeling Lucky)
+  * Non-stop searches: fire new searches at omniprompt without exiting
+  * Comprehensive documentation, man page with handy usage examples
+  * Minimal dependencies
+.SH OPTIONS
+.TP
+.BI "-h, --help"
+Show help text and exit.
+.TP
+.BI "-s, --start=" N
+Start at the \fIN\fRth result.
+.TP
+.BI "-n, --count=" N
+Show \fIN\fR results (default 10).
+.TP
+.BI "-N, --news"
+Show results from news section.
+.TP
+.BI "-c, --tld=" TLD
+Country-specific search with top-level domain \fI.TLD\fR, e.g., \fBin\fR for India.
+.TP
+.BI "-l, --lang=" LANG
+Search for the language \fILANG\fR, e.g., \fBfi\fR for Finnish.
+.TP
+.B "-x, --exact"
+Disable automatic spelling correction. Search exact keywords.
+.TP
+.B "-C, --nocolor"
+Disable color output.
+.TP
+.BI "--colors=" COLORS
+Set output colors. Refer to the \fBCOLORS\fR section below for details.
+.TP
+.B "-j, --first, --lucky"
+Open the first result in a web browser; implies \fB--noprompt\fR. Feeling Lucky?
+.TP
+.BI "-t, --time=" dN
+Time limit search [h5 (5 hrs), d5 (5 days), w5 (5 weeks), m5 (5 months), y5 (5 years)].
+.TP
+.BI "-w, --site=" SITE
+Search a site using Google.
+.TP
+.BI "--unfilter"
+Do not omit similar results.
+.TP
+.BI "-p, --proxy=" PROXY
+Tunnel traffic through an HTTP proxy. \fIPROXY\fR is of the form \fI[http://][user:password@]proxyhost[:port]\fR. The proxy server must support HTTP CONNECT tunneling and must not block port 443 for the relevant Google hosts. If a proxy is not explicitly given, the \fIhttps_proxy\fR environment variable (if available) is used instead.
+.TP
+.BI "--noua"
+Disable user agent. Results are fetched faster.
+.TP
+.BI "--notweak"
+Disable TCP optimizations. Negotiate Transport Layer Security protocol instead of forcing TLS 1.2 (on Python 3.4 and above). Should be used only in case of connection issues.
+.TP
+.BI "--json"
+Output in JSON format; implies \fB--noprompt\fR.
+.TP
+.BI "--show-browser-logs"
+Do not suppress browser output when opening result in browser; that is, connect stdout and stderr of the browser to googler's stdout and stderr instead of /dev/null. By default, browser output is suppressed (due to certain graphical browsers spewing messages to console) unless the \fBBROWSER\fR environment variable is a known text-based browser: elinks, links, lynx, w3m or www-browser.
+.TP
+.BI "--np, --noprompt"
+Perform search and exit; do not prompt for further interactions.
+.TP
+.BI "-u, --upgrade"
+Perform in-place self-upgrade. By default, the latest stable version is used. However, the latest git master is used instead if \fB--include-git\fR is also supplied. This mechanism is not available on Windows (including Cygwin), and if you installed \fBgoogler\fR with a package manager, this mechanism may have been disabled by your packager at packaging or install time.
+.TP
+.BI "--include-git"
+See \fB--upgrade\fR.
+.TP
+.BI "-v, --version"
+Show version number and exit.
+.TP
+.BI "-d, --debug"
+Enable debugging.
+.SH OMNIPROMPT KEYS
+.TP
+.BI "n, p"
+Fetch the next or previous set of search results.
+.TP
+.BI "index"
+Open the result corresponding to index in browser.
+.TP
+.BI "f"
+Jump to the first page.
+.TP
+.BI o " [index|range|a ...]"
+Open space-separated result indices, numeric ranges (sitelinks unsupported in ranges) or all indices, if 'a' is specified, in the browser. Open the current search in the browser, if no arguments.
+.TP
+.BI O " [index|range|a ...]"
+Works similar to key 'o', but tries to ignore text-based browsers (even if BROWSER is set) and open links in a GUI browser.
+.TP
+.BI g " keywords"
+Initiate a new Google search for \fIkeywords\fR with original options. This key should be used to search omniprompt keys (including itself) and indices.
+.TP
+.BI "q, ^D, double Enter"
+Exit googler.
+.TP
+.BI "?"
+Show omniprompt help.
+.TP
+.BI *
+Any other string initiates a new search with original options.
+.SH GOOGLER @T
+\fBgoogler @t\fR is a convenient add-on to Google Site Search with unique keywords. While \fBgoogler\fR has an integrated option to search a site, it could be simplified further with aliases. The file \fIgoogler_at\fR (https://github.com/jarun/googler/blob/master/auto-completion/googler_at/googler_at) contains a list of website search aliases. To source it, run:
+.PP
+.IP "" 4
+.B source googler_at
+.PP
+or
+.PP
+.IP "" 4
+.B . googler_at
+.PP
+With \fBgoogler @t\fR, the following command searches Wikipedia for \fIhexspeak\fR:
+.PP
+.IP "" 4
+.B @w hexspeak
+.PP
+Other \fBgoogler\fR options can be combined. The shell can be configured to be source the file at start-up for further convenience.
+.PP
+All the aliases start with the \fB@\fR symbol (hence the name \fBgoogler @t\fR) and there is minimum chance they will conflict with any shell commands. Users can add new aliases to the file.
+.SH COLORS
+\fBgoogler\fR allows you to customize the color scheme via a six-letter string, reminiscent of BSD \fBLSCOLORS\fR. The six letters represent the colors of
+.IP - 2
+indices
+.PD 0 \" Change paragraph spacing to 0 in the list
+.IP - 2
+titles
+.IP - 2
+URLs
+.IP - 2
+metadata/publishing info (Google News only)
+.IP - 2
+abstracts
+.IP - 2
+prompts
+.PD 1 \" Restore paragraph spacing
+.TP
+respectively. The six-letter string is passed in either as the argument to the \fB--colors\fR option, or as the value of the environment variable \fBGOOGLER_COLORS\fR.
+.TP
+We offer the following colors/styles:
+.TS
+tab(;) box;
+l|l
+-|-
+l|l.
+Letter;Color/Style
+a;black
+b;red
+c;green
+d;yellow
+e;blue
+f;magenta
+g;cyan
+h;white
+i;bright black
+j;bright red
+k;bright green
+l;bright yellow
+m;bright blue
+n;bright magenta
+o;bright cyan
+p;bright white
+A-H;bold version of the lowercase-letter color
+I-P;bold version of the lowercase-letter bright color
+x;normal
+X;bold
+y;reverse video
+Y;bold reverse video
+.TE
+.TP
+.TP
+The default colors string is \fIGKlgxy\fR, which stands for
+.IP - 2
+bold bright cyan indices
+.PD 0 \" Change paragraph spacing to 0 in the list
+.IP - 2
+bold bright green titles
+.IP - 2
+bright yellow URLs
+.IP - 2
+cyan metadata/publishing info
+.IP - 2
+normal abstracts
+.IP - 2
+reverse video prompts
+.PD 1 \" Restore paragraph spacing
+.TP
+Note that
+.IP - 2
+Bright colors (implemented as \\x1b[90m - \\x1b[97m) may not be available in all color-capable terminal emulators;
+.IP - 2
+Some terminal emulators draw bold text in bright colors instead;
+.IP - 2
+Some terminal emulators only distinguish between bold and bright colors via a default-off switch.
+.TP
+Please consult the manual of your terminal emulator as well as \fIhttps://en.wikipedia.org/wiki/ANSI_escape_code\fR for details.
+.SH ENVIRONMENT
+.TP
+.BI BROWSER
+Overrides the default browser. Ref:
+.I http://docs.python.org/library/webbrowser.html
+.TP
+.BI GOOGLER_COLORS
+Refer to the \fBCOLORS\fR section.
+.TP
+.BI https_proxy
+Refer to the \fB--proxy\fR option.
+.SH EXAMPLES
+.PP
+.IP 1. 4
+Google \fBhello world\fR:
+.PP
+.EX
+.IP
+.B googler hello world
+.EE
+.PP
+.IP 2. 4
+Fetch \fB15 results\fR updated within the last \fB14 months\fR, starting from the \fB3rd result\fR for the keywords \fBjungle book\fR in \fBsite\fR imdb.com:
+.PP
+.EX
+.IP
+.B googler -n 15 -s 3 -t m14 -w imdb.com jungle book
+.EE
+.PP
+.IP 3. 4
+Read recent \fBnews\fR on gadgets:
+.PP
+.EX
+.IP
+.B googler -N gadgets
+.EE
+.PP
+.IP 4. 4
+Fetch results on IPL cricket from \fBGoogle India\fR server in \fBEnglish\fR:
+.PP
+.EX
+.IP
+.B googler -c in -l en IPL cricket
+.EE
+.PP
+.IP 5. 4
+Search \fBquoted text\fR:
+.PP
+.EX
+.IP
+.B googler it\(rs's a \(rs\(dqbeautiful world\(rs\(dq in spring
+.EE
+.PP
+.IP 6. 4
+Search for a \fBspecific file type\fR:
+.PP
+.EX
+.IP
+.B googler instrumental filetype:mp3
+.EE
+.PP
+.IP 7. 4
+Disable \fBautomatic spelling correction\fR, e.g. fetch results for \fIgoogler\fR instead of \fIgoogle\fR:
+.PP
+.EX
+.IP
+.B googler -x googler
+.EE
+.PP
+.IP 8. 4
+\fBI'm feeling lucky\fR search:
+.PP
+.EX
+.IP
+.B googler -j leather jackets
+.EE
+.PP
+.IP 9. 4
+\fBWebsite specific\fR search:
+.PP
+.EX
+.IP
+.B googler -w amazon.com -w ebay.com digital camera
+.EE
+.PP
+.IP "" 4
+Site specific search continues at omniprompt. Use the \fBg\fR key to run a regular Google search.
+.EE
+.PP
+.IP 10. 4
+Alias to find \fBdefinitions of words\fR:
+.PP
+.EX
+.IP
+.B alias define='googler -n 2 define'
+.EE
+.PP
+.IP 11. 4
+Look up \fBn\fR, \fBp\fR, \fBo\fR, \fBq\fR, \fBg keywords\fR or a result index at the \fBomniprompt\fR: As the omniprompt recognizes \fBn\fR, \fBp\fR, \fBo\fR, \fBq\fR, \fBg\fR or index strings as commands, you need to prefix them with \fBg\fR, e.g.,
+.PP
+.EX
+.PD 0
+.IP
+.B g n
+.IP
+.B g g keywords
+.IP
+.B g 1
+.PD
+.EE
+.PP
+.IP 12. 4
+Input and output \fBredirection\fR:
+.PP
+.EX
+.IP
+.B googler -C hello world < input > output
+.EE
+.PP
+.IP "" 4
+Note that \fI-C\fR is required to avoid printing control characters (for colored output).
+.IP 13. 4
+\fBPipe\fR output:
+.PP
+.EX
+.IP
+.B googler -C hello world | tee output
+.EE
+.IP 14. 4
+Use a \fBcustom color scheme\fR, e.g., one warm color scheme designed for Solarized Dark:
+.PP
+.EX
+.IP
+.B googler --colors bjdxxy google
+.IP
+.B GOOGLER_COLORS=bjdxxy googler google
+.EE
+.IP 15. 4
+Tunnel traffic through an \fBHTTPS proxy\fR, e.g., a local Privoxy instance listening on port 8118:
+.PP
+.EX
+.IP
+.B googler --proxy localhost:8118 google
+.EE
+.PP
+.IP "" 4
+By default the environment variable \fIhttps_proxy\fR is used, if defined.
+.IP 16. 4
+Quote multiple search keywords to auto-complete (using completion script):
+.PP
+.EX
+.IP
+.B googler 'hello w<TAB>
+.EE
+.SH AUTHOR
+Arun Prakash Jana <engineerarun@gmail.com>
+.SH HOME
+.I https://github.com/jarun/ddgr
+.SH REPORTING BUGS
+.I https://github.com/jarun/ddgr/issues
+.SH LICENSE
+Copyright \(co 2015-2017 Arun Prakash Jana <engineerarun@gmail.com>
+.PP
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
+.br
+This is free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.
