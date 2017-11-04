@@ -429,7 +429,9 @@ class DdgConnection(object):
         self.cookie = ''
 
         self._proxies = {
-            'https': proxy if proxy is not None else os.getenv('https_proxy'),
+            'https': proxy if proxy is not None else (os.getenv('https_proxy')
+                                                      if os.getenv('https_proxy') is not None
+                                                      else os.getenv('HTTPS_PROXY'))
         }
 
     @property
@@ -463,7 +465,8 @@ class DdgConnection(object):
         """
         dic = url.query()
         page = dic['page']
-        logdbg('q:[%s], region:[%s], page:[%d], current:[%d], safe:[%d]', dic['q'], dic['region'], page, dic['curindex'], dic['safe'])
+        logdbg('q:%s, region:%s, page:%d, current:%d, safe:%d', dic['q'], dic['region'], page, dic['curindex'], dic['safe'])
+        logdbg('proxy:%s', self._proxies)
 
         try:
             if page == 0:
@@ -1417,7 +1420,6 @@ def python_version():
 # mark.)
 def completer_fetch_completions(prefix):
     import json
-    import re
     import urllib.request
 
     # One can pass the 'hl' query param to specify the language. We
