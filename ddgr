@@ -1422,30 +1422,17 @@ def completer_fetch_completions(prefix):
 
     # One can pass the 'hl' query param to specify the language. We
     # ignore that for now.
-    api_url = ('https://www.google.com/complete/search?client=psy-ab&q=%s' %
-               urllib.parse.quote(prefix, safe=''))
+    api_url = ('https://duckduckgo.com/ac/?q=%s&kl=wt-wt' % prefix)
     # A timeout of 3 seconds seems to be overly generous already.
     resp = urllib.request.urlopen(api_url, timeout=3)
     respobj = json.loads(resp.read().decode('utf-8'))
 
-    # The response object, once parsed as JSON, should look like
-    #
-    # ['git',
-    #  [['git<b>hub</b>', 0],
-    #   ['git', 0],
-    #   ['git<b>lab</b>', 0],
-    #   ['git<b> stash</b>', 0]],
-    #  {'q': 'oooAhRzoChqNmMbNaaDKXk1YY4k', 't': {'bpc': False, 'tlw': False}}]
-    #
-    # Note the each result entry need not have two members; e.g., for
-    # 'gi', there is an entry ['gi<b>f</b>', 0, [131]].
-    HTML_TAG = re.compile(r'<[^>]+>')
-    return [HTML_TAG.sub('', entry[0]) for entry in respobj[1]]
+    return [entry['phrase'] for entry in respobj]
 
 
 def completer_run(prefix):
     if prefix:
-        completions = completer_fetch_completions(prefix)
+        completions = completer_fetch_completions('+'.join(prefix.split()))
         if completions:
             print('\n'.join(completions))
     sys.exit(0)
@@ -1491,6 +1478,7 @@ def parse_args(args=None, namespace=None):
     addarg('-v', '--version', action='version', version=_VERSION_)
     addarg('-d', '--debug', action='store_true', help='enable debugging')
     addarg('keywords', nargs='*', metavar='KEYWORD', help='search keywords')
+    addarg('--complete', help=argparse.SUPPRESS)
     return argparser.parse_args(args, namespace)
 
 
@@ -1504,6 +1492,10 @@ def main():
         logger.setLevel(logging.DEBUG)
         logdbg('ddgr version %s', _VERSION_)
         logdbg('Python version %s', python_version())
+
+    # Handle query completer
+    if opts.complete is not None:
+        completer_run(opts.complete)
 
     # Add cmdline args to readline history
     if opts.keywords:
