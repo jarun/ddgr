@@ -196,6 +196,7 @@ class DdgUrl(object):
         self._start = 0
         self._keywords = []
         self._sites = None
+        self._safe = 1
         self._query_dict = {
         }
         self.update(opts, **kwargs)
@@ -282,6 +283,8 @@ class DdgUrl(object):
             self._sites = opts['sites']
         if 'start' in opts:
             self._start = opts['start']
+        if 'unsafe' in opts and opts['unsafe']:
+            self._safe = -2
 
     def set_queries(self, **kwargs):
         """Forcefully set queries outside the normal `update` mechanism.
@@ -371,6 +374,7 @@ class DdgUrl(object):
         qd['region'] = self._region
         qd['totalnum'] = self._totalnum
         qd['start'] = self._start
+        qd['safe'] = self._safe
 
         # Construct the q query
         q = ''
@@ -458,7 +462,7 @@ class DdgConnection(object):
         """
         dic = url.query()
         start = dic['start']
-        logdbg('q:[%s], region:[%s], start:[%d], current:[%d]', dic['q'], dic['region'], start, dic['totalnum'])
+        logdbg('q:[%s], region:[%s], start:[%d], current:[%d], safe:[%d]', dic['q'], dic['region'], start, dic['totalnum'], dic['safe'])
 
         proxies = {
             'https': os.environ.get('https_proxy'),
@@ -481,6 +485,7 @@ class DdgConnection(object):
                                         'kf': '-1',
                                         'kh': '1',
                                         'kl': dic['region'],
+                                        'kp': dic['safe'],
                                         'k1': '-1',
                                        },
                                   proxies=proxies)
@@ -503,6 +508,7 @@ class DdgConnection(object):
                                         'kf': '-1',  # Disable favicons
                                         'kh': '1',  # HTTPS always ON
                                         'kl': dic['region'],  # Region code
+                                        'kp': dic['safe'],  # Safe search
                                         'k1': '-1',  # Advertisements off
                                        },
                                   proxies=proxies)
@@ -1519,6 +1525,7 @@ def parse_args(args=None, namespace=None):
            help='Show complete url in search results')
     addarg('-p', '--proxy', dest='proxy',
            help='tunnel traffic through an HTTPS proxy (HOST:PORT)')
+    addarg('--unsafe', action='store_true', help='disable safe search')
     addarg('--noua', dest='noua', action='store_true',
            help='disable user agent')
     addarg('--json', dest='json', action='store_true',

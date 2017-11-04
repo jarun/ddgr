@@ -13,7 +13,9 @@ is a command-line tool to search DuckDuckGo from the terminal. \fBddgr\fR shows 
   * Navigate result pages from omniprompt, open URLs in browser
   * Open the first result directly in browser (as in I'm Feeling Ducky)
   * Non-stop searches: fire new searches at omniprompt without exiting
+  * Specify region, disable safe search
   * Do Not Track set to True, optionally disable User Agent
+  * Support custom url handler script or cmdline utility
   * Comprehensive documentation, man page with handy usage examples
   * Minimal dependencies
 .SH OPTIONS
@@ -44,6 +46,9 @@ Expand URLs instead of showing only the domain name (default).
 .TP
 .BI "-p, --proxy=" PROXY
 Tunnel traffic through an HTTP proxy. \fIPROXY\fR is of the form \fI[http://][user:password@]proxyhost[:port]\fR. The proxy server must support HTTP CONNECT tunneling and must not block port 443 for the relevant DuckDuckGo hosts. If a proxy is not explicitly given, the \fIhttps_proxy\fR environment variable (if available) is used instead.
+.TP
+.BI "--unsafe"
+Disable safe search.
 .TP
 .BI "--noua"
 Disable user agent. Results are fetched faster.
