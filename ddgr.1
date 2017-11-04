@@ -43,7 +43,7 @@ Search a site using DuckDuckGo.
 Expand URLs instead of showing only the domain name (default).
 .TP
 .BI "-p, --proxy=" PROXY
-Tunnel traffic through an HTTP proxy. \fIPROXY\fR is of the form \fI[http://][user:password@]proxyhost[:port]\fR. The proxy server must support HTTP CONNECT tunneling and must not block port 443 for the relevant DuckDuckGo hosts. If a proxy is not explicitly given, the \fIhttps_proxy\fR environment variable (if available) is used instead.
+Tunnel traffic through an HTTP proxy. \fIPROXY\fR is of the form \fI[http[s]://][user:pwd@]host[:port]\fR. The proxy server must support HTTP CONNECT tunneling and must not block port 443 for the relevant DuckDuckGo hosts. If a proxy is not explicitly given, the \fIhttps_proxy\fR environment variable (if available) is used instead.
 .TP
 .BI "--unsafe"
 Disable safe search.

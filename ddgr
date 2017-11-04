@@ -422,11 +422,15 @@ class DdgConnection(object):
     """
 
     def __init__(self, host, port=None, timeout=45, proxy=None):
+        self._u = 'https://duckduckgo.com/html'
         self._host = None
         self._port = None
-        self._proxy = proxy
         self._conn = None
         self.cookie = ''
+
+        self._proxies = {
+            'https': proxy if proxy is not None else os.getenv('https_proxy'),
+        }
 
     @property
     def host(self):
@@ -461,15 +465,9 @@ class DdgConnection(object):
         page = dic['page']
         logdbg('q:[%s], region:[%s], page:[%d], current:[%d], safe:[%d]', dic['q'], dic['region'], page, dic['curindex'], dic['safe'])
 
-        proxies = {
-            'https': os.environ.get('https_proxy'),
-        }
-
-        _u = 'https://duckduckgo.com/html'
-
         try:
             if page == 0:
-                r = requests.post(_u,
+                r = requests.post(self._u,
                                   headers={
                                            'Accept-encoding': 'gzip,deflate',
                                            'User-Agent': USER_AGENT,
@@ -485,9 +483,9 @@ class DdgConnection(object):
                                         'kp': dic['safe'],
                                         'k1': '-1',
                                        },
-                                  proxies=proxies)
+                                  proxies=self._proxies)
             else:
-                r = requests.post(_u,
+                r = requests.post(self._u,
                                   headers={
                                            'Accept-encoding': 'gzip,deflate',
                                            'User-Agent': USER_AGENT,
@@ -508,7 +506,7 @@ class DdgConnection(object):
                                         'kp': dic['safe'],  # Safe search
                                         'k1': '-1',  # Advertisements off
                                        },
-                                  proxies=proxies)
+                                  proxies=self._proxies)
         except Exception as e:
             logerr(e)
             return None
@@ -1409,38 +1407,6 @@ def python_version():
     return '%d.%d.%d' % sys.version_info[:3]
 
 
-def https_proxy_from_environment():
-    return os.getenv('https_proxy')
-
-
-def parse_proxy_spec(proxyspec):
-    if '://' in proxyspec:
-        pos = proxyspec.find('://')
-        scheme = proxyspec[:pos]
-        proxyspec = proxyspec[pos+3:]
-        if scheme.lower() != 'http':
-            # Only support HTTP proxies.
-            #
-            # In particular, we don't support HTTPS proxies since we
-            # only speak plain HTTP to the proxy server, so don't give
-            # users a false sense of security.
-            raise NotImplementedError('Unsupported proxy scheme %s.' % scheme)
-
-    if '@' in proxyspec:
-        pos = proxyspec.find('@')
-        user_passwd = urllib.parse.unquote(proxyspec[:pos])
-        host_port = proxyspec[pos+1:]
-    else:
-        user_passwd = None
-        host_port = proxyspec
-
-    if ':' not in host_port:
-        # Use port 1080 as default, following curl.
-        host_port += ':1080'
-
-    return user_passwd, host_port
-
-
 # Query autocompleter
 
 # This function is largely experimental and could raise any exception;
@@ -1515,7 +1481,7 @@ def parse_args(args=None, namespace=None):
     addarg('-j', '--ducky', action='store_true', help='open the first result in a web browser; implies --np')
     addarg('-w', '--site', dest='sites', action='append', metavar='SITE', help='search sites using DuckDuckGo')
     addarg('-x', '--expand', action='store_true', help='Show complete url in search results')
-    addarg('-p', '--proxy', help='tunnel traffic through an HTTPS proxy (HOST:PORT)')
+    addarg('-p', '--proxy', help='tunnel traffic through an HTTPS proxy in the form [http[s]://][user:pwd@]host[:port]')
     addarg('--unsafe', action='store_true', help='disable safe search')
     addarg('--noua', action='store_true', help='disable user agent')
     addarg('--json', action='store_true', help='output in JSON format; implies --np')
