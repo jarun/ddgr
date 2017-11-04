@@ -451,18 +451,12 @@ class DdgConnection(object):
             'https': os.environ.get('https_proxy'),
         }
 
-        from urllib.parse import quote_plus as qp
-
         _u = 'https://duckduckgo.com/html'
 
         try:
             if start == 0:
                 r = requests.post(_u,
                                   headers={
-                                           'authority': 'duckduckgo.com',
-                                           'path': '/html/',
-                                           #'content-type': 'application/json',
-                                           #'Cookie': '',
                                            'Accept-encoding': 'gzip,deflate',
                                            'User-Agent': USER_AGENT,
                                            'Connection': 'keep-alive',
@@ -477,10 +471,6 @@ class DdgConnection(object):
             else:
                 r = requests.post(_u,
                                   headers={
-                                           'authority': 'duckduckgo.com',
-                                           'path': '/html/',
-                                           #'content-type': 'application/json',
-                                           #'Cookie': '',
                                            'Accept-encoding': 'gzip,deflate',
                                            'User-Agent': USER_AGENT,
                                            'Connection': 'keep-alive',
@@ -655,7 +645,6 @@ class DdgParser(html.parser.HTMLParser):
 
         self.news = news
 
-        self.filtered = False
         self.results = []
 
         self.index = 0
@@ -682,10 +671,6 @@ class DdgParser(html.parser.HTMLParser):
 
             self.set_handlers_to('result')
             return 'result'
-
-        # Omitted results
-        if tag == 'p' and attrs.get('id') == 'ofr':
-            self.filtered = True
 
     @retrieve_tag_annotation
     def root_end(self, tag, annotation):
@@ -1014,7 +999,7 @@ class DdgCmd(object):
     -------
     fetch()
     display_results(prelude='\n', json_output=False)
-    fetch_and_display(prelude='\n', json_output=False, interactive=True)
+    fetch_and_display(prelude='\n', json_output=False)
     read_next_command()
     help()
     cmdloop()
@@ -1034,7 +1019,6 @@ class DdgCmd(object):
         self._conn = DdgConnection(self._ddg_url.hostname, proxy=proxy)
 
         self.results = []
-        self._results_filtered = False
         self._urltable = {}
 
     @property
@@ -1062,8 +1046,7 @@ class DdgCmd(object):
         fetch_and_display
 
         """
-        # This method also sets self._results_filtered and
-        # self._urltable.
+        # This method also sets self._urltable.
         page = self._conn.fetch_page(self._ddg_url)
 
         if page == None:
@@ -1083,7 +1066,6 @@ class DdgCmd(object):
         parser.feed(page.text)
 
         self.results = parser.results
-        self._results_filtered = parser.filtered
         self._urltable = {}
 
         for r in self.results:
@@ -1115,7 +1097,7 @@ class DdgCmd(object):
                     r.print()
 
     @require_keywords
-    def fetch_and_display(self, prelude='\n', json_output=False, interactive=True):
+    def fetch_and_display(self, prelude='\n', json_output=False):
         """Fetch a page and display results.
 
         Results are stored in ``self.results``.
@@ -1127,9 +1109,6 @@ class DdgCmd(object):
             usually serving as a separator. Default is an empty line.
         json_output : bool, optional
             Whether to dump results in JSON format. Default is False.
-        interactive : bool, optional
-            Whether to show contextual instructions, when e.g. DuckDuckGo
-            has filtered the results. Default is True.
 
         Raises
         ------
@@ -1144,8 +1123,6 @@ class DdgCmd(object):
         self.fetch()
         colors = self.colors
         self.display_results(prelude=prelude, json_output=json_output)
-        if self._results_filtered:
-            printerr('** Enter "unfilter" to show similar results DuckDuckGo omitted.')
 
     def read_next_command(self):
         """Show omniprompt and read user command line.
@@ -1256,14 +1233,6 @@ class DdgCmd(object):
 
         self.fetch_and_display()
 
-    @require_keywords
-    @no_argument
-    def do_unfilter(self):
-        # Reset start to 0 when unfilter is applied.
-        self._ddg_url.update(start=0)
-        self._ddg_url.set_queries(filter=0)
-        self.fetch_and_display()
-
     def cmdloop(self):
         """Run REPL."""
         if self.keywords:
@@ -1299,8 +1268,6 @@ class DdgCmd(object):
                     self.do_previous('')
                 elif cmd == 'q':
                     break
-                elif cmd == 'unfilter':
-                    self.do_unfilter('')
                 elif cmd == '?':
                     self.help()
                 elif cmd in self._urltable:
@@ -1557,8 +1524,6 @@ def testreq():
     proxies = {
         'https': os.environ.get('https_proxy'),
     }
-
-    from urllib.parse import quote_plus as qp
 
     _u = 'https://duckduckgo.com/html'
 
