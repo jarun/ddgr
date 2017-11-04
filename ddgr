@@ -28,7 +28,10 @@ import signal
 import sys
 import textwrap
 import urllib.parse
-import readline
+try:
+    import readline
+except ImportError:
+    pass
 import webbrowser
 
 # Basic setup
@@ -1065,9 +1068,7 @@ class DdgCmd(object):
                 fp.write(page.text)
             logger.debug("Response body written to '%s'.", tmpfile)
 
-        parser = DdgParser(news=False)
-
-        parser = DdgParser(news=False)
+        parser = DdgParser()
         parser.feed(page.text)
 
         self.results = parser.results
@@ -1530,6 +1531,13 @@ def main():
                 readline.add_history(' '.join(opts.keywords))
             except Exception:
                 pass
+
+    if opts.keywords:
+        try:
+            # Add cmdline args to readline history
+            readline.add_history(' '.join(opts.keywords))
+        except Exception:
+            pass
 
     # Set colors
     if opts.colorize:
