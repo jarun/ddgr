@@ -1506,7 +1506,6 @@ def parse_args(args=None, namespace=None):
            help='show N results (default 10)')
     addarg('-r', '--reg', dest='region', default='us-en', metavar='REG',
            help="region-specific search e.g. 'us-en' for US (default); visit https://duckduckgo.com/params")
-    addarg('-l', '--lang', metavar='LANG', help='display in language LANG')
     addarg('-C', '--nocolor', dest='colorize', action='store_false',
            help='disable color output')
     addarg('--colors', dest='colorstr', type=argparser.is_colorstr,
@@ -1523,7 +1522,7 @@ def parse_args(args=None, namespace=None):
     addarg('--noua', dest='noua', action='store_true',
            help='disable user agent')
     addarg('--json', dest='json', action='store_true',
-           help='output in JSON format; implies --noprompt')
+           help='output in JSON format; implies --np')
     addarg('--url-handler', metavar='UTIL',
            help='custom script or cli utility to open results')
     addarg('--show-browser-logs', action='store_true',
