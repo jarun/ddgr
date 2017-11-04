@@ -190,13 +190,13 @@ class DdgUrl(object):
         # self.query is a calculated property
         self.fragment = ''
 
-        self._region = ''
-        self._lastnum = 0
-        self._totalnum = 1
-        self._start = 0
+        self._region = ''  # Region code
+        self._qrycnt = 0  # Number of search results fetched in most recent query
+        self._curindex = 1  # Index of total results in pages fetched so far + 1
+        self._page = 0  # Current page number
         self._keywords = []
         self._sites = None
-        self._safe = 1
+        self._safe = 1  # Safe search parameter value
         self._query_dict = {
         }
         self.update(opts, **kwargs)
@@ -256,7 +256,6 @@ class DdgUrl(object):
 
                 keywords: str or list of strs
                 num: int
-                start: int
 
         Other Parameters
         ----------------
@@ -278,11 +277,9 @@ class DdgUrl(object):
         if 'region' in opts:
             self._region = opts['region']
         if 'num' in opts:
-            self._lastnum = 0
+            self._qrycnt = 0
         if 'sites' in opts:
             self._sites = opts['sites']
-        if 'start' in opts:
-            self._start = opts['start']
         if 'unsafe' in opts and opts['unsafe']:
             self._safe = -2
 
@@ -321,12 +318,12 @@ class DdgUrl(object):
 
     def next_page(self):
         """Navigate to the next page."""
-        self._start = self._start + 1
+        self._page = self._page + 1
 
-        if self._totalnum > 0:
-            self._totalnum = self._totalnum + self._lastnum
+        if self._curindex > 0:
+            self._curindex = self._curindex + self._qrycnt
         else:
-            self._totalnum = -self._totalnum
+            self._curindex = -self._curindex
 
     def prev_page(self):
         """Navigate to the previous page.
@@ -334,17 +331,17 @@ class DdgUrl(object):
         Raises
         ------
         ValueError
-            If already at the first page (``start=0`` in the current
+            If already at the first page (``page=0`` in the current
             query string).
 
         """
-        if self._start == 0:
+        if self._page == 0:
             raise ValueError('Already at the first page.')
-        self._start = self._start - 1
-        if self._totalnum > 0:
-            self._totalnum = -self._totalnum
+        self._page = self._page - 1
+        if self._curindex > 0:
+            self._curindex = -self._curindex  # A negative index is used when fetching previous page
         else:
-            self._totalnum = self._totalnum + self._lastnum
+            self._curindex = self._curindex + self._qrycnt
 
     def first_page(self):
         """Navigate to the first page.
@@ -352,15 +349,15 @@ class DdgUrl(object):
         Raises
         ------
         ValueError
-            If already at the first page (``start=0`` in the current
+            If already at the first page (``page=0`` in the current
             query string).
 
         """
-        if self._start == 0:
+        if self._page == 0:
             raise ValueError('Already at the first page.')
-        self._start = 0
-        self._lastnum = 0
-        self._totalnum = 1
+        self._page = 0
+        self._qrycnt = 0
+        self._curindex = 1
 
     @property
     def netloc(self):
@@ -372,8 +369,8 @@ class DdgUrl(object):
         qd = {}
         qd.update(self._query_dict)
         qd['region'] = self._region
-        qd['totalnum'] = self._totalnum
-        qd['start'] = self._start
+        qd['curindex'] = self._curindex
+        qd['page'] = self._page
         qd['safe'] = self._safe
 
         # Construct the q query
@@ -392,7 +389,7 @@ class DdgUrl(object):
         return qd
 
     def update_num(self, count):
-        self._lastnum = count
+        self._qrycnt = count
 
 
 class DDGConnectionError(Exception):
@@ -461,8 +458,8 @@ class DdgConnection(object):
 
         """
         dic = url.query()
-        start = dic['start']
-        logdbg('q:[%s], region:[%s], start:[%d], current:[%d], safe:[%d]', dic['q'], dic['region'], start, dic['totalnum'], dic['safe'])
+        page = dic['page']
+        logdbg('q:[%s], region:[%s], page:[%d], current:[%d], safe:[%d]', dic['q'], dic['region'], page, dic['curindex'], dic['safe'])
 
         proxies = {
             'https': os.environ.get('https_proxy'),
@@ -471,7 +468,7 @@ class DdgConnection(object):
         _u = 'https://duckduckgo.com/html'
 
         try:
-            if start == 0:
+            if page == 0:
                 r = requests.post(_u,
                                   headers={
                                            'Accept-encoding': 'gzip,deflate',
@@ -499,11 +496,11 @@ class DdgConnection(object):
                                           },
                                   data={
                                         'q': dic['q'],  # The query string
-                                        's': str(start * (50 * (start - 1) + 30)),  # Start page index
+                                        's': str(page * (50 * (page - 1) + 30)),  # Page index
                                         'nextParams': '',
                                         'v': 'l',
                                         'o': 'json',
-                                        'dc': str(dic['totalnum']),  # Start from result number
+                                        'dc': str(dic['curindex']),  # Start from total fetched result index
                                         'api': '/d.js',
                                         'kf': '-1',  # Disable favicons
                                         'kh': '1',  # HTTPS always ON
@@ -1214,7 +1211,7 @@ class DdgCmd(object):
     @no_argument
     def do_next(self):
         # If no results were fetched last time, we have hit the last page already
-        if self._ddg_url._lastnum == 0:
+        if self._ddg_url._qrycnt == 0:
             print('No results.', file=sys.stderr)
         else:
             self._ddg_url.next_page()
