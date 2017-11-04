@@ -13,6 +13,7 @@ is a command-line tool to search DuckDuckGo from the terminal. \fBddgr\fR shows 
   * Navigate result pages from omniprompt, open URLs in browser
   * Open the first result directly in browser (as in I'm Feeling Ducky)
   * Non-stop searches: fire new searches at omniprompt without exiting
+  * Keywords (e.g. \fIfiletype:mime\fR, \fIsite:somesite.com\fR) support
   * Specify region, disable safe search
   * Do Not Track set to True, optionally disable User Agent
   * Support custom url handler script or cmdline utility
@@ -22,9 +23,9 @@ is a command-line tool to search DuckDuckGo from the terminal. \fBddgr\fR shows 
 .TP
 .BI "-h, --help"
 Show help text and exit.
-.TP
-.BI "-n, --count=" N
-Show \fIN\fR results (default 10).
+".TP
+".BI "-n, --count=" N
+"Show \fIN\fR results (default 10).
 .TP
 .BI "-r, --reg=" REG
 Region-specific search e.g. 'us-en' for US (default); visit https://duckduckgo.com/params.
@@ -55,6 +56,9 @@ Disable user agent. Results are fetched faster.
 .TP
 .BI "--json"
 Output in JSON format; implies \fB--noprompt\fR.
+.TP
+.BI "--url-handler=" UTIL
+Custom script or command-line utility to open urls with.
 .TP
 .BI "--show-browser-logs"
 Do not suppress browser output when opening result in browser; that is, connect stdout and stderr of the browser to ddgr's stdout and stderr instead of /dev/null. By default, browser output is suppressed (due to certain graphical browsers spewing messages to console) unless the \fBBROWSER\fR environment variable is a known text-based browser: elinks, links, lynx, w3m or www-browser.
@@ -185,146 +189,122 @@ Refer to the \fB--proxy\fR option.
 .SH EXAMPLES
 .PP
 .IP 1. 4
-Google \fBhello world\fR:
+DuckDuckGo \fBhello world\fR:
 .PP
 .EX
 .IP
-.B googler hello world
+.B ddgr hello world
 .EE
 .PP
 .IP 2. 4
-Fetch \fB15 results\fR updated within the last \fB14 months\fR, starting from the \fB3rd result\fR for the keywords \fBjungle book\fR in \fBsite\fR imdb.com:
+Fetch results on IPL cricket from \fBIndia\fR in \fBEnglish\fR:
 .PP
 .EX
 .IP
-.B googler -n 15 -s 3 -t m14 -w imdb.com jungle book
+.B ddgr -r in-en IPL cricket
 .EE
 .PP
 .IP 3. 4
-Read recent \fBnews\fR on gadgets:
-.PP
-.EX
-.IP
-.B googler -N gadgets
-.EE
-.PP
-.IP 4. 4
-Fetch results on IPL cricket from \fBGoogle India\fR server in \fBEnglish\fR:
-.PP
-.EX
-.IP
-.B googler -c in -l en IPL cricket
-.EE
-.PP
-.IP 5. 4
 Search \fBquoted text\fR:
 .PP
 .EX
 .IP
-.B googler it\(rs's a \(rs\(dqbeautiful world\(rs\(dq in spring
+.B ddgr it\(rs's a \(rs\(dqbeautiful world\(rs\(dq in spring
 .EE
 .PP
-.IP 6. 4
+.IP 4. 4
 Search for a \fBspecific file type\fR:
 .PP
 .EX
 .IP
-.B googler instrumental filetype:mp3
+.B ddgr instrumental filetype:mp3
+.EE
+.PP
+.IP 5. 4
+Show \fBcomplete urls\fR in search results (instead of only domain name):
+.PP
+.EX
+.IP
+.B ddgr -x ddgr
+.EE
+.PP
+.IP 6. 4
+\fBI'm Feeling Ducky\fR search:
+.PP
+.EX
+.IP
+.B ddgr -j lucky ducks
 .EE
 .PP
 .IP 7. 4
-Disable \fBautomatic spelling correction\fR, e.g. fetch results for \fIgoogler\fR instead of \fIgoogle\fR:
-.PP
-.EX
-.IP
-.B googler -x googler
-.EE
-.PP
-.IP 8. 4
-\fBI'm feeling lucky\fR search:
-.PP
-.EX
-.IP
-.B googler -j leather jackets
-.EE
-.PP
-.IP 9. 4
 \fBWebsite specific\fR search:
 .PP
 .EX
 .IP
-.B googler -w amazon.com -w ebay.com digital camera
+.B ddgr -w amazon.com digital camera
 .EE
 .PP
 .IP "" 4
-Site specific search continues at omniprompt. Use the \fBg\fR key to run a regular Google search.
+Site specific search continues at omniprompt.
 .EE
 .PP
-.IP 10. 4
-Alias to find \fBdefinitions of words\fR:
-.PP
-.EX
-.IP
-.B alias define='googler -n 2 define'
-.EE
-.PP
-.IP 11. 4
-Look up \fBn\fR, \fBp\fR, \fBo\fR, \fBq\fR, \fBg keywords\fR or a result index at the \fBomniprompt\fR: As the omniprompt recognizes \fBn\fR, \fBp\fR, \fBo\fR, \fBq\fR, \fBg\fR or index strings as commands, you need to prefix them with \fBg\fR, e.g.,
+.IP 8. 4
+Look up \fBn\fR, \fBp\fR, \fBo\fR, \fBO\fR, \fBq\fR, \fBd keywords\fR or a result index at the \fBomniprompt\fR: as the omniprompt recognizes these keys or index strings as commands, you need to prefix them with \fBd\fR, e.g.,
 .PP
 .EX
 .PD 0
 .IP
-.B g n
+.B d n
 .IP
-.B g g keywords
+.B d d keywords
 .IP
-.B g 1
+.B d 1
 .PD
 .EE
 .PP
-.IP 12. 4
+.IP 9. 4
 Input and output \fBredirection\fR:
 .PP
 .EX
 .IP
-.B googler -C hello world < input > output
+.B ddgr -C hello world < input > output
 .EE
 .PP
 .IP "" 4
 Note that \fI-C\fR is required to avoid printing control characters (for colored output).
-.IP 13. 4
+.IP 10. 4
 \fBPipe\fR output:
 .PP
 .EX
 .IP
-.B googler -C hello world | tee output
+.B ddgr -C hello world | tee output
 .EE
-.IP 14. 4
+.IP 11. 4
 Use a \fBcustom color scheme\fR, e.g., one warm color scheme designed for Solarized Dark:
 .PP
 .EX
 .IP
-.B googler --colors bjdxxy google
+.B ddgr --colors bjdxxy hello world
 .IP
-.B GOOGLER_COLORS=bjdxxy googler google
+.B DDGR_COLORS=bjdxxy ddgr hello world
 .EE
-.IP 15. 4
+.IP 12. 4
 Tunnel traffic through an \fBHTTPS proxy\fR, e.g., a local Privoxy instance listening on port 8118:
 .PP
 .EX
 .IP
-.B googler --proxy localhost:8118 google
+.B ddgr --proxy localhost:8118 hello world
 .EE
 .PP
 .IP "" 4
 By default the environment variable \fIhttps_proxy\fR is used, if defined.
-.IP 16. 4
-Quote multiple search keywords to auto-complete (using completion script):
-.PP
-.EX
-.IP
-.B googler 'hello w<TAB>
-.EE
+".IP 16. 4
+"Quote multiple search keywords to auto-complete (using completion script):
+".PP
+".EX
+".IP
+".B ddgr 'hello w<TAB>
+".EE
 .SH AUTHOR
 Arun Prakash Jana <engineerarun@gmail.com>
 .SH HOME

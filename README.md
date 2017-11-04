@@ -5,7 +5,7 @@ DuckDuckGo from the terminal
 GPLv3
 
 ## Current status
-The code is very nascent and based on [googler](https://github.com/jarun/googler). I have resumed the work after a year. Privacy is on demand.
+Several options are already in.
 
 To fire a search, run:
 
