@@ -2,6 +2,8 @@
 
 <p align="center">
 <a href="https://github.com/jarun/ddgr/releases/latest"><img src="https://img.shields.io/github/release/jarun/ddgr.svg?maxAge=600" alt="Latest release" /></a>
+<a href="https://aur.archlinux.org/packages/ddgr"><img src="https://img.shields.io/aur/version/ddgr.svg?maxAge=600" alt="AUR" /></a>
+<a href="https://launchpad.net/~twodopeshaggy/+archive/ubuntu/jarun/"><img src="https://img.shields.io/badge/ubuntu-PPA-blue.svg?maxAge=2592000" alt="Ubuntu PPA" /></a>
 <a href="https://github.com/jarun/ddgr/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-GPLv3-yellow.svg?maxAge=2592000" alt="License" /></a>
 <a href="https://travis-ci.org/jarun/ddgr"><img src="https://travis-ci.org/jarun/ddgr.svg?branch=master" alt="Build Status" /></a>
 </p>
@@ -20,6 +22,7 @@
 - [Features](#features)
 - [Installation](#installation)
     - [Dependencies](#dependencies)
+    - [From a package manager](#from-a-package-manager)
     - [Release packages](#release-packages)
     - [From source](#from-source)
     - [Running standalone](#running-standalone)
@@ -30,7 +33,7 @@
     - [Text-based browser integration](#text-based-browser-integration)
     - [Colors](#colors)
 - [Examples](#examples)
-- [Developers](#developers)
+- [Collaborators](#collaborators)
 
 ### Features
 
@@ -52,6 +55,11 @@
 #### Dependencies
 
 `ddgr` requires Python 3.3 or later. Only the latest patch release of each minor version is supported.
+
+#### From a package manager
+
+- [AUR](https://aur.archlinux.org/packages/ddgr/)
+- [Ubuntu PPA](https://launchpad.net/~twodopeshaggy/+archive/ubuntu/jarun/)
 
 #### Release packages
 
@@ -200,6 +208,10 @@ The color configuration is similar to that of [`googler` colors](https://github.
         $ ddgr -h
         $ man ddgr
 
-### Developers
+### Collaborators
+
+- [Arun Prakash Jana](https://github.com/jarun)
+- [Johnathan Jenkins](https://github.com/shaggytwodope)
+- [SZ Lin](https://github.com/szlin)
 
 Copyright © 2016-2017 [Arun Prakash Jana](https://github.com/jarun)
