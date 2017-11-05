@@ -196,14 +196,6 @@ DuckDuckGo \fBhello world\fR:
 .EE
 .PP
 .IP 2. 4
-Search for a \fBspecific file type\fR:
-.PP
-.EX
-.IP
-.B ddgr instrumental filetype:mp3
-.EE
-.PP
-.IP 3. 4
 \fBI'm Feeling Ducky\fR search:
 .PP
 .EX
@@ -211,7 +203,7 @@ Search for a \fBspecific file type\fR:
 .B ddgr -j lucky ducks
 .EE
 .PP
-.IP 4. 4
+.IP 3. 4
 \fBDuckDuckGo Bang\fR search 'hello world' in Wikipedia:
 .PP
 .EX
@@ -222,7 +214,7 @@ Search for a \fBspecific file type\fR:
 .IP "" 4
 Bangs work at the omniprompt too. To look up bangs, visit https://duckduckgo.com/bang?#bangs-list.
 .PP
-.IP 5. 4
+.IP 4. 4
 \fBWebsite specific\fR search:
 .PP
 .EX
@@ -232,6 +224,14 @@ Bangs work at the omniprompt too. To look up bangs, visit https://duckduckgo.com
 .PP
 .IP "" 4
 Site specific search continues at omniprompt.
+.EE
+.PP
+.IP 5. 4
+Search for a \fBspecific file type\fR:
+.PP
+.EX
+.IP
+.B ddgr instrumental filetype:mp3
 .EE
 .PP
 .IP 6. 4
@@ -298,25 +298,6 @@ Look up \fBn\fR, \fBp\fR, \fBo\fR, \fBO\fR, \fBq\fR, \fBd keywords\fR or a resul
 .EE
 .PP
 .IP 12. 4
-Input and output \fBredirection\fR:
-.PP
-.EX
-.IP
-.B ddgr -C hello world < input > output
-.EE
-.PP
-.IP "" 4
-Note that \fI-C\fR is required to avoid printing control characters (for colored output).
-.PP
-.IP 13. 4
-\fBPipe\fR output:
-.PP
-.EX
-.IP
-.B ddgr -C hello world | tee output
-.EE
-.PP
-.IP 14. 4
 Program \fBhelp\fR:
 .PP
 .EX

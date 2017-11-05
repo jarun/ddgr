@@ -1469,7 +1469,7 @@ def parse_args(args=None, namespace=None):
 
     colorstr_env = os.getenv('DDGR_COLORS')
 
-    argparser = DdgArgumentParser(description='DuckDuckGo from the command-line.')
+    argparser = DdgArgumentParser(description='DuckDuckGo from the terminal.')
     addarg = argparser.add_argument
     # addarg('-n', '--count', dest='num', type=argparser.positive_int, default=10, metavar='N', help='show N results (default 10)')
     addarg('-r', '--reg', dest='region', default='us-en', metavar='REG',
