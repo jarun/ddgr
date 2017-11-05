@@ -60,6 +60,7 @@
 
 - [AUR](https://aur.archlinux.org/packages/ddgr/)
 - [Ubuntu PPA](https://launchpad.net/~twodopeshaggy/+archive/ubuntu/jarun/)
+- [Void Linux](https://github.com/voidlinux/void-packages/tree/master/srcpkgs/ddgr) (`sudo xbps-install -S ddgr`)
 
 #### Release packages
 
