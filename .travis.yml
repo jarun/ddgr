@@ -1,0 +1,32 @@
+language: python
+python:
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+sudo: required
+services:
+  - docker
+dist: trusty
+before_install:
+  - "pip install --upgrade setuptools"
+  - "pip install --upgrade pip"
+script:
+  - make test
+before_deploy:
+  - sudo apt-get update -qy
+  - sudo apt-get install -qy python3 python3-pip
+  - python3 -m pip install packagecore
+  - packagecore -o dist/ "${TRAVIS_TAG#v}"
+deploy:
+  provider: releases
+  api_key:
+    secure: BgInyqrgGef0IZ6ABBm8cUGOtq+aghdnYdWvEftxqioqQVM+jq8u4mhEl2MlhKG5CrWnD/KXJdBSGI/SmJ1QNKrRELEiQxWJ2V85qz8I1iDRpQ9VdpDxvQszJvNdTEqCl/7JHTPnFP05Nfr+WFQmOYffh34qxmDHyqEF93uf1VyYpJeurvsRYBCAfakQxZOTbdl4M5xNHg2XYmHzemkSwHy9sTZR/kb9xO7CdcE5GcCpJ0QUuIUZasgRbQkrq6rjCFR+8RU0DFtAc7r8x3t5a2JCKLglIm7puUg28YkDvX/PxuWTdrZKLPg+kabWkSgtdQs11mvyEkcD5n2b+aV0x3jxamJPdEBLX1WINaNdn7EUO+2WSsopAbfKWpKGnZ7S6uVEHJ5m91VzP/r4tJrU4DmvIv733kjV3trVzFofPFn5hWX/GKc/FCfGIFMpyJh/d3L/zlKsRgeUaCwYtf0TxQFwZaVOobxHaPlLQVHdLLqrfnKHqRsIJDyW7iI/OyeFxPclBSvEemxwkhWjPgwrArlYG/gY38qLcyUTHGzo362feVjMzv3MSwoC6UZTiW/9IZgtfguu743oceDQx28DcuYrJZX96FFPob+Ut4kD27qCSK6QnuzDpnTofIom5FtKrSsScfPdbk5HABmjkn/MMSW5wgFLmssXpza3XRrsRRg=
+  file_glob: true
+  file:
+    - dist/*
+  skip_cleanup: true
+  on:
+    tags: true
+    repo: jarun/ddgr
+    python: "3.6"

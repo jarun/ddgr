@@ -1,0 +1,42 @@
+name: ddgr
+maintainer: Arun Prakash Jana <engineerarun@gmail.com>
+license: GPLv3
+summary: DuckDuckGo from the terminal.
+homepage: https://github.com/jarun/ddgr
+commands:
+  install:
+    - make PREFIX="/usr" install DESTDIR="${BP_DESTDIR}"
+packages:
+  archlinux:
+    builddeps:
+      - make
+    deps:
+      - python
+  fedora26:
+    builddeps:
+      - make
+    deps:
+      - python3
+  centos7.3:
+    builddeps:
+      - make
+    deps:
+      - python
+    commands:
+      pre:
+        - yum install epel-release
+  ubuntu16.04:
+    builddeps:
+      - make
+    deps:
+      - python3
+  ubuntu17.10:
+    builddeps:
+      - make
+    deps:
+      - python3
+  debian9:
+    builddeps:
+      - make
+    deps:
+      - python3

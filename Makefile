@@ -21,3 +21,5 @@ uninstall:
 	rm -f $(BINDIR)/ddgr
 	rm -f $(MANDIR)/ddgr.1.gz
 	rm -rf $(DOCDIR)
+
+test: ;
