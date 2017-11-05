@@ -22,9 +22,10 @@ _ddgr () {
         --unsafe
         --noua
         --json
+        --gb --gui-browser
+        --np --noprompt
         --url-handler
         --show-browser-logs
-        --np --noprompt
         -v --version
         -d --debug
     )

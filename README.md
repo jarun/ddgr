@@ -95,8 +95,8 @@ Search keyword and option completion scripts for Bash, Fish and Zsh can be found
 
 ```
 usage: ddgr [-h] [-r REG] [-C] [--colors COLORS] [-j] [-w SITE] [-x]
-            [-p PROXY] [--unsafe] [--noua] [--json] [--url-handler UTIL]
-            [--show-browser-logs] [--np] [-v] [-d]
+            [-p PROXY] [--unsafe] [--noua] [--json] [--gb] [--np]
+            [--url-handler UTIL] [--show-browser-logs] [-v] [-d]
             [KEYWORD [KEYWORD ...]]
 
 DuckDuckGo from the terminal.
@@ -119,9 +119,10 @@ optional arguments:
   --unsafe              disable safe search
   --noua                disable user agent
   --json                output in JSON format; implies --np
+  --gb, --gui-browser   open a bang directly in gui browser
+  --np, --noprompt      perform search and exit, do not prompt
   --url-handler UTIL    custom script or cli utility to open results
   --show-browser-logs   do not suppress browser output (stdout and stderr)
-  --np, --noprompt      perform search and exit, do not prompt
   -v, --version         show program's version number and exit
   -d, --debug           enable debugging
 
@@ -173,40 +174,40 @@ The color configuration is similar to that of [`googler` colors](https://github.
 
        $ ddgr !w hello world
     Bangs work at the omniprompt too. To look up bangs, visit https://duck‐duckgo.com/bang?#bangs-list.
-4. **Website specific** search:
+4. **Bang alias** to fire from the cmdline, open results in a GUI browser and exit:
+
+       alias bang='ddgr --gb --np'
+       $ bang !w hello world
+5. **Website specific** search:
 
        $ ddgr -w amazon.com digital camera
     Site specific search continues at omniprompt.
-5. Search for a **specific file type**:
+6. Search for a **specific file type**:
 
        $ ddgr instrumental filetype:mp3
-6. Fetch results on IPL cricket from **India** in **English**:
+7. Fetch results on IPL cricket from **India** in **English**:
 
        $ ddgr -r in-en IPL cricket
     To find your region parameter token visit https://duckduckgo.com/params.
-7. Search **quoted text**:
+8. Search **quoted text**:
 
        $ ddgr it\'s a \"beautiful world\" in spring
-8. Show **complete urls** in search results (instead of only domain name):
+9. Show **complete urls** in search results (instead of only domain name):
 
        $ ddgr -x ddgr
-9. Use a **custom color scheme**, e.g., one warm color scheme designed for Solarized Dark:
+10. Use a **custom color scheme**, e.g., one warm color scheme designed for Solarized Dark:
 
-       $ ddgr --colors bjdxxy hello world
-       $ DDGR_COLORS=bjdxxy ddgr hello world
-10. Tunnel traffic through an **HTTPS proxy**, e.g., a local Privoxy instance listening on port 8118:
+        $ ddgr --colors bjdxxy hello world
+        $ DDGR_COLORS=bjdxxy ddgr hello world
+11. Tunnel traffic through an **HTTPS proxy**, e.g., a local Privoxy instance listening on port 8118:
 
         $ ddgr --proxy localhost:8118 hello world
     By default the environment variable `https_proxy` (or `HTTPS_PROXY`) is used, if defined.
-11. Look up `n`, `p`, `o`, `O`, `q`, `d keywords` or a result index at the **omniprompt**: as the omniprompt recognizes these keys or index strings as commands, you need to prefix them with `d`, e.g.,
+12. Look up `n`, `p`, `o`, `O`, `q`, `d keywords` or a result index at the **omniprompt**: as the omniprompt recognizes these keys or index strings as commands, you need to prefix them with `d`, e.g.,
 
         d n
         d g keywords
         d 1
-12. More **help**:
-
-        $ ddgr -h
-        $ man ddgr
 
 ### Collaborators
 

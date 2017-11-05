@@ -56,14 +56,17 @@ Disable user agent. Results are fetched faster.
 .BI "--json"
 Output in JSON format; implies \fB--noprompt\fR.
 .TP
+.BI "--gb, --gui-browser"
+Open a bang directly in a GUI browser.
+.TP
+.BI "--np, --noprompt"
+Perform search and exit; do not prompt for further interactions.
+.TP
 .BI "--url-handler=" UTIL
 Custom script or command-line utility to open urls with.
 .TP
 .BI "--show-browser-logs"
 Do not suppress browser output when opening result in browser; that is, connect stdout and stderr of the browser to ddgr's stdout and stderr instead of /dev/null. By default, browser output is suppressed (due to certain graphical browsers spewing messages to console) unless the \fBBROWSER\fR environment variable is a known text-based browser: elinks, links, lynx, w3m or www-browser.
-.TP
-.BI "--np, --noprompt"
-Perform search and exit; do not prompt for further interactions.
 .TP
 .BI "-v, --version"
 Show version number and exit.
@@ -215,6 +218,16 @@ DuckDuckGo \fBhello world\fR:
 Bangs work at the omniprompt too. To look up bangs, visit https://duckduckgo.com/bang?#bangs-list.
 .PP
 .IP 4. 4
+\fBBang alias\fR to fire from the cmdline, open results in a GUI browser and exit:
+.PP
+.EX
+.IP
+.B alias bang='ddgr --gb --np'
+.IP
+.B bang !w hello world
+.EE
+.PP
+.IP 5. 4
 \fBWebsite specific\fR search:
 .PP
 .EX
@@ -226,7 +239,7 @@ Bangs work at the omniprompt too. To look up bangs, visit https://duckduckgo.com
 Site specific search continues at omniprompt.
 .EE
 .PP
-.IP 5. 4
+.IP 6. 4
 Search for a \fBspecific file type\fR:
 .PP
 .EX
@@ -234,7 +247,7 @@ Search for a \fBspecific file type\fR:
 .B ddgr instrumental filetype:mp3
 .EE
 .PP
-.IP 6. 4
+.IP 7. 4
 Fetch results on IPL cricket from \fBIndia\fR in \fBEnglish\fR:
 .PP
 .EX
@@ -245,7 +258,7 @@ Fetch results on IPL cricket from \fBIndia\fR in \fBEnglish\fR:
 .IP "" 4
 To find your region parameter token visit https://duckduckgo.com/params.
 .PP
-.IP 7. 4
+.IP 8. 4
 Search \fBquoted text\fR:
 .PP
 .EX
@@ -253,7 +266,7 @@ Search \fBquoted text\fR:
 .B ddgr it\(rs's a \(rs\(dqbeautiful world\(rs\(dq in spring
 .EE
 .PP
-.IP 8. 4
+.IP 9. 4
 Show \fBcomplete urls\fR in search results (instead of only domain name):
 .PP
 .EX
@@ -261,7 +274,7 @@ Show \fBcomplete urls\fR in search results (instead of only domain name):
 .B ddgr -x ddgr
 .EE
 .PP
-.IP 9. 4
+.IP 10. 4
 Use a \fBcustom color scheme\fR, e.g., one warm color scheme designed for Solarized Dark:
 .PP
 .EX
@@ -271,7 +284,7 @@ Use a \fBcustom color scheme\fR, e.g., one warm color scheme designed for Solari
 .B DDGR_COLORS=bjdxxy ddgr hello world
 .EE
 .PP
-.IP 10. 4
+.IP 11. 4
 Tunnel traffic through an \fBHTTPS proxy\fR, e.g., a local Privoxy instance listening on port 8118:
 .PP
 .EX
@@ -283,7 +296,7 @@ Tunnel traffic through an \fBHTTPS proxy\fR, e.g., a local Privoxy instance list
 By default the environment variable \fIhttps_proxy\fR (or \fIHTTPS_PROXY\fR) is used, if defined.
 .EE
 .PP
-.IP 11. 4
+.IP 12. 4
 Look up \fBn\fR, \fBp\fR, \fBo\fR, \fBO\fR, \fBq\fR, \fBd keywords\fR or a result index at the \fBomniprompt\fR: as the omniprompt recognizes these keys or index strings as commands, you need to prefix them with \fBd\fR, e.g.,
 .PP
 .EX
@@ -295,14 +308,6 @@ Look up \fBn\fR, \fBp\fR, \fBo\fR, \fBO\fR, \fBq\fR, \fBd keywords\fR or a resul
 .IP
 .B d 1
 .PD
-.EE
-.PP
-.IP 12. 4
-Program \fBhelp\fR:
-.PP
-.EX
-.IP
-.B ddgr -h
 .EE
 .SH AUTHOR
 Arun Prakash Jana <engineerarun@gmail.com>

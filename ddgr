@@ -1484,9 +1484,10 @@ def parse_args(args=None, namespace=None):
     addarg('--unsafe', action='store_true', help='disable safe search')
     addarg('--noua', action='store_true', help='disable user agent')
     addarg('--json', action='store_true', help='output in JSON format; implies --np')
+    addarg('--gb', '--gui-browser', dest='gui_browser', action='store_true', help='open a bang directly in gui browser')
+    addarg('--np', '--noprompt', dest='noninteractive', action='store_true', help='perform search and exit, do not prompt')
     addarg('--url-handler', metavar='UTIL', help='custom script or cli utility to open results')
     addarg('--show-browser-logs', action='store_true', help='do not suppress browser output (stdout and stderr)')
-    addarg('--np', '--noprompt', dest='noninteractive', action='store_true', help='perform search and exit, do not prompt')
     addarg('-v', '--version', action='version', version=_VERSION_)
     addarg('-d', '--debug', action='store_true', help='enable debugging')
     addarg('keywords', nargs='*', metavar='KEYWORD', help='search keywords')
@@ -1528,8 +1529,11 @@ def main():
     if opts.url_handler is not None:
         open_url.url_handler = opts.url_handler
     else:
-        # Set text browser override to False
-        open_url.override_text_browser = False
+        if opts.gui_browser:
+            open_url.override_text_browser = True
+        else:
+            # Initialize text browser override to False
+            open_url.override_text_browser = False
 
         # Handle browser output suppression
         if opts.show_browser_logs or (os.getenv('BROWSER') in text_browsers):
@@ -1545,14 +1549,19 @@ def main():
 
         if opts.json or opts.ducky or opts.noninteractive:
             # Non-interactive mode
-            repl.fetch()
-            if opts.ducky:
-                if repl.results:
-                    open_url(repl.results[0].url)
-                else:
-                    print('No results.', file=sys.stderr)
+            if repl.keywords and repl.keywords[0][0] == '!':
+                # Handle bangs
+                open_url(repl._ddg_url.full())
             else:
-                repl.display_results(prelude='', json_output=opts.json)
+                repl.fetch()
+                if opts.ducky:
+                    if repl.results:
+                        open_url(repl.results[0].url)
+                    else:
+                        print('No results.', file=sys.stderr)
+                else:
+                    repl.display_results(prelude='', json_output=opts.json)
+
             sys.exit(0)
         else:
             # Interactive mode
