@@ -240,8 +240,15 @@ class DdgUrl(object):
         str
 
         """
+        q = ''
+        if self._keywords:
+            if isinstance(self._keywords, list):
+                q += '+'.join([kw for kw in self._keywords])
+            else:
+                q += self._keywords
+
         url = (self.scheme + ':') if self.scheme else ''
-        url += '//' + self.netloc + self.relative()
+        url += '//' + self.netloc + '/?q=' + q
         return url
 
     def update(self, opts=None, **kwargs):
@@ -1209,7 +1216,7 @@ class DdgCmd(object):
         self._ddg_url = DdgUrl(self._opts)
         # If there is a Bang, let DuckDuckGo do the work
         if arg[0] == '!':
-            webbrowser.open(self._ddg_url.full())
+            open_url(self._ddg_url.full())
         else:
             self.fetch_and_display()
 
@@ -1269,7 +1276,10 @@ class DdgCmd(object):
     def cmdloop(self):
         """Run REPL."""
         if self.keywords:
-            self.fetch_and_display()
+            if self.keywords[0][0] == '!':
+                open_url(self._ddg_url.full())
+            else:
+                self.fetch_and_display()
         else:
             printerr('Please initiate a query.')
 
