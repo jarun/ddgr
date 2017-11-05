@@ -45,7 +45,7 @@ Search a site using DuckDuckGo.
 Expand URLs instead of showing only the domain name (default).
 .TP
 .BI "-p, --proxy=" PROXY
-Tunnel traffic through an HTTP proxy. \fIPROXY\fR is of the form \fI[http[s]://][user:pwd@]host[:port]\fR. The proxy server must support HTTP CONNECT tunneling and must not block port 443 for the relevant DuckDuckGo hosts. If a proxy is not explicitly given, the \fIhttps_proxy\fR environment variable (if available) is used instead.
+Tunnel traffic through an HTTP proxy. \fIPROXY\fR is of the form \fI[http[s]://][user:pwd@]host[:port]\fR. The proxy server must support HTTP CONNECT tunneling and must not block port 443 for the relevant DuckDuckGo hosts. If a proxy is not explicitly given, the \fIhttps_proxy\fR or \fIHTTPS_PROXY\fR environment variable (if available) is used instead.
 .TP
 .BI "--unsafe"
 Disable safe search.
@@ -183,7 +183,7 @@ Overrides the default browser. Ref:
 .BI DDGR_COLORS
 Refer to the \fBCOLORS\fR section.
 .TP
-.BI https_proxy
+.BI "HTTPS_PROXY, https_proxy"
 Refer to the \fB--proxy\fR option.
 .SH EXAMPLES
 .PP
@@ -196,22 +196,6 @@ DuckDuckGo \fBhello world\fR:
 .EE
 .PP
 .IP 2. 4
-Fetch results on IPL cricket from \fBIndia\fR in \fBEnglish\fR:
-.PP
-.EX
-.IP
-.B ddgr -r in-en IPL cricket
-.EE
-.PP
-.IP 3. 4
-Search \fBquoted text\fR:
-.PP
-.EX
-.IP
-.B ddgr it\(rs's a \(rs\(dqbeautiful world\(rs\(dq in spring
-.EE
-.PP
-.IP 4. 4
 Search for a \fBspecific file type\fR:
 .PP
 .EX
@@ -219,15 +203,7 @@ Search for a \fBspecific file type\fR:
 .B ddgr instrumental filetype:mp3
 .EE
 .PP
-.IP 5. 4
-Show \fBcomplete urls\fR in search results (instead of only domain name):
-.PP
-.EX
-.IP
-.B ddgr -x ddgr
-.EE
-.PP
-.IP 6. 4
+.IP 3. 4
 \fBI'm Feeling Ducky\fR search:
 .PP
 .EX
@@ -235,7 +211,18 @@ Show \fBcomplete urls\fR in search results (instead of only domain name):
 .B ddgr -j lucky ducks
 .EE
 .PP
-.IP 7. 4
+.IP 4. 4
+\fBDuckDuckGo Bang\fR search 'hello world' in Wikipedia:
+.PP
+.EX
+.IP
+.B ddgr !w hello world
+.EE
+.PP
+.IP "" 4
+Bangs work at the omniprompt too. To look up bangs, visit https://duckduckgo.com/bang?#bangs-list.
+.PP
+.IP 5. 4
 \fBWebsite specific\fR search:
 .PP
 .EX
@@ -247,7 +234,56 @@ Show \fBcomplete urls\fR in search results (instead of only domain name):
 Site specific search continues at omniprompt.
 .EE
 .PP
+.IP 6. 4
+Fetch results on IPL cricket from \fBIndia\fR in \fBEnglish\fR:
+.PP
+.EX
+.IP
+.B ddgr -r in-en IPL cricket
+.EE
+.PP
+.IP "" 4
+To find your region parameter token visit https://duckduckgo.com/params.
+.PP
+.IP 7. 4
+Search \fBquoted text\fR:
+.PP
+.EX
+.IP
+.B ddgr it\(rs's a \(rs\(dqbeautiful world\(rs\(dq in spring
+.EE
+.PP
 .IP 8. 4
+Show \fBcomplete urls\fR in search results (instead of only domain name):
+.PP
+.EX
+.IP
+.B ddgr -x ddgr
+.EE
+.PP
+.IP 9. 4
+Use a \fBcustom color scheme\fR, e.g., one warm color scheme designed for Solarized Dark:
+.PP
+.EX
+.IP
+.B ddgr --colors bjdxxy hello world
+.IP
+.B DDGR_COLORS=bjdxxy ddgr hello world
+.EE
+.PP
+.IP 10. 4
+Tunnel traffic through an \fBHTTPS proxy\fR, e.g., a local Privoxy instance listening on port 8118:
+.PP
+.EX
+.IP
+.B ddgr --proxy localhost:8118 hello world
+.EE
+.PP
+.IP "" 4
+By default the environment variable \fIhttps_proxy\fR (or \fIHTTPS_PROXY\fR) is used, if defined.
+.EE
+.PP
+.IP 11. 4
 Look up \fBn\fR, \fBp\fR, \fBo\fR, \fBO\fR, \fBq\fR, \fBd keywords\fR or a result index at the \fBomniprompt\fR: as the omniprompt recognizes these keys or index strings as commands, you need to prefix them with \fBd\fR, e.g.,
 .PP
 .EX
@@ -261,7 +297,7 @@ Look up \fBn\fR, \fBp\fR, \fBo\fR, \fBO\fR, \fBq\fR, \fBd keywords\fR or a resul
 .PD
 .EE
 .PP
-.IP 9. 4
+.IP 12. 4
 Input and output \fBredirection\fR:
 .PP
 .EX
@@ -271,32 +307,21 @@ Input and output \fBredirection\fR:
 .PP
 .IP "" 4
 Note that \fI-C\fR is required to avoid printing control characters (for colored output).
-.IP 10. 4
+.PP
+.IP 13. 4
 \fBPipe\fR output:
 .PP
 .EX
 .IP
 .B ddgr -C hello world | tee output
 .EE
-.IP 11. 4
-Use a \fBcustom color scheme\fR, e.g., one warm color scheme designed for Solarized Dark:
+.PP
+.IP 14. 4
+Program \fBhelp\fR:
 .PP
 .EX
 .IP
-.B ddgr --colors bjdxxy hello world
-.IP
-.B DDGR_COLORS=bjdxxy ddgr hello world
-.EE
-.IP 12. 4
-Tunnel traffic through an \fBHTTPS proxy\fR, e.g., a local Privoxy instance listening on port 8118:
-.PP
-.EX
-.IP
-.B ddgr --proxy localhost:8118 hello world
-.EE
-.PP
-.IP "" 4
-By default the environment variable \fIhttps_proxy\fR is used, if defined.
+.B ddgr -h
 .EE
 .SH AUTHOR
 Arun Prakash Jana <engineerarun@gmail.com>
