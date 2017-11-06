@@ -504,7 +504,7 @@ class DdgConnection(object):
                                           },
                                   data={
                                         'q': dic['q'],  # The query string
-                                        's': str(page * (50 * (page - 1) + 30)),  # Page index
+                                        's': str(50 * (page - 1) + 30),  # Page index
                                         'nextParams': '',
                                         'v': 'l',
                                         'o': 'json',
