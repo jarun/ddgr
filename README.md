@@ -215,5 +215,6 @@ The color configuration is similar to that of [`googler` colors](https://github.
 - [Arun Prakash Jana](https://github.com/jarun)
 - [Johnathan Jenkins](https://github.com/shaggytwodope)
 - [SZ Lin](https://github.com/szlin)
+- [Alex Gontar](https://github.com/mosegontar)
 
-Copyright © 2016-2017 [Arun Prakash Jana](https://github.com/jarun)
+Copyright © 2016-2017 [Arun Prakash Jana](mailto:engineerarun@gmail.com)
