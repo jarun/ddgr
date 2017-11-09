@@ -190,6 +190,7 @@ class DdgUrl(object):
         # self.query is a calculated property
         self.fragment = ''
 
+        self._duration = ''  # duration as day, week, month or unlimited
         self._region = ''  # Region code
         self._qrycnt = 0  # Number of search results fetched in most recent query
         self._curindex = 1  # Index of total results in pages fetched so far + 1
@@ -281,6 +282,7 @@ class DdgUrl(object):
 
         if 'keywords' in opts:
             self._keywords = opts['keywords']
+        self._duration = opts['duration']
         if 'region' in opts:
             self._region = opts['region']
         if 'num' in opts:
@@ -375,6 +377,7 @@ class DdgUrl(object):
         """The query string."""
         qd = {}
         qd.update(self._query_dict)
+        qd['duration'] = self._duration
         qd['region'] = self._region
         qd['curindex'] = self._curindex
         qd['page'] = self._page
@@ -487,6 +490,7 @@ class DdgConnection(object):
                                   data={
                                         'q': dic['q'],
                                         'b': '',
+                                        'df': dic['duration'],
                                         'kf': '-1',
                                         'kh': '1',
                                         'kl': dic['region'],
@@ -509,6 +513,7 @@ class DdgConnection(object):
                                         'v': 'l',
                                         'o': 'json',
                                         'dc': str(dic['curindex']),  # Start from total fetched result index
+                                        'df': dic['duration'],
                                         'api': '/d.js',
                                         'kf': '-1',  # Disable favicons
                                         'kh': '1',  # HTTPS always ON
@@ -1478,6 +1483,8 @@ def parse_args(args=None, namespace=None):
     addarg('--colors', dest='colorstr', type=argparser.is_colorstr, default=colorstr_env if colorstr_env else 'oCdgxy', metavar='COLORS',
            help='set output colors (see man page for details)')
     addarg('-j', '--ducky', action='store_true', help='open the first result in a web browser; implies --np')
+    addarg('-t', '--time', dest='duration', metavar='DURATION', default='', choices=('d', 'w', 'm'), help='time limit search '
+           '[d (1 day), w (1 week), m (1 month)]')
     addarg('-w', '--site', dest='sites', action='append', metavar='SITE', help='search sites using DuckDuckGo')
     addarg('-x', '--expand', action='store_true', help='Show complete url in search results')
     addarg('-p', '--proxy', help='tunnel traffic through an HTTPS proxy in the form [http[s]://][user:pwd@]host[:port]')

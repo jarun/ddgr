@@ -44,7 +44,7 @@
 - Open the first result directly in browser (as in I'm Feeling Ducky)
 - Non-stop searches: fire new searches at omniprompt without exiting
 - Keywords (e.g. `filetype:mime`, `site:somesite.com`) support
-- Specify region, disable safe search
+- Limit search by time, specify region, disable safe search
 - HTTPS proxy support, Do Not Track set, optionally disable User Agent
 - Support custom url handler script or cmdline utility
 - Comprehensive documentation, man page with handy usage examples
@@ -95,8 +95,8 @@ Search keyword and option completion scripts for Bash, Fish and Zsh can be found
 #### Cmdline options
 
 ```
-usage: ddgr [-h] [-r REG] [-C] [--colors COLORS] [-j] [-w SITE] [-x]
-            [-p PROXY] [--unsafe] [--noua] [--json] [--gb] [--np]
+usage: ddgr [-h] [-r REG] [-C] [--colors COLORS] [-j] [-t DURATION] [-w SITE]
+            [-x] [-p PROXY] [--unsafe] [--noua] [--json] [--gb] [--np]
             [--url-handler UTIL] [--show-browser-logs] [-v] [-d]
             [KEYWORD [KEYWORD ...]]
 
@@ -112,6 +112,8 @@ optional arguments:
   -C, --nocolor         disable color output
   --colors COLORS       set output colors (see man page for details)
   -j, --ducky           open the first result in a web browser; implies --np
+  -t DURATION, --time DURATION
+                        time limit search [d (1 day), w (1 week), m (1 month)]
   -w SITE, --site SITE  search sites using DuckDuckGo
   -x, --expand          Show complete url in search results
   -p PROXY, --proxy PROXY

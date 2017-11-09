@@ -16,7 +16,7 @@ is a command-line tool to search DuckDuckGo from the terminal. \fBddgr\fR shows 
   * Open the first result directly in browser (as in I'm Feeling Ducky)
   * Non-stop searches: fire new searches at omniprompt without exiting
   * Keywords (e.g. \fIfiletype:mime\fR, \fIsite:somesite.com\fR) support
-  * Specify region, disable safe search
+  * Limit search by time, specify region, disable safe search
   * HTTPS proxy support, Do Not Track set, optionally disable User Agent
   * Support custom url handler script or cmdline utility
   * Comprehensive documentation, man page with handy usage examples
@@ -29,14 +29,17 @@ Show help text and exit.
 .BI "-r, --reg=" REG
 Region-specific search e.g. 'us-en' for US (default); visit https://duckduckgo.com/params.
 .TP
-.B "-C, --nocolor"
+.BI "-C, --nocolor"
 Disable color output.
 .TP
 .BI "--colors=" COLORS
 Set output colors. Refer to the \fBCOLORS\fR section below for details.
 .TP
-.B "-j, --ducky"
+.BI "-j, --ducky"
 Open the first result in a web browser; implies \fB--noprompt\fR. Feeling Ducky?
+.TP
+.BI "-t, --time=" DURATION
+Time limit search [d=past day, w=past week, m=past month] (default=any time).
 .TP
 .BI "-w, --site=" SITE
 Search a site using DuckDuckGo.
