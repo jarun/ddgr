@@ -16,6 +16,7 @@ _ddgr () {
         -C --nocolor
         --colors
         -j --ducky
+        -t --time
         -w --site
         -x --expand
         -p --proxy
@@ -32,6 +33,7 @@ _ddgr () {
     opts_with_arg=(
         -r --reg
         --colors
+        -t --time
         -w --site
         -p --proxy
         --url-handler
