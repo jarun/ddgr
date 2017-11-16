@@ -1087,7 +1087,7 @@ class DdgCmd(object):
 
     def __init__(self, opts):
         super().__init__()
-
+        self.index =0
         self._opts = opts
 
         self._ddg_url = DdgUrl(opts)
@@ -1138,8 +1138,11 @@ class DdgCmd(object):
 
         parser = DdgParser()
         parser.feed(page.text)
+        if self.options.pagination:
+            self.results.extend(parser.results)
+        else:
+            self.results = parser.results
 
-        self.results = parser.results
         self._ddg_url._nextParams_prev = parser.nextParams_prevbtn
         self._ddg_url._nextParams_next = parser.nextParams_nextbtn
         logdbg('Prev nextParams: %s', self._ddg_url._nextParams_prev)
@@ -1150,7 +1153,7 @@ class DdgCmd(object):
         for r in self.results:
             self._urltable.update(r.urltable())
 
-        self._ddg_url.update_num(len(self.results))
+        self._ddg_url.update_num(len(parser.results))
 
     @require_keywords
     def display_results(self, prelude='\n', json_output=False):
@@ -1172,8 +1175,19 @@ class DdgCmd(object):
                 print('No results.', file=sys.stderr)
             else:
                 sys.stderr.write(prelude)
-                for r in self.results:
-                    r.print()
+                pag = self.options.pagination
+
+                if pag:
+                    for r in self.results[self.index:self.index+pag]:
+                        r.print()
+
+                    if self.index + pag > len(self.results):
+                        self.index = len(self.results)
+                    else:
+                        self.index += pag
+                else:
+                    for r in self.results:
+                        r.print()
 
     @require_keywords
     def fetch_and_display(self, prelude='\n', json_output=False):
@@ -1254,6 +1268,7 @@ class DdgCmd(object):
         self.fetch_and_display()
 
     def do_ddg(self, arg):
+        self.__init__(self._opts)
         # Update keywords and reconstruct URL
         self._opts.keywords = arg
         self._ddg_url = DdgUrl(self._opts)
@@ -1269,6 +1284,8 @@ class DdgCmd(object):
         # If no results were fetched last time, we have hit the last page already
         if self._ddg_url._qrycnt == 0:
             print('No results.', file=sys.stderr)
+        elif self.options.pagination and self.index < len(self.results):
+            self.display_results()
         else:
             self._ddg_url.next_page()
             self.fetch_and_display()
@@ -1308,6 +1325,12 @@ class DdgCmd(object):
     @require_keywords
     @no_argument
     def do_previous(self):
+        if self.options.pagination:
+            self.index -= (self.options.pagination * 2)
+            if self.index >= 0:
+                self.display_results()
+                return
+
         try:
             self._ddg_url.prev_page()
         except ValueError as e:
@@ -1525,6 +1548,7 @@ def parse_args(args=None, namespace=None):
            '[d (1 day), w (1 week), m (1 month)]')
     addarg('-w', '--site', dest='sites', action='append', metavar='SITE', help='search sites using DuckDuckGo')
     addarg('-x', '--expand', action='store_true', help='Show complete url in search results')
+    addarg('-n', '--num', dest='pagination', type=int)
     addarg('-p', '--proxy', help='tunnel traffic through an HTTPS proxy in the form [http[s]://][user:pwd@]host[:port]')
     addarg('--unsafe', action='store_true', help='disable safe search')
     addarg('--noua', action='store_true', help='disable user agent')
