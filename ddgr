@@ -1254,6 +1254,11 @@ class DdgCmd(object):
     @require_keywords
     @no_argument
     def do_first(self):
+        if self.options.pagination:
+            self.index = 0
+            self.display_results()
+            return
+
         try:
             self._ddg_url.first_page()
         except ValueError as e:
