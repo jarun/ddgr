@@ -1164,10 +1164,16 @@ class DdgCmd(object):
         See `fetch_and_display`.
 
         """
+
+        if self.options.pagination:
+            results = self.results[self.index:self.index+self.options.pagination]
+        else:
+            results = self.results
+
         if json_output:
             # JSON output
             import json
-            results_object = [r.jsonizable_object() for r in self.results]
+            results_object = [r.jsonizable_object() for r in results]
             print(json.dumps(results_object, indent=2, sort_keys=True, ensure_ascii=False))
         else:
             # Regular output
@@ -1175,14 +1181,8 @@ class DdgCmd(object):
                 print('No results.', file=sys.stderr)
             else:
                 sys.stderr.write(prelude)
-
-                pag = self.options.pagination
-                if pag:
-                    for r in self.results[self.index:self.index+pag]:
-                        r.print()
-                else:
-                    for r in self.results:
-                        r.print()
+                for r in results:
+                    r.print()
 
     @require_keywords
     def fetch_and_display(self, prelude='\n', json_output=False):
