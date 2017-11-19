@@ -1263,7 +1263,9 @@ class DdgCmd(object):
         self.fetch_and_display()
 
     def do_ddg(self, arg):
-        self.__init__(self._opts)
+        if self.options.pagination:
+            self.index = 0
+            self.results = []
         # Update keywords and reconstruct URL
         self._opts.keywords = arg
         self._ddg_url = DdgUrl(self._opts)
