@@ -1332,6 +1332,8 @@ class DdgCmd(object):
             if self.index >= 0:
                 self.display_results()
             else:
+                # Set index to negative the pagination value, so that
+                # if do_next is called, index will begin at 0.
                 self.index = -self.options.pagination
                 print("Already at the earliest results", file=sys.stderr)
             return
