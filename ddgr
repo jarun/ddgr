@@ -1087,7 +1087,7 @@ class DdgCmd(object):
 
     def __init__(self, opts):
         super().__init__()
-        self.index =0
+        self.index = 0
         self._opts = opts
 
         self._ddg_url = DdgUrl(opts)
@@ -1171,20 +1171,15 @@ class DdgCmd(object):
             print(json.dumps(results_object, indent=2, sort_keys=True, ensure_ascii=False))
         else:
             # Regular output
-            if not self.results:
+            if not self.results or self.index > len(self.results):
                 print('No results.', file=sys.stderr)
             else:
                 sys.stderr.write(prelude)
-                pag = self.options.pagination
 
+                pag = self.options.pagination
                 if pag:
                     for r in self.results[self.index:self.index+pag]:
                         r.print()
-
-                    if self.index + pag > len(self.results):
-                        self.index = len(self.results)
-                    else:
-                        self.index += pag
                 else:
                     for r in self.results:
                         r.print()
@@ -1282,10 +1277,15 @@ class DdgCmd(object):
     @no_argument
     def do_next(self):
         # If no results were fetched last time, we have hit the last page already
-        if self._ddg_url._qrycnt == 0:
+        if self._ddg_url._qrycnt == 0 and self.index >= len(self.results):
             print('No results.', file=sys.stderr)
-        elif self.options.pagination and self.index < len(self.results):
-            self.display_results()
+        elif self.options.pagination:
+            self.index += self.options.pagination
+            if len(self.results) - self.index < self.options.pagination:
+                self._ddg_url.next_page()
+                self.fetch_and_display()
+            else:
+                self.display_results()
         else:
             self._ddg_url.next_page()
             self.fetch_and_display()
@@ -1326,10 +1326,13 @@ class DdgCmd(object):
     @no_argument
     def do_previous(self):
         if self.options.pagination:
-            self.index -= (self.options.pagination * 2)
+            self.index -= self.options.pagination
             if self.index >= 0:
                 self.display_results()
-                return
+            else:
+                self.index = -self.options.pagination
+                print("Already at the earliest results", file=sys.stderr)
+            return
 
         try:
             self._ddg_url.prev_page()
