@@ -8,7 +8,7 @@
 <a href="https://travis-ci.org/jarun/ddgr"><img src="https://travis-ci.org/jarun/ddgr.svg?branch=master" alt="Build Status" /></a>
 </p>
 
-`ddgr` is a cmdline utility to search DuckDuckGo from the terminal. While [`googler`](https://github.com/jarun/googler) is highly popular among cmdline users, in many forums the need for a similar utility for privacy-aware DuckDuckGo came up. [DuckDuckGo Bangs](https://duckduckgo.com/bang) are super-cool too! So here's `ddgr` for you!
+`ddgr` is a cmdline utility to search DuckDuckGo from the terminal. While [`googler`](https://github.com/jarun/googler) is highly popular among cmdline users, in many forums the need of a similar utility for privacy-aware DuckDuckGo came up. [DuckDuckGo Bangs](https://duckduckgo.com/bang) are super-cool too! So here's `ddgr` for you!
 
 `ddgr` isn't affiliated to DuckDuckGo in any way.
 
