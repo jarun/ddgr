@@ -989,9 +989,10 @@ class Result(object):
         if colors:
             print(colors.reset, end='')
 
-    def print(self):
+    def print(self, display_index):
         """Print the result entry."""
-        self._print_title_and_url(self.index, self.title, self.url)
+
+        self._print_title_and_url(display_index, self.title, self.url)
         self._print_metadata_and_abstract(self.abstract, metadata=self.metadata)
 
     def jsonizable_object(self):
@@ -1138,20 +1139,24 @@ class DdgCmd(object):
 
         parser = DdgParser()
         parser.feed(page.text)
+
         if self.options.pagination:
             self.results.extend(parser.results)
+            offset = len(self._urltable)
+            for r in self.results:
+                for k, v in r.urltable().items():
+                    i = str(int(k) + offset)
+                    self._urltable.update({i: v})
         else:
+            self._urltable = {}
             self.results = parser.results
+            for r in self.results:
+                self._urltable.update(r.urltable())
 
         self._ddg_url._nextParams_prev = parser.nextParams_prevbtn
         self._ddg_url._nextParams_next = parser.nextParams_nextbtn
         logdbg('Prev nextParams: %s', self._ddg_url._nextParams_prev)
         logdbg('Next nextParams: %s', self._ddg_url._nextParams_next)
-
-        self._urltable = {}
-
-        for r in self.results:
-            self._urltable.update(r.urltable())
 
         self._ddg_url.update_num(len(parser.results))
 
@@ -1181,8 +1186,8 @@ class DdgCmd(object):
                 print('No results.', file=sys.stderr)
             else:
                 sys.stderr.write(prelude)
-                for r in results:
-                    r.print()
+                for i, r in enumerate(results):
+                    r.print(str(i+1))
 
     @require_keywords
     def fetch_and_display(self, prelude='\n', json_output=False):
@@ -1308,10 +1313,16 @@ class DdgCmd(object):
                 for key, value in sorted(self._urltable.items()):
                     open_url(self._urltable[key])
             elif nav in self._urltable:
+                if self.options.pagination:
+                    nav = str(int(nav) + self.index)
                 open_url(self._urltable[nav])
             elif '-' in nav:
                 try:
-                    vals = [int(x) for x in nav.split('-')]
+                    if self.options.pagination:
+                        vals = [int(x) + self.index for x in nav.split('-')]
+                    else:
+                        vals = [int(x) for x in nav.split('-')]
+
                     if (len(vals) != 2):
                         printerr('Invalid range %s.' % nav)
                         continue
@@ -1389,6 +1400,9 @@ class DdgCmd(object):
                     break
                 elif cmd == '?':
                     self.help()
+                elif self.options.pagination and int(cmd) in range(1, self.options.pagination+1):
+                    i = int(cmd) + self.index
+                    open_url(self._urltable[str(i)])
                 elif cmd in self._urltable:
                     open_url(self._urltable[cmd])
                 elif self.keywords and cmd.isdigit() and int(cmd) < 100:
