@@ -1574,7 +1574,7 @@ def parse_args(args=None, namespace=None):
            '[d (1 day), w (1 week), m (1 month)]')
     addarg('-w', '--site', dest='sites', action='append', metavar='SITE', help='search sites using DuckDuckGo')
     addarg('-x', '--expand', action='store_true', help='Show complete url in search results')
-    addarg('-n', '--num', dest='pagination', type=int)
+    addarg('-n', '--num', dest='pagination', type=int, default=10)
     addarg('-p', '--proxy', help='tunnel traffic through an HTTPS proxy in the form [http[s]://][user:pwd@]host[:port]')
     addarg('--unsafe', action='store_true', help='disable safe search')
     addarg('--noua', action='store_true', help='disable user agent')
