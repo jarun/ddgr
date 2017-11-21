@@ -1404,7 +1404,6 @@ class DdgCmd(object):
                 elif cmd == '?':
                     self.help()
                 elif pag and cmd.isdigit() and int(cmd) in range(1, pag+1):
-                    print(cmd)
                     i = int(cmd) + self.index
                     open_url(self._urltable[str(i)])
                 elif cmd in self._urltable:
