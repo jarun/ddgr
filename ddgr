@@ -1276,6 +1276,7 @@ class DdgCmd(object):
         if self.options.pagination:
             self.index = 0
             self.results = []
+            self._urltable = {}
         # Update keywords and reconstruct URL
         self._opts.keywords = arg
         self._ddg_url = DdgUrl(self._opts)
@@ -1380,6 +1381,8 @@ class DdgCmd(object):
             # change behaviour of the prompt. However, we have already
             # laid a lot of ground work for the dispatcher, e.g., the
             # `no_argument' decorator.
+
+            pag = self.options.pagination
             try:
                 cmd = self.cmd
                 if cmd == 'f':
@@ -1400,7 +1403,8 @@ class DdgCmd(object):
                     break
                 elif cmd == '?':
                     self.help()
-                elif self.options.pagination and int(cmd) in range(1, self.options.pagination+1):
+                elif pag and cmd.isdigit() and int(cmd) in range(1, pag+1):
+                    print(cmd)
                     i = int(cmd) + self.index
                     open_url(self._urltable[str(i)])
                 elif cmd in self._urltable:
