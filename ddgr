@@ -996,7 +996,7 @@ class Result(object):
         self._print_metadata_and_abstract(self.abstract, metadata=self.metadata)
 
     def print_paginated(self, display_index):
-        """Print the result entry."""
+        """Print the result entry with custom index."""
 
         self._print_title_and_url(display_index, self.title, self.url)
         self._print_metadata_and_abstract(self.abstract, metadata=self.metadata)
