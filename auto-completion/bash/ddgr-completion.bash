@@ -12,6 +12,7 @@ _ddgr () {
     local -a opts opts_with_args
     opts=(
         -h --help
+        -n --num
         -r --reg
         -C --nocolor
         --colors
@@ -31,6 +32,7 @@ _ddgr () {
         -d --debug
     )
     opts_with_arg=(
+        -n --num
         -r --reg
         --colors
         -t --time

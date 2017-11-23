@@ -35,10 +35,11 @@ _ddgr_complete_query () {
 local -a args
 args=(
     '(- : *)'{-h,--help}'[show help text and exit]'
+    '(-n --num)'{-n,--num}'[show N (0<=N<=25) results per page]:val'
     '(-r --reg)'{-r,--reg}'[region-specific search]:reg-lang'
     '(-C --nocolor)'{-C,--nocolor}'[disable color output]'
     '(--colors)--colors[set output colors]:six-letter string'
-    '(-j --ducky)'{-j,--ducky}'[open the first result in a web browser]'
+    '(-j --ducky)'{-j,--ducky}'[open the first result in web browser]'
     '(-t --time'{-t,--time}'[limit search duration]:d/w/m'
     '(-w --site)'{-w,--site}'[search a site using DuckDuckGo]:domain'
     '(-x --expand)'{-x,--expand}'[show complete URL in results]'

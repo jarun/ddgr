@@ -14,10 +14,11 @@ function __fish_ddgr_complete_query
 end
 
 complete -c ddgr -s h -l help            --description 'show help text and exit'
+complete -c ddgr -s n -l num    -r       --description 'show N (0<=N<=25) results per page'
 complete -c ddgr -s r -l reg    -r       --description 'region-specific search'
 complete -c ddgr -s C -l nocolor         --description 'disable color output'
 complete -c ddgr -l colors      -r       --description 'set output colors'
-complete -c ddgr -s j -l first -l ducky  --description 'open the first result in a web browser'
+complete -c ddgr -s j -l ducky           --description 'open the first result in web browser'
 complete -c ddgr -s t -l time            --description 'limit search duration (d/w/m)'
 complete -c ddgr -s w -l site   -r       --description 'search a site using DuckDuckGo'
 complete -c ddgr -s x -l expand          --description 'show complete URL in results'

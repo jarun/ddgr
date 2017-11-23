@@ -10,6 +10,7 @@ is a command-line tool to search DuckDuckGo from the terminal. \fBddgr\fR shows 
 .B Features
 .PP
   * Fast and clean (no ads, stray URLs or clutter), custom color
+  * Specify number of results to show per page
   * Navigate result pages from omniprompt, open URLs in browser
   * Search and option completion scripts for Bash, Zsh and Fish
   * DuckDuckGo Bang support (along with completion)
@@ -25,6 +26,9 @@ is a command-line tool to search DuckDuckGo from the terminal. \fBddgr\fR shows 
 .TP
 .BI "-h, --help"
 Show help text and exit.
+.TP
+.BI "-n, --num=" N
+Show N results per page (default 10). N must be between 0 and 25. N=0 disables fixed paging and shows actual number of results fetched per page.
 .TP
 .BI "-r, --reg=" REG
 Region-specific search e.g. 'us-en' for US (default); visit https://duckduckgo.com/params.

@@ -1590,7 +1590,8 @@ def parse_args(args=None, namespace=None):
 
     argparser = DdgArgumentParser(description='DuckDuckGo from the terminal.')
     addarg = argparser.add_argument
-    addarg('-n', '--num', type=argparser.nonnegative_int, default=10, metavar='N', help='show N (<=25) results (default 10, N=0: disabled')
+    addarg('-n', '--num', type=argparser.nonnegative_int, default=10, metavar='N',
+           help='show N (0<=N<=25) results per page (default 10); N=0 shows actual number of results fetched per page')
     addarg('-r', '--reg', dest='region', default='us-en', metavar='REG',
            help="region-specific search e.g. 'us-en' for US (default); visit https://duckduckgo.com/params")
     addarg('-C', '--nocolor', dest='colorize', action='store_false', help='disable color output')

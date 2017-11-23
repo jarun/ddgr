@@ -40,6 +40,7 @@
 ### Features
 
 - Fast and clean (no ads, stray URLs or clutter), custom color
+- Specify number of results to show per page
 - Navigate result pages from omniprompt, open URLs in browser
 - Search and option completion scripts for Bash, Zsh and Fish
 - DuckDuckGo Bang support (along with completion)
@@ -97,9 +98,9 @@ Search keyword and option completion scripts for Bash, Fish and Zsh can be found
 #### Cmdline options
 
 ```
-usage: ddgr [-h] [-r REG] [-C] [--colors COLORS] [-j] [-t DURATION] [-w SITE]
-            [-x] [-p PROXY] [--unsafe] [--noua] [--json] [--gb] [--np]
-            [--url-handler UTIL] [--show-browser-logs] [-v] [-d]
+usage: ddgr [-h] [-n N] [-r REG] [-C] [--colors COLORS] [-j] [-t DURATION]
+            [-w SITE] [-x] [-p PROXY] [--unsafe] [--noua] [--json] [--gb]
+            [--np] [--url-handler UTIL] [--show-browser-logs] [-v] [-d]
             [KEYWORD [KEYWORD ...]]
 
 DuckDuckGo from the terminal.
@@ -109,6 +110,8 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  -n N, --num N         show N (0<=N<=25) results per page (default 10); N=0
+                        shows actual number of results fetched per page
   -r REG, --reg REG     region-specific search e.g. 'us-en' for US (default);
                         visit https://duckduckgo.com/params
   -C, --nocolor         disable color output
