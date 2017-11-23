@@ -1178,7 +1178,7 @@ class DdgCmd(object):
         """
 
         if self._opts.num:
-            results = self.results[self.index:self.index + self._opts.num]
+            results = self.results[self.index:(self.index + self._opts.num)]
         else:
             results = self.results
 
