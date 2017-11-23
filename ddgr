@@ -989,9 +989,10 @@ class Result(object):
         if colors:
             print(colors.reset, end='')
 
-    def print(self):
+    def print(self, display_index):
         """Print the result entry."""
-        self._print_title_and_url(self.index, self.title, self.url)
+
+        self._print_title_and_url(display_index, self.title, self.url)
         self._print_metadata_and_abstract(self.abstract, metadata=self.metadata)
 
     def jsonizable_object(self):
@@ -1087,7 +1088,7 @@ class DdgCmd(object):
 
     def __init__(self, opts):
         super().__init__()
-
+        self.index = 0
         self._opts = opts
 
         self._ddg_url = DdgUrl(opts)
@@ -1139,18 +1140,25 @@ class DdgCmd(object):
         parser = DdgParser()
         parser.feed(page.text)
 
-        self.results = parser.results
+        if self.options.pagination:
+            self.results.extend(parser.results)
+            offset = len(self._urltable)
+            for r in self.results:
+                for k, v in r.urltable().items():
+                    i = str(int(k) + offset)
+                    self._urltable.update({i: v})
+        else:
+            self._urltable = {}
+            self.results = parser.results
+            for r in self.results:
+                self._urltable.update(r.urltable())
+
         self._ddg_url._nextParams_prev = parser.nextParams_prevbtn
         self._ddg_url._nextParams_next = parser.nextParams_nextbtn
         logdbg('Prev nextParams: %s', self._ddg_url._nextParams_prev)
         logdbg('Next nextParams: %s', self._ddg_url._nextParams_next)
 
-        self._urltable = {}
-
-        for r in self.results:
-            self._urltable.update(r.urltable())
-
-        self._ddg_url.update_num(len(self.results))
+        self._ddg_url.update_num(len(parser.results))
 
     @require_keywords
     def display_results(self, prelude='\n', json_output=False):
@@ -1161,19 +1169,25 @@ class DdgCmd(object):
         See `fetch_and_display`.
 
         """
+
+        if self.options.pagination:
+            results = self.results[self.index:self.index+self.options.pagination]
+        else:
+            results = self.results
+
         if json_output:
             # JSON output
             import json
-            results_object = [r.jsonizable_object() for r in self.results]
+            results_object = [r.jsonizable_object() for r in results]
             print(json.dumps(results_object, indent=2, sort_keys=True, ensure_ascii=False))
         else:
             # Regular output
-            if not self.results:
+            if not self.results or self.index > len(self.results):
                 print('No results.', file=sys.stderr)
             else:
                 sys.stderr.write(prelude)
-                for r in self.results:
-                    r.print()
+                for i, r in enumerate(results):
+                    r.print(str(i+1))
 
     @require_keywords
     def fetch_and_display(self, prelude='\n', json_output=False):
@@ -1245,6 +1259,11 @@ class DdgCmd(object):
     @require_keywords
     @no_argument
     def do_first(self):
+        if self.options.pagination:
+            self.index = 0
+            self.display_results()
+            return
+
         try:
             self._ddg_url.first_page()
         except ValueError as e:
@@ -1254,6 +1273,10 @@ class DdgCmd(object):
         self.fetch_and_display()
 
     def do_ddg(self, arg):
+        if self.options.pagination:
+            self.index = 0
+            self.results = []
+            self._urltable = {}
         # Update keywords and reconstruct URL
         self._opts.keywords = arg
         self._ddg_url = DdgUrl(self._opts)
@@ -1267,8 +1290,15 @@ class DdgCmd(object):
     @no_argument
     def do_next(self):
         # If no results were fetched last time, we have hit the last page already
-        if self._ddg_url._qrycnt == 0:
+        if self._ddg_url._qrycnt == 0 and self.index >= len(self.results):
             print('No results.', file=sys.stderr)
+        elif self.options.pagination:
+            self.index += self.options.pagination
+            if len(self.results) - self.index < self.options.pagination:
+                self._ddg_url.next_page()
+                self.fetch_and_display()
+            else:
+                self.display_results()
         else:
             self._ddg_url.next_page()
             self.fetch_and_display()
@@ -1284,10 +1314,16 @@ class DdgCmd(object):
                 for key, value in sorted(self._urltable.items()):
                     open_url(self._urltable[key])
             elif nav in self._urltable:
+                if self.options.pagination:
+                    nav = str(int(nav) + self.index)
                 open_url(self._urltable[nav])
             elif '-' in nav:
                 try:
-                    vals = [int(x) for x in nav.split('-')]
+                    if self.options.pagination:
+                        vals = [int(x) + self.index for x in nav.split('-')]
+                    else:
+                        vals = [int(x) for x in nav.split('-')]
+
                     if (len(vals) != 2):
                         printerr('Invalid range %s.' % nav)
                         continue
@@ -1308,6 +1344,17 @@ class DdgCmd(object):
     @require_keywords
     @no_argument
     def do_previous(self):
+        if self.options.pagination:
+            self.index -= self.options.pagination
+            if self.index >= 0:
+                self.display_results()
+            else:
+                # Set index to negative the pagination value, so that
+                # if do_next is called, index will begin at 0.
+                self.index = -self.options.pagination
+                print("Already at the earliest results", file=sys.stderr)
+            return
+
         try:
             self._ddg_url.prev_page()
         except ValueError as e:
@@ -1334,6 +1381,8 @@ class DdgCmd(object):
             # change behaviour of the prompt. However, we have already
             # laid a lot of ground work for the dispatcher, e.g., the
             # `no_argument' decorator.
+
+            pag = self.options.pagination
             try:
                 cmd = self.cmd
                 if cmd == 'f':
@@ -1354,6 +1403,9 @@ class DdgCmd(object):
                     break
                 elif cmd == '?':
                     self.help()
+                elif pag and cmd.isdigit() and int(cmd) in range(1, pag+1):
+                    i = int(cmd) + self.index
+                    open_url(self._urltable[str(i)])
                 elif cmd in self._urltable:
                     open_url(self._urltable[cmd])
                 elif self.keywords and cmd.isdigit() and int(cmd) < 100:
@@ -1525,6 +1577,7 @@ def parse_args(args=None, namespace=None):
            '[d (1 day), w (1 week), m (1 month)]')
     addarg('-w', '--site', dest='sites', action='append', metavar='SITE', help='search sites using DuckDuckGo')
     addarg('-x', '--expand', action='store_true', help='Show complete url in search results')
+    addarg('-n', '--num', dest='pagination', type=int, default=10)
     addarg('-p', '--proxy', help='tunnel traffic through an HTTPS proxy in the form [http[s]://][user:pwd@]host[:port]')
     addarg('--unsafe', action='store_true', help='disable safe search')
     addarg('--noua', action='store_true', help='disable user agent')
