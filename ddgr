@@ -1372,7 +1372,7 @@ class DdgCmd(object):
                 # Set index to negative the pagination value, so that
                 # if do_next is called, index will begin at 0.
                 self.index = -self._opts.num
-                print("Already at the earliest results", file=sys.stderr)
+                print("Already at the first page.", file=sys.stderr)
             return
 
         try:
