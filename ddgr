@@ -1309,12 +1309,13 @@ class DdgCmd(object):
     @no_argument
     def do_next(self):
         if self._opts.num:
-            if self._ddg_url._qrycnt == 0 and self.index >= len(self.results):
+            count = len(self.results)
+            if self._ddg_url._qrycnt == 0 and self.index >= count:
                 print('No results.', file=sys.stderr)
                 return
 
             self.index += self._opts.num
-            if len(self.results) - self.index < self._opts.num:
+            if count - self.index < self._opts.num:
                 self._ddg_url.next_page()
                 self.fetch_and_display()
             else:
