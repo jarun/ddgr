@@ -684,12 +684,12 @@ class DdgParser(html.parser.HTMLParser):
     #                                 prepend self.filetype, if available -->
     #   </h2>
 
-    def __init__(self, news=False):
+    def __init__(self, news=False, offset=0):
         html.parser.HTMLParser.__init__(self)
 
         self.news = news
         self.results = []
-        self.index = 0
+        self.index = offset
         self.textbuf = ''
         self.tag_annotations = {}
         self.nextParams_prevbtn = ''
@@ -1137,21 +1137,18 @@ class DdgCmd(object):
                 fp.write(page.text)
             logdbg("Response body written to '%s'.", tmpfile)
 
-        parser = DdgParser()
+        if self.options.pagination:
+            _index = len(self._urltable)
+        else:
+            _index = 0
+            self._urltable = {}
+
+        parser = DdgParser(offset=_index)
         parser.feed(page.text)
 
-        if self.options.pagination:
-            self.results.extend(parser.results)
-            offset = len(self._urltable)
-            for r in self.results:
-                for k, v in r.urltable().items():
-                    i = str(int(k) + offset)
-                    self._urltable.update({i: v})
-        else:
-            self._urltable = {}
-            self.results = parser.results
-            for r in self.results:
-                self._urltable.update(r.urltable())
+        self.results.extend(parser.results)
+        for r in parser.results:
+            self._urltable.update(r.urltable())
 
         self._ddg_url._nextParams_prev = parser.nextParams_prevbtn
         self._ddg_url._nextParams_next = parser.nextParams_nextbtn
