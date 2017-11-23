@@ -1187,23 +1187,16 @@ class DdgCmd(object):
             import json
             results_object = [r.jsonizable_object() for r in results]
             print(json.dumps(results_object, indent=2, sort_keys=True, ensure_ascii=False))
-        else:
-            if self._opts.num:
-                # Paginated output
-                if not results or self.index > len(self.results):
-                    print('No results.', file=sys.stderr)
-                else:
-                    sys.stderr.write(prelude)
-                    for i, r in enumerate(results):
-                        r.print_paginated(str(i+1))
-            else:
-                # Regular output
-                if not self.results:
-                    print('No results.', file=sys.stderr)
-                else:
-                    sys.stderr.write(prelude)
-                    for r in self.results:
-                        r.print()
+        elif not results:
+            print('No results.', file=sys.stderr)
+        elif self._opts.num:  # Paginated output
+            sys.stderr.write(prelude)
+            for i, r in enumerate(results):
+                r.print_paginated(str(i + 1))
+        else:  # Regular output
+            sys.stderr.write(prelude)
+            for r in results:
+                r.print()
 
     @require_keywords
     def fetch_and_display(self, prelude='\n', json_output=False):
