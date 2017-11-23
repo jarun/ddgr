@@ -1190,7 +1190,7 @@ class DdgCmd(object):
         else:
             if self._opts.num:
                 # Paginated output
-                if not self.results or self.index > len(self.results):
+                if not results or self.index > len(self.results):
                     print('No results.', file=sys.stderr)
                 else:
                     sys.stderr.write(prelude)
@@ -1276,8 +1276,12 @@ class DdgCmd(object):
     @no_argument
     def do_first(self):
         if self._opts.num:
-            self.index = 0
-            self.display_results()
+            if self.index < self._opts.num:
+                print('Already at the first page.', file=sys.stderr)
+            else:
+                self.index = 0
+                self.display_results()
+
             return
 
         try:
