@@ -1308,16 +1308,20 @@ class DdgCmd(object):
     @require_keywords
     @no_argument
     def do_next(self):
-        # If no results were fetched last time, we have hit the last page already
-        if self._ddg_url._qrycnt == 0 and self.index >= len(self.results):
-            print('No results.', file=sys.stderr)
-        elif self._opts.num:
+        if self._opts.num:
+            if self._ddg_url._qrycnt == 0 and self.index >= len(self.results):
+                print('No results.', file=sys.stderr)
+                return
+
             self.index += self._opts.num
             if len(self.results) - self.index < self._opts.num:
                 self._ddg_url.next_page()
                 self.fetch_and_display()
             else:
                 self.display_results()
+        elif self._ddg_url._qrycnt == 0:
+            # If no results were fetched last time, we have hit the last page already
+            print('No results.', file=sys.stderr)
         else:
             self._ddg_url.next_page()
             self.fetch_and_display()
