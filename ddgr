@@ -1281,7 +1281,6 @@ class DdgCmd(object):
             else:
                 self.index = 0
                 self.display_results()
-
             return
 
         try:
@@ -1365,14 +1364,11 @@ class DdgCmd(object):
     @no_argument
     def do_previous(self):
         if self._opts.num:
-            self.index -= self._opts.num
-            if self.index >= 0:
-                self.display_results()
+            if self.index < self._opts.num:
+                print('Already at the first page.', file=sys.stderr)
             else:
-                # Set index to negative the pagination value, so that
-                # if do_next is called, index will begin at 0.
-                self.index = -self._opts.num
-                print("Already at the first page.", file=sys.stderr)
+                self.index -= self._opts.num
+                self.display_results()
             return
 
         try:
