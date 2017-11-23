@@ -811,7 +811,7 @@ class DdgParser(html.parser.HTMLParser):
             if attrs['name'] == 'nextParams' and attrs['value'] != '':
                 # The previous button always shows before next button
                 # If there's only 1 button (page 1), it's the next button
-                if self.npfound == True:
+                if self.npfound is True:
                     self.nextParams_prevbtn = self.nextParams_nextbtn
                 else:
                     self.npfound = True
@@ -1137,7 +1137,7 @@ class DdgCmd(object):
                 fp.write(page.text)
             logdbg("Response body written to '%s'.", tmpfile)
 
-        if self.options.pagination:
+        if self._opts.num:
             _index = len(self._urltable)
         else:
             _index = 0
@@ -1167,8 +1167,8 @@ class DdgCmd(object):
 
         """
 
-        if self.options.pagination:
-            results = self.results[self.index:self.index+self.options.pagination]
+        if self._opts.num:
+            results = self.results[self.index:self.index + self._opts.num]
         else:
             results = self.results
 
@@ -1256,7 +1256,7 @@ class DdgCmd(object):
     @require_keywords
     @no_argument
     def do_first(self):
-        if self.options.pagination:
+        if self._opts.num:
             self.index = 0
             self.display_results()
             return
@@ -1270,7 +1270,7 @@ class DdgCmd(object):
         self.fetch_and_display()
 
     def do_ddg(self, arg):
-        if self.options.pagination:
+        if self._opts.num:
             self.index = 0
             self.results = []
             self._urltable = {}
@@ -1289,9 +1289,9 @@ class DdgCmd(object):
         # If no results were fetched last time, we have hit the last page already
         if self._ddg_url._qrycnt == 0 and self.index >= len(self.results):
             print('No results.', file=sys.stderr)
-        elif self.options.pagination:
-            self.index += self.options.pagination
-            if len(self.results) - self.index < self.options.pagination:
+        elif self._opts.num:
+            self.index += self._opts.num
+            if len(self.results) - self.index < self._opts.num:
                 self._ddg_url.next_page()
                 self.fetch_and_display()
             else:
@@ -1311,12 +1311,12 @@ class DdgCmd(object):
                 for key, value in sorted(self._urltable.items()):
                     open_url(self._urltable[key])
             elif nav in self._urltable:
-                if self.options.pagination:
+                if self._opts.num:
                     nav = str(int(nav) + self.index)
                 open_url(self._urltable[nav])
             elif '-' in nav:
                 try:
-                    if self.options.pagination:
+                    if self._opts.num:
                         vals = [int(x) + self.index for x in nav.split('-')]
                     else:
                         vals = [int(x) for x in nav.split('-')]
@@ -1341,14 +1341,14 @@ class DdgCmd(object):
     @require_keywords
     @no_argument
     def do_previous(self):
-        if self.options.pagination:
-            self.index -= self.options.pagination
+        if self._opts.num:
+            self.index -= self._opts.num
             if self.index >= 0:
                 self.display_results()
             else:
                 # Set index to negative the pagination value, so that
                 # if do_next is called, index will begin at 0.
-                self.index = -self.options.pagination
+                self.index = -self._opts.num
                 print("Already at the earliest results", file=sys.stderr)
             return
 
@@ -1379,7 +1379,7 @@ class DdgCmd(object):
             # laid a lot of ground work for the dispatcher, e.g., the
             # `no_argument' decorator.
 
-            pag = self.options.pagination
+            _num = self._opts.num
             try:
                 cmd = self.cmd
                 if cmd == 'f':
@@ -1400,10 +1400,13 @@ class DdgCmd(object):
                     break
                 elif cmd == '?':
                     self.help()
-                elif pag and cmd.isdigit() and int(cmd) in range(1, pag+1):
+                elif _num and cmd.isdigit() and int(cmd) in range(1, _num + 1):
                     i = int(cmd) + self.index
-                    open_url(self._urltable[str(i)])
-                elif cmd in self._urltable:
+                    try:
+                        open_url(self._urltable[str(i)])
+                    except KeyError:
+                        printerr('Index out of bound. To search for the number, use d.')
+                elif _num == 0 and cmd in self._urltable:
                     open_url(self._urltable[cmd])
                 elif self.keywords and cmd.isdigit() and int(cmd) < 100:
                     printerr('Index out of bound. To search for the number, use d.')
@@ -1563,7 +1566,7 @@ def parse_args(args=None, namespace=None):
 
     argparser = DdgArgumentParser(description='DuckDuckGo from the terminal.')
     addarg = argparser.add_argument
-    # addarg('-n', '--count', dest='num', type=argparser.positive_int, default=10, metavar='N', help='show N results (default 10)')
+    addarg('-n', '--num', type=argparser.positive_int, default=10, metavar='N', help='show N results (default 10); N=0:disabled')
     addarg('-r', '--reg', dest='region', default='us-en', metavar='REG',
            help="region-specific search e.g. 'us-en' for US (default); visit https://duckduckgo.com/params")
     addarg('-C', '--nocolor', dest='colorize', action='store_false', help='disable color output')
@@ -1574,7 +1577,6 @@ def parse_args(args=None, namespace=None):
            '[d (1 day), w (1 week), m (1 month)]')
     addarg('-w', '--site', dest='sites', action='append', metavar='SITE', help='search sites using DuckDuckGo')
     addarg('-x', '--expand', action='store_true', help='Show complete url in search results')
-    addarg('-n', '--num', dest='pagination', type=int, default=10)
     addarg('-p', '--proxy', help='tunnel traffic through an HTTPS proxy in the form [http[s]://][user:pwd@]host[:port]')
     addarg('--unsafe', action='store_true', help='disable safe search')
     addarg('--noua', action='store_true', help='disable user agent')
