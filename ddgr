@@ -1493,13 +1493,14 @@ class DdgArgumentParser(argparse.ArgumentParser):
 
     @staticmethod
     def nonnegative_int(arg):
-        """Try to convert a string into a nonnegative integer."""
+        """Try to convert a string into a nonnegative integer <= 25."""
         try:
             n = int(arg)
             assert n >= 0
+            assert n <= 25
             return n
         except (ValueError, AssertionError):
-            raise argparse.ArgumentTypeError('%s is not a non-negative integer' % arg)
+            raise argparse.ArgumentTypeError('%s is not a non-negative integer <= 25' % arg)
 
     @staticmethod
     def is_duration(arg):
@@ -1585,7 +1586,7 @@ def parse_args(args=None, namespace=None):
 
     argparser = DdgArgumentParser(description='DuckDuckGo from the terminal.')
     addarg = argparser.add_argument
-    addarg('-n', '--num', type=argparser.nonnegative_int, default=10, metavar='N', help='show N results (default 10); N=0:disabled')
+    addarg('-n', '--num', type=argparser.nonnegative_int, default=10, metavar='N', help='show N (<=25) results (default 10, N=0: disabled')
     addarg('-r', '--reg', dest='region', default='us-en', metavar='REG',
            help="region-specific search e.g. 'us-en' for US (default); visit https://duckduckgo.com/params")
     addarg('-C', '--nocolor', dest='colorize', action='store_false', help='disable color output')
