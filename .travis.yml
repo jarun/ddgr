@@ -15,7 +15,6 @@ before_install:
   - "pip install --upgrade pylint"
 script:
   - python3 -m flake8 ddgr
-  - pylint --rcfile tests/.pylintrc ddgr
   - make test
 before_deploy:
   - sudo apt-get update -qy
