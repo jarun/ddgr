@@ -1321,7 +1321,7 @@ class DdgCmd(object):
             self.fetch_and_display()
 
     @require_keywords
-    def do_open(self, *args):
+    def do_open(self, low, high, *args):
         if not args:
             printerr('Index or range missing.')
             return
@@ -1329,10 +1329,15 @@ class DdgCmd(object):
         for nav in args:
             if nav == 'a':
                 for key, value in sorted(self._urltable.items()):
+                    if self._opts.num and int(key) not in range(low, high):
+                        continue
                     open_url(self._urltable[key])
             elif nav in self._urltable:
                 if self._opts.num:
                     nav = str(int(nav) + self.index)
+                    if int(nav) not in range(low, high):
+                        printerr('Invalid index %s.' % (int(nav) - self.index))
+                        continue
                 open_url(self._urltable[nav])
             elif '-' in nav:
                 try:
@@ -1349,6 +1354,10 @@ class DdgCmd(object):
                         vals[0], vals[1] = vals[1], vals[0]
 
                     for _id in range(vals[0], vals[1] + 1):
+                        if self._opts.num and _id not in range(low, high):
+                            printerr('Invalid index %s.' % (_id - self.index))
+                            continue
+
                         if str(_id) in self._urltable:
                             open_url(self._urltable[str(_id)])
                         else:
@@ -1406,10 +1415,10 @@ class DdgCmd(object):
                 elif cmd == 'n':
                     self.do_next('')
                 elif cmd.startswith('o '):
-                    self.do_open(*cmd[2:].split())
+                    self.do_open(self.index + 1, self.index + self._opts.num + 1, *cmd[2:].split())
                 elif cmd.startswith('O '):
                     open_url.override_text_browser = True
-                    self.do_open(*cmd[2:].split())
+                    self.do_open(self.index + 1, self.index + self._opts.num + 1, *cmd[2:].split())
                     open_url.override_text_browser = False
                 elif cmd == 'p':
                     self.do_previous('')
