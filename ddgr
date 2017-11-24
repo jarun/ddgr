@@ -684,10 +684,9 @@ class DdgParser(html.parser.HTMLParser):
     #                                 prepend self.filetype, if available -->
     #   </h2>
 
-    def __init__(self, news=False, offset=0):
+    def __init__(self, offset=0):
         html.parser.HTMLParser.__init__(self)
 
-        self.news = news
         self.results = []
         self.index = offset
         self.textbuf = ''
@@ -707,12 +706,7 @@ class DdgParser(html.parser.HTMLParser):
                 self.title = ''
                 self.url = ''
                 self.abstract = ''
-                self.metadata = ''  # Only used for News
                 self.filetype = ''
-
-                # In the case of news, guard against "card
-                # sections" (secondary results to the same event).
-                self.metadata_registered = False  # Only used for News
 
                 self.set_handlers_to('result')
                 return 'result'
@@ -729,16 +723,6 @@ class DdgParser(html.parser.HTMLParser):
             self.set_handlers_to('title')
             return 'title'
 
-        if self.news:
-            if not self.metadata_registered and tag == 'div' and 'slp' in self.classes(attrs):
-                # Change metadata field separator from '-' to ', ' for better appearance
-                self.start_populating_textbuf(lambda text: ', ' if text == '-' else text)
-                return 'news_metadata'
-
-            if tag == 'div' and 'st' in self.classes(attrs):
-                self.start_populating_textbuf()
-                return 'news_abstract'
-
         if tag == 'a' and 'result__snippet' in self.classes(attrs) and 'href' in attrs:
             self.start_populating_textbuf()
             return 'abstract'
@@ -751,8 +735,7 @@ class DdgParser(html.parser.HTMLParser):
         elif annotation == 'result':
             if self.url:
                 self.index += 1
-                result = Result(self.index, self.title, self.url, self.abstract,
-                                metadata=self.metadata if self.metadata else None)
+                result = Result(self.index, self.title, self.url, self.abstract, None)
                 self.results.append(result)
             self.set_handlers_to('root')
 
