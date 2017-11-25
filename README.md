@@ -145,6 +145,7 @@ omniprompt keys:
   O [index|range|a ...] like key 'o', but try to open in a GUI browser
   d keywords            new DDG search for 'keywords' with original options
                         should be used to search omniprompt keys and indices
+  x                     toggle url expansion
   q, ^D, double Enter   exit ddgr
   ?                     show omniprompt help
   *                     other inputs are considered as new search keywords

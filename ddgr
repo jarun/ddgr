@@ -1419,6 +1419,9 @@ class DdgCmd(object):
                     open_url(self._urltable[cmd])
                 elif self.keywords and cmd.isdigit() and int(cmd) < 100:
                     printerr('Index out of bound. To search for the number, use d.')
+                elif cmd == 'x':
+                    Result.urlexpand = not Result.urlexpand
+                    printerr('url expansion toggled.')
                 else:
                     self.do_ddg(cmd)
             except NoKeywordsException:
@@ -1440,6 +1443,7 @@ class DdgArgumentParser(argparse.ArgumentParser):
           O [index|range|a ...] like key 'o', but try to open in a GUI browser
           d keywords            new DDG search for 'keywords' with original options
                                 should be used to search omniprompt keys and indices
+          x                     toggle url expansion
           q, ^D, double Enter   exit ddgr
           ?                     show omniprompt help
           *                     other inputs are considered as new search keywords
