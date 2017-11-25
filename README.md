@@ -100,9 +100,9 @@ Search keyword and option completion scripts for Bash, Fish and Zsh can be found
 #### Cmdline options
 
 ```
-usage: ddgr [-h] [-n N] [-r REG] [-C] [--colors COLORS] [-j] [-t DURATION]
-            [-w SITE] [-x] [-p PROXY] [--unsafe] [--noua] [--json] [--gb]
-            [--np] [--url-handler UTIL] [--show-browser-logs] [-v] [-d]
+usage: ddgr [-h] [-n N] [-r REG] [-C] [--colors COLORS] [-j] [-t SPAN]
+            [-w SITE] [-x] [-p URI] [--unsafe] [--noua] [--json] [--gb] [--np]
+            [--url-handler UTIL] [--show-browser-logs] [-v] [-d]
             [KEYWORD [KEYWORD ...]]
 
 DuckDuckGo from the terminal.
@@ -119,12 +119,10 @@ optional arguments:
   -C, --nocolor         disable color output
   --colors COLORS       set output colors (see man page for details)
   -j, --ducky           open the first result in a web browser; implies --np
-  -t DURATION, --time DURATION
-                        time limit search [d (1 day), w (1 week), m (1 month)]
+  -t SPAN, --time SPAN  time limit search [d (1 day), w (1 wk), m (1 month)]
   -w SITE, --site SITE  search sites using DuckDuckGo
   -x, --expand          Show complete url in search results
-  -p PROXY, --proxy PROXY
-                        tunnel traffic through an HTTPS proxy in the form
+  -p URL, --proxy URI   tunnel traffic through an HTTPS proxy; URI format:
                         [http[s]://][user:pwd@]host[:port]
   --unsafe              disable safe search
   --noua                disable user agent
@@ -137,17 +135,15 @@ optional arguments:
   -d, --debug           enable debugging
 
 omniprompt keys:
-  n, p                  fetch the next or previous set of search results
+  n, p, f               fetch the next, prev or first set of search results
   index                 open the result corresponding to index in browser
-  f                     jump to the first page
-  o [index|range|a ...] open space-separated result indices, numeric ranges
-                        or all, in browser
+  o [index|range|a ...] open space-separated result indices, ranges or all
   O [index|range|a ...] like key 'o', but try to open in a GUI browser
   d keywords            new DDG search for 'keywords' with original options
                         should be used to search omniprompt keys and indices
   q, ^D, double Enter   exit ddgr
   ?                     show omniprompt help
-  *                     other inputs issue a new search with original options
+  *                     other inputs are considered as new search keywords
 ```
 
 #### Configuration file

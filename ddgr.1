@@ -42,7 +42,7 @@ Set output colors. Refer to the \fBCOLORS\fR section below for details.
 .BI "-j, --ducky"
 Open the first result in a web browser; implies \fB--noprompt\fR. Feeling Ducky?
 .TP
-.BI "-t, --time=" DURATION
+.BI "-t, --time=" SPAN
 Time limit search [d=past day, w=past week, m=past month] (default=any time).
 .TP
 .BI "-w, --site=" SITE
@@ -51,8 +51,8 @@ Search a site using DuckDuckGo.
 .BI "-x, --expand"
 Expand URLs instead of showing only the domain name (default).
 .TP
-.BI "-p, --proxy=" PROXY
-Tunnel traffic through an HTTP proxy. \fIPROXY\fR is of the form \fI[http[s]://][user:pwd@]host[:port]\fR. The proxy server must support HTTP CONNECT tunneling and must not block port 443 for the relevant DuckDuckGo hosts. If a proxy is not explicitly given, the \fIhttps_proxy\fR or \fIHTTPS_PROXY\fR environment variable (if available) is used instead.
+.BI "-p, --proxy=" URI
+Tunnel traffic through an HTTP proxy. \fIURI\fR is of the form \fI[http[s]://][user:pwd@]host[:port]\fR. The proxy server must support HTTP CONNECT tunneling and must not block port 443 for the relevant DuckDuckGo hosts. If a proxy is not explicitly given, the \fIhttps_proxy\fR or \fIHTTPS_PROXY\fR environment variable (if available) is used instead.
 .TP
 .BI "--unsafe"
 Disable safe search.
@@ -82,14 +82,11 @@ Show version number and exit.
 Enable debugging.
 .SH OMNIPROMPT KEYS
 .TP
-.BI "n, p"
-Fetch the next or previous set of search results.
+.BI "n, p, f"
+Fetch the next, previous or first set of search results.
 .TP
 .BI "index"
 Open the result corresponding to index in browser.
-.TP
-.BI "f"
-Jump to the first page.
 .TP
 .BI o " [index|range|a ...]"
 Open space-separated result indices, numeric ranges or all indices, if 'a' is specified, in the browser.

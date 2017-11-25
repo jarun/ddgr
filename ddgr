@@ -1434,17 +1434,15 @@ class DdgArgumentParser(argparse.ArgumentParser):
         file = sys.stderr if file is None else file
         file.write(textwrap.dedent("""
         omniprompt keys:
-          n, p                  fetch the next or previous set of search results
+          n, p, f               fetch the next, prev or first set of search results
           index                 open the result corresponding to index in browser
-          f                     jump to the first page
-          o [index|range|a ...] open space-separated result indices, numeric ranges
-                                or all, in browser
+          o [index|range|a ...] open space-separated result indices, ranges or all
           O [index|range|a ...] like key 'o', but try to open in a GUI browser
           d keywords            new DDG search for 'keywords' with original options
                                 should be used to search omniprompt keys and indices
           q, ^D, double Enter   exit ddgr
           ?                     show omniprompt help
-          *                     other inputs issue a new search with original options
+          *                     other inputs are considered as new search keywords
         """))
 
     # Print information on ddgr
@@ -1584,11 +1582,11 @@ def parse_args(args=None, namespace=None):
     addarg('--colors', dest='colorstr', type=argparser.is_colorstr, default=colorstr_env if colorstr_env else 'oCdgxy', metavar='COLORS',
            help='set output colors (see man page for details)')
     addarg('-j', '--ducky', action='store_true', help='open the first result in a web browser; implies --np')
-    addarg('-t', '--time', dest='duration', metavar='DURATION', default='', choices=('d', 'w', 'm'), help='time limit search '
-           '[d (1 day), w (1 week), m (1 month)]')
+    addarg('-t', '--time', dest='duration', metavar='SPAN', default='', choices=('d', 'w', 'm'), help='time limit search '
+           '[d (1 day), w (1 wk), m (1 month)]')
     addarg('-w', '--site', dest='sites', action='append', metavar='SITE', help='search sites using DuckDuckGo')
     addarg('-x', '--expand', action='store_true', help='Show complete url in search results')
-    addarg('-p', '--proxy', help='tunnel traffic through an HTTPS proxy in the form [http[s]://][user:pwd@]host[:port]')
+    addarg('-p', '--proxy', metavar='URI', help='tunnel traffic through an HTTPS proxy; URI format: [http[s]://][user:pwd@]host[:port]')
     addarg('--unsafe', action='store_true', help='disable safe search')
     addarg('--noua', action='store_true', help='disable user agent')
     addarg('--json', action='store_true', help='output in JSON format; implies --np')
