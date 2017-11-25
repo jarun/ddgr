@@ -12,6 +12,8 @@
 
 `ddgr` is a cmdline utility to search DuckDuckGo from the terminal. While [`googler`](https://github.com/jarun/googler) is highly popular among cmdline users, in many forums the need of a similar utility for privacy-aware DuckDuckGo came up. [DuckDuckGo Bangs](https://duckduckgo.com/bang) are super-cool too! So here's `ddgr` for you!
 
+Unlike the web interface, you can specify the number of search results you would like to see per page. It's more convenient than skimming through 30-odd search results per page. The default interface is carefully designed to use minimum space without sacrificing readability.
+
 `ddgr` isn't affiliated to DuckDuckGo in any way.
 
 <p align="center">
@@ -41,7 +43,8 @@
 ### Features
 
 - Fast and clean (no ads, stray URLs or clutter), custom color
-- Specify number of results to show per page
+- Designed to deliver maximum readability at minimum space
+- Specify the number of search results to show per page
 - Navigate result pages from omniprompt, open URLs in browser
 - Search and option completion scripts for Bash, Zsh and Fish
 - DuckDuckGo Bang support (along with completion)
