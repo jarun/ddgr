@@ -64,8 +64,7 @@ COLORMAP = {k: '\x1b[%sm' % v for k, v in {
     'x': '0', 'X': '1', 'y': '7', 'Y': '7;1',
 }.items()}
 
-# Disguise as Elinks browser
-USER_AGENT = ('ELinks/0.12pre6 (textmode; Linux 4.4.0-98-generic x86_64; 199x55-2)')
+USER_AGENT = 'ddgr/{} (textmode; Linux x86_64; 1024x768)'.format(_VERSION_)
 
 text_browsers = ['elinks', 'links', 'lynx', 'w3m', 'www-browser']
 
