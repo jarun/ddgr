@@ -1,3 +1,16 @@
+ddgr 1.1
+2017-11-29
+
+What's in?
+- Option `--num` to specify the number of results to show per page
+- Omniprompt key `x` to toggle URL expansion on-the-fly.
+- Option `-t` to limit search by time
+- Option `--gui-browser` to open bangs directly in GUI browser
+- Retrieve next index parameters from fetched data
+- Custom user agent for ddgr
+
+-------------------------------------------------------------------------------
+
 ddgr 1.0
 2017-11-05
 

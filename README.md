@@ -126,7 +126,7 @@ optional arguments:
   -t SPAN, --time SPAN  time limit search [d (1 day), w (1 wk), m (1 month)]
   -w SITE, --site SITE  search sites using DuckDuckGo
   -x, --expand          Show complete url in search results
-  -p URL, --proxy URI   tunnel traffic through an HTTPS proxy; URI format:
+  -p URI, --proxy URI   tunnel traffic through an HTTPS proxy; URI format:
                         [http[s]://][user:pwd@]host[:port]
   --unsafe              disable safe search
   --noua                disable user agent
