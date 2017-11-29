@@ -22,4 +22,5 @@ uninstall:
 	rm -f $(DESTDIR)$(MANDIR)/ddgr.1.gz
 	rm -rf $(DESTDIR)$(DOCDIR)
 
-test: ;
+test:
+	./ddgr --help
