@@ -63,6 +63,8 @@ Unlike the web interface, you can specify the number of search results you would
 
 `ddgr` requires Python 3.3 or later. Only the latest patch release of each minor version is supported.
 
+The Python `requests` library is required to make HTTPS requests.
+
 #### From a package manager
 
 - [AUR](https://aur.archlinux.org/packages/ddgr/)
@@ -91,7 +93,7 @@ To remove `ddgr` and associated docs, run
 
 #### Running standalone
 
-`ddgr` is a standalone executable. From the containing directory:
+`ddgr` is a standalone executable (if you have the `requests` library installed). From the containing directory:
 
     $ ./ddgr
 
