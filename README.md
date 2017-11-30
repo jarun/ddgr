@@ -63,12 +63,13 @@ Unlike the web interface, you can specify the number of search results you would
 
 `ddgr` requires Python 3.3 or later. Only the latest patch release of each minor version is supported.
 
-The Python `requests` library is required to make HTTPS requests.
+The Python3 `requests` library is required to make HTTPS requests.
 
 #### From a package manager
 
 - [AUR](https://aur.archlinux.org/packages/ddgr/)
 - [Debian](https://packages.debian.org/search?keywords=ddgr&searchon=names&exact=1)
+- [Snap Store](https://snapcraft.io/ddgr/) (`sudo snap install ddgr`)
 - [Ubuntu](https://packages.ubuntu.com/search?keywords=ddgr&searchon=names&exact=1)
 - [Ubuntu PPA](https://launchpad.net/~twodopeshaggy/+archive/ubuntu/jarun/)
 - [Void Linux](https://github.com/voidlinux/void-packages/tree/master/srcpkgs/ddgr) (`sudo xbps-install -S ddgr`)
@@ -235,3 +236,4 @@ Copyright © 2016-2017 [Arun Prakash Jana](mailto:engineerarun@gmail.com)
 
 - [Information Security Squad](http://itsecforu.ru/2017/11/21/%D0%BA%D0%B0%D0%BA-%D0%B8%D1%81%D0%BA%D0%B0%D1%82%D1%8C-%D0%B2-duckduckgo-%D0%B8%D0%B7-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D0%BD%D0%BE%D0%B9-%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B8-linux/)
 - [LinOxide](https://linoxide.com/tools/search-duckduckgo-command-line/)
+- [OMG! Ubuntu!](http://www.omgubuntu.co.uk/2017/11/duck-duck-go-terminal-app)
