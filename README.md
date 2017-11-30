@@ -69,6 +69,7 @@ The Python3 `requests` library is required to make HTTPS requests.
 
 - [AUR](https://aur.archlinux.org/packages/ddgr/)
 - [Debian](https://packages.debian.org/search?keywords=ddgr&searchon=names&exact=1)
+- [FreeBSD](https://www.freshports.org/www/ddgr/) (`pkg install ddgr`)
 - [Snap Store](https://snapcraft.io/ddgr/) (`sudo snap install ddgr`)
 - [Ubuntu](https://packages.ubuntu.com/search?keywords=ddgr&searchon=names&exact=1)
 - [Ubuntu PPA](https://launchpad.net/~twodopeshaggy/+archive/ubuntu/jarun/)
