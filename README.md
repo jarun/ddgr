@@ -61,7 +61,7 @@ Unlike the web interface, you can specify the number of search results you would
 
 #### Dependencies
 
-`ddgr` requires Python 3.3 or later. Only the latest patch release of each minor version is supported.
+`ddgr` requires Python 3.4 or later. Only the latest patch release of each minor version is supported.
 
 The Python3 `requests` library is required to make HTTPS requests.
 
