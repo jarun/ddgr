@@ -223,6 +223,25 @@ The color configuration is similar to that of [`googler` colors](https://github.
         d n
         d g keywords
         d 1
+### Docker
+
+#### Build image locally
+
+```
+docker build -t ddgr .
+```
+
+#### Use locally built image
+
+```
+docker run --rm -ti ddgr -h
+```
+
+#### Use multiarch already built image
+
+```
+docker run --rm -ti jaymoulin/ddgr -h
+```
 
 ### Collaborators
 
@@ -230,6 +249,7 @@ The color configuration is similar to that of [`googler` colors](https://github.
 - [Johnathan Jenkins](https://github.com/shaggytwodope)
 - [SZ Lin](https://github.com/szlin)
 - [Alex Gontar](https://github.com/mosegontar)
+- [Jay Moulin](https://github.com/jaymoulin)
 
 Copyright © 2016-2017 [Arun Prakash Jana](mailto:engineerarun@gmail.com)
 
