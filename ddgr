@@ -18,16 +18,18 @@
 import argparse
 import collections
 import functools
+import gzip
 import html.entities
 import html.parser
 import logging
 import os
-import requests
 import signal
 import subprocess
 import sys
 import textwrap
+import urllib.error
 import urllib.parse
+import urllib.request
 from urllib3.util import parse_url
 try:
     import readline
@@ -126,6 +128,42 @@ def open_url(url):
 
     if open_url.override_text_browser:
         open_url.suppress_browser_output = browser_output
+
+
+def https_post(url, data=None, headers=None, proxies=None, expected_code=None):
+    """Sends an HTTPS POST request; returns the HTTP status code and the
+    decoded response payload.
+
+    By default, HTTP 301, 302 and 303 are followed; all other non-2XX
+    responses result in a urllib.error.HTTPError. If expected_code is
+    supplied, a urllib.error.HTTPError is raised unless the status code
+    matches expected_code.
+    """
+    data = data or {}
+    headers = headers or {}
+    proxies = {'https': proxies['https']} if proxies.get('https') else {}
+    opener = urllib.request.build_opener(
+        urllib.request.HTTPSHandler,
+        urllib.request.ProxyHandler(proxies),
+        urllib.request.HTTPRedirectHandler,
+    )
+    req = urllib.request.Request(
+        url,
+        data=urllib.parse.urlencode(data).encode('ascii'),
+        headers=headers,
+    )
+    resp = opener.open(req)
+    code = resp.getcode()
+    if expected_code is not None and code != expected_code:
+        raise urllib.error.HTTPError(resp.geturl(), code, resp.msg, resp.info(), resp)
+    payload = resp.read()
+    try:
+        payload = gzip.decompress(payload)
+    except OSError:
+        pass
+    finally:
+        payload = payload.decode('utf-8')
+    return code, payload
 
 
 def printerr(msg):
@@ -488,11 +526,10 @@ class DdgConnection(object):
 
         try:
             if page == 0:
-                r = requests.post(self._u,
+                _, r = https_post(self._u,
                                   headers={
-                                           'Accept-encoding': 'gzip,deflate',
+                                           'Accept-Encoding': 'gzip',
                                            'User-Agent': USER_AGENT,
-                                           'Connection': 'keep-alive',
                                            'DNT': '1',
                                           },
                                   data={
@@ -505,13 +542,13 @@ class DdgConnection(object):
                                         'kp': dic['safe'],
                                         'k1': '-1',
                                        },
-                                  proxies=self._proxies)
+                                  proxies=self._proxies,
+                                  expected_code=200)
             else:
-                r = requests.post(self._u,
+                _, r = https_post(self._u,
                                   headers={
-                                           'Accept-encoding': 'gzip,deflate',
+                                           'Accept-Encoding': 'gzip',
                                            'User-Agent': USER_AGENT,
-                                           'Connection': 'keep-alive',
                                            'DNT': '1',
                                           },
                                   data={
@@ -529,13 +566,10 @@ class DdgConnection(object):
                                         'kp': dic['safe'],  # Safe search
                                         'k1': '-1',  # Advertisements off
                                        },
-                                  proxies=self._proxies)
+                                  proxies=self._proxies,
+                                  expected_code=200)
         except Exception as e:
             logerr(e)
-            return None
-
-        if r.status_code != 200:
-            logerr('[%s] %s', r.status_code, r.reason)
             return None
 
         return r
@@ -1122,7 +1156,7 @@ class DdgCmd(object):
             fd, tmpfile = tempfile.mkstemp(prefix='ddgr-response-')
             os.close(fd)
             with open(tmpfile, 'w', encoding='utf-8') as fp:
-                fp.write(page.text)
+                fp.write(page)
             logdbg("Response body written to '%s'.", tmpfile)
 
         if self._opts.num:
@@ -1132,7 +1166,7 @@ class DdgCmd(object):
             self._urltable = {}
 
         parser = DdgParser(offset=_index)
-        parser.feed(page.text)
+        parser.feed(page)
 
         if self._opts.num:
             self.results.extend(parser.results)
