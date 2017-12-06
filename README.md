@@ -63,7 +63,7 @@ Unlike the web interface, you can specify the number of search results you would
 
 `ddgr` requires Python 3.4 or later. Only the latest patch release of each minor version is supported.
 
-The Python3 `requests` library is required to make HTTPS requests.
+Note: v1.1 and below require the Python3 `requests` library to make HTTPS requests. This dependency is removed in the later releases.
 
 #### From a package manager
 
