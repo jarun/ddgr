@@ -1,3 +1,13 @@
+ddgr 1.2
+2017-12-08
+
+What's in?
+- Remove Pyhton3 'requests' library dependency
+- Remove Python 3.3 (EOL) support
+- Fix zsh completion script issue
+
+-------------------------------------------------------------------------------
+
 ddgr 1.1
 2017-11-29
 
