@@ -77,7 +77,7 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 
 #### Release packages
 
-Packages for Arch Linux, CentOS, Debian, Fedora and Ubuntu are available with the [latest stable release](https://github.com/jarun/ddgr/releases/latest).
+Packages for Arch Linux, CentOS, Debian, Fedora, OpenSUSE Leap and Ubuntu are available with the [latest stable release](https://github.com/jarun/ddgr/releases/latest).
 
 #### From source
 
