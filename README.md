@@ -95,7 +95,7 @@ To remove `ddgr` and associated docs, run
 
 #### Running standalone
 
-`ddgr` is a standalone executable (if you have the `requests` library installed). From the containing directory:
+`ddgr` is a standalone executable. From the containing directory:
 
     $ ./ddgr
 

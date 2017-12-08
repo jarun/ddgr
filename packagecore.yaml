@@ -12,37 +12,36 @@ packages:
       - make
     deps:
       - python
-      - python-requests
-  fedora26:
-    builddeps:
-      - make
-    deps:
-      - python3
-      - python3-requests
   centos7.3:
     builddeps:
       - make
     deps:
       - python
-      - python-requests
     commands:
       pre:
         - yum install epel-release
-  ubuntu16.04:
-    builddeps:
-      - make
-    deps:
-      - python3
-      - python3-requests
-  ubuntu17.10:
-    builddeps:
-      - make
-    deps:
-      - python3
-      - python3-requests
   debian9:
     builddeps:
       - make
     deps:
       - python3
-      - python3-requests
+  fedora26:
+    builddeps:
+      - make
+    deps:
+      - python3
+  opensuse42.3:
+    builddeps:
+      - make
+    deps:
+      - python3
+  ubuntu16.04:
+    builddeps:
+      - make
+    deps:
+      - python3
+  ubuntu17.10:
+    builddeps:
+      - make
+    deps:
+      - python3

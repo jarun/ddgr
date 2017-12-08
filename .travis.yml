@@ -10,7 +10,6 @@ dist: trusty
 before_install:
   - "pip install --upgrade setuptools"
   - "pip install --upgrade pip"
-  - "pip install --upgrade requests"
   - "pip install --upgrade flake8"
   - "pip install --upgrade pylint"
 script:
