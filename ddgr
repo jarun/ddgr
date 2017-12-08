@@ -30,12 +30,12 @@ import textwrap
 import urllib.error
 import urllib.parse
 import urllib.request
-from urllib3.util import parse_url
+import webbrowser
+
 try:
     import readline
 except ImportError:
     pass
-import webbrowser
 
 # Basic setup
 
@@ -959,7 +959,7 @@ class Result(object):
         colors = self.colors
 
         if not self.urlexpand:
-            url = '  [' + parse_url(url).netloc + ']'
+            url = '  [' + urllib.parse.urlparse(url).netloc + ']'
 
         # Pad index and url with `indent` number of spaces
         if indent:
