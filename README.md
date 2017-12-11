@@ -44,6 +44,7 @@ Unlike the web interface, you can specify the number of search results you would
     - [Text-based browser integration](#text-based-browser-integration)
     - [Colors](#colors)
 - [Examples](#examples)
+- [Troubleshooting](#troubleshooting)
 - [Collaborators](#collaborators)
 - [In the Press](#in-the-press)
 
@@ -232,6 +233,12 @@ The color configuration is similar to that of [`googler` colors](https://github.
         d n
         d g keywords
         d 1
+
+### Troubleshooting
+
+1. Some users have reported problems with a colored omniprompt (refer to issue [#40](https://github.com/jarun/ddgr/issues/40)) with iTerm2 on OS X. To force a plain omniprompt:
+
+       export DISABLE_PROMPT_COLOR=1
 
 ### Collaborators
 

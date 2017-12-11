@@ -1105,9 +1105,6 @@ class DdgCmd(object):
 
     """
 
-    # Class variables
-    colors = None
-
     def __init__(self, opts):
         super().__init__()
         self.index = 0
@@ -1119,6 +1116,10 @@ class DdgCmd(object):
 
         self.results = []
         self._urltable = {}
+
+        colors = self.colors
+        message = 'ddgr (? for help)'
+        self.prompt = (colors.prompt + message + colors.reset + ' ') if (colors and os.getenv('DISABLE_PROMPT_COLOR') is None) else (message + ': ')
 
     @property
     def options(self):
@@ -1245,7 +1246,7 @@ class DdgCmd(object):
         """Show omniprompt and read user command line.
 
         Command line is always stripped, and each consecutive group of
-        whitespace is replaced with a single space charater. If the
+        whitespace is replaced with a single space character. If the
         command line is empty after stripping, when ignore it and keep
         reading. Exit with status 0 if we get EOF or an empty line
         (pre-strip, that is, a raw <enter>) twice in a row.
@@ -1253,13 +1254,10 @@ class DdgCmd(object):
         The new command line (non-empty) is stored in ``self.cmd``.
 
         """
-        colors = self.colors
-        message = 'ddgr (? for help)'
-        prompt = (colors.prompt + message + colors.reset + ' ') if colors else (message + ': ')
         enter_count = 0
         while True:
             try:
-                cmd = input(prompt)
+                cmd = input(self.prompt)
             except EOFError:
                 sys.exit(0)
 
