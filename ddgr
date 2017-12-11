@@ -1119,7 +1119,8 @@ class DdgCmd(object):
 
         colors = self.colors
         message = 'ddgr (? for help)'
-        self.prompt = (colors.prompt + message + colors.reset + ' ') if (colors and os.getenv('DISABLE_PROMPT_COLOR') is None) else (message + ': ')
+        self.prompt = ((colors.prompt + message + colors.reset + ' ')
+                        if (colors and os.getenv('DISABLE_PROMPT_COLOR') is None) else (message + ': '))
 
     @property
     def options(self):
