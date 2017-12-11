@@ -3,6 +3,7 @@
 <p align="center">
 <a href="https://github.com/jarun/ddgr/releases/latest"><img src="https://img.shields.io/github/release/jarun/ddgr.svg?maxAge=600" alt="Latest release" /></a>
 <a href="https://aur.archlinux.org/packages/ddgr"><img src="https://img.shields.io/aur/version/ddgr.svg?maxAge=600" alt="AUR" /></a>
+<a href="http://formulae.brew.sh/formula/ddgr"><img src="https://img.shields.io/homebrew/v/ddgr.svg?maxAge=600" alt="Homebrew" /></a>
 <a href="https://packages.debian.org/search?keywords=ddgr&searchon=names&exact=1"><img src="https://img.shields.io/badge/debian-10+-blue.svg?maxAge=2592000" alt="Debian Buster+" /></a>
 <a href="https://packages.ubuntu.com/search?keywords=ddgr&searchon=names&exact=1"><img src="https://img.shields.io/badge/ubuntu-18.04+-blue.svg?maxAge=2592000" alt="Ubuntu Bionic+" /></a>
 <a href="https://launchpad.net/~twodopeshaggy/+archive/ubuntu/jarun/"><img src="https://img.shields.io/badge/ubuntu-PPA-blue.svg?maxAge=2592000" alt="Ubuntu PPA" /></a>
@@ -76,6 +77,8 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 - [AUR](https://aur.archlinux.org/packages/ddgr/)
 - [Debian](https://packages.debian.org/search?keywords=ddgr&searchon=names&exact=1)
 - [FreeBSD](https://www.freshports.org/www/ddgr/) (`pkg install ddgr`)
+- [Homebrew](http://formulae.brew.sh/formula/ddgr)
+- [NixOS](https://github.com/NixOS/nixpkgs/tree/master/pkgs/applications/misc/ddgr) (`sudo nix-env -i ddgr`)
 - [Snap Store](https://snapcraft.io/ddgr/) (`sudo snap install ddgr`)
 - [Ubuntu](https://packages.ubuntu.com/search?keywords=ddgr&searchon=names&exact=1)
 - [Ubuntu PPA](https://launchpad.net/~twodopeshaggy/+archive/ubuntu/jarun/)
