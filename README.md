@@ -80,6 +80,7 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 - [FreeBSD](https://www.freshports.org/www/ddgr/) (`pkg install ddgr`)
 - [Homebrew](http://formulae.brew.sh/formula/ddgr)
 - [NixOS](https://github.com/NixOS/nixpkgs/tree/master/pkgs/applications/misc/ddgr) (`sudo nix-env -i ddgr`)
+- [Slackware] (http://slackbuilds.org/repository/14.2/network/ddgr/)
 - [Snap Store](https://snapcraft.io/ddgr/) (`sudo snap install ddgr`)
 - [Ubuntu](https://packages.ubuntu.com/search?keywords=ddgr&searchon=names&exact=1)
 - [Ubuntu PPA](https://launchpad.net/~twodopeshaggy/+archive/ubuntu/jarun/)
