@@ -27,7 +27,7 @@ apps:
 parts:
   ddgr:
     plugin: make
-    source: https://github.com/jarun/ddgr.git
+    source: .
     stage-packages:
       - python3
       - python3-requests
