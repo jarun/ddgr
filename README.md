@@ -71,9 +71,9 @@ Unlike the web interface, you can specify the number of search results you would
 
 `ddgr` requires Python 3.4 or later. Only the latest patch release of each minor version is supported.
 
-Note: v1.1 and below require the Python3 `requests` library to make HTTPS requests. This dependency is removed in the later releases.
+For copy url to clipboard support at the omniprompt, install [`pyperclip`](https://pypi.python.org/pypi/pyperclip). This is an optional dependency.
 
-For clipboard copy support, install [`pyperclip`](https://pypi.python.org/pypi/pyperclip) from `pip`.
+Note: v1.1 and below require the Python3 `requests` library to make HTTPS requests. This dependency is removed in the later releases.
 
 #### From a package manager
 
@@ -163,6 +163,7 @@ omniprompt keys:
   d keywords            new DDG search for 'keywords' with original options
                         should be used to search omniprompt keys and indices
   x                     toggle url expansion
+  c index               copy url to clipboard (needs pyperclip)
   q, ^D, double Enter   exit ddgr
   ?                     show omniprompt help
   *                     other inputs are considered as new search keywords

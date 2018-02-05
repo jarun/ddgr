@@ -37,11 +37,6 @@ try:
 except ImportError:
     pass
 
-try:
-    import pyperclip
-except ImportError:
-    pass
-
 # Basic setup
 
 logging.basicConfig(format='[%(levelname)s] %(message)s')
@@ -1461,13 +1456,13 @@ class DdgCmd(object):
                     Result.urlexpand = not Result.urlexpand
                     printerr('url expansion toggled.')
                 elif cmd[0] == 'c' and cmd[2:].isdigit():
-                    url = self._urltable[cmd[2:]]
                     try:
+                        import pyperclip
+
+                        url = self._urltable[cmd[2:]]
                         pyperclip.copy(url)
-                    except NameError:
-                        printerr("cannot copy url: pyperclip not installed")
-                    else:
-                        printerr('copied url: {}'.format(url))
+                    except ImportError:
+                        printerr('pyperclip missing')
                 else:
                     self.do_ddg(cmd)
             except NoKeywordsException:
@@ -1490,7 +1485,7 @@ class DdgArgumentParser(argparse.ArgumentParser):
           d keywords            new DDG search for 'keywords' with original options
                                 should be used to search omniprompt keys and indices
           x                     toggle url expansion
-          c <index>             copy url to clipboard (needs pyperclip)
+          c index               copy url to clipboard (needs pyperclip)
           q, ^D, double Enter   exit ddgr
           ?                     show omniprompt help
           *                     other inputs are considered as new search keywords
