@@ -1487,6 +1487,7 @@ class DdgArgumentParser(argparse.ArgumentParser):
           d keywords            new DDG search for 'keywords' with original options
                                 should be used to search omniprompt keys and indices
           x                     toggle url expansion
+          c <index>             copy url to clipboard
           q, ^D, double Enter   exit ddgr
           ?                     show omniprompt help
           *                     other inputs are considered as new search keywords
