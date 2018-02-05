@@ -73,6 +73,8 @@ Unlike the web interface, you can specify the number of search results you would
 
 Note: v1.1 and below require the Python3 `requests` library to make HTTPS requests. This dependency is removed in the later releases.
 
+For clipboard copy support, install [`pyperclip`](https://pypi.python.org/pypi/pyperclip) from `pip`.
+
 #### From a package manager
 
 - [AUR](https://aur.archlinux.org/packages/ddgr/)
