@@ -23,8 +23,9 @@ import html.entities
 import html.parser
 import logging
 import os
+import shutil
 import signal
-import subprocess
+from subprocess import Popen, PIPE, DEVNULL
 import sys
 import textwrap
 import urllib.error
@@ -95,7 +96,7 @@ def open_url(url):
 
     # Custom URL handler gets max priority
     if hasattr(open_url, 'url_handler'):
-        p = subprocess.Popen([open_url.url_handler, url], stdin=subprocess.PIPE)
+        p = Popen([open_url.url_handler, url], stdin=PIPE)
         p.communicate()
         return
 
@@ -1455,14 +1456,29 @@ class DdgCmd(object):
                 elif cmd == 'x':
                     Result.urlexpand = not Result.urlexpand
                     printerr('url expansion toggled.')
-                elif cmd[0] == 'c' and cmd[2:].isdigit():
+                elif cmd.startswith('c ') and cmd[2:].isdigit():
                     try:
-                        import pyperclip
+                        # try copying the url to clipboard using native utilities
+                        if sys.platform.startswith(('linux', 'freebsd', 'openbsd')):
+                            if shutil.which('xsel') is None:
+                                raise FileNotFoundError
+                            copier_params = ['xsel', '-b', '-i']
+                        elif sys.platform == 'darwin':
+                            copier_params = ['pbcopy']
+                        elif sys.platform == 'win32':
+                            copier_params = ['clip']
+                        else:
+                            copier_params = []
 
-                        url = self._urltable[cmd[2:]]
-                        pyperclip.copy(url)
-                    except ImportError:
-                        printerr('pyperclip missing')
+                        if not copier_params:
+                            printerr('operating system not identified')
+                        else:
+                            Popen(copier_params, stdin=PIPE, stdout=DEVNULL,
+                                  stderr=DEVNULL).communicate(self._urltable[cmd[2:]].encode('utf-8'))
+                    except FileNotFoundError:
+                        printerr('xsel missing')
+                    except:
+                        raise NoKeywordsException
                 else:
                     self.do_ddg(cmd)
             except NoKeywordsException:
@@ -1485,7 +1501,7 @@ class DdgArgumentParser(argparse.ArgumentParser):
           d keywords            new DDG search for 'keywords' with original options
                                 should be used to search omniprompt keys and indices
           x                     toggle url expansion
-          c index               copy url to clipboard (needs pyperclip)
+          c index               copy url to clipboard
           q, ^D, double Enter   exit ddgr
           ?                     show omniprompt help
           *                     other inputs are considered as new search keywords
