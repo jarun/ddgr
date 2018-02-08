@@ -1477,7 +1477,7 @@ class DdgCmd(object):
                                   stderr=DEVNULL).communicate(self._urltable[cmd[2:]].encode('utf-8'))
                     except FileNotFoundError:
                         printerr('xsel missing')
-                    except:
+                    except Exception:
                         raise NoKeywordsException
                 else:
                     self.do_ddg(cmd)
