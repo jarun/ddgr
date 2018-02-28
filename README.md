@@ -3,10 +3,14 @@
 <p align="center">
 <a href="https://github.com/jarun/ddgr/releases/latest"><img src="https://img.shields.io/github/release/jarun/ddgr.svg?maxAge=600" alt="Latest release" /></a>
 <a href="https://aur.archlinux.org/packages/ddgr"><img src="https://img.shields.io/aur/version/ddgr.svg?maxAge=600" alt="AUR" /></a>
+<a href="http://formulae.brew.sh/formula/ddgr"><img src="https://img.shields.io/homebrew/v/ddgr.svg?maxAge=600" alt="Homebrew" /></a>
 <a href="https://packages.debian.org/search?keywords=ddgr&searchon=names&exact=1"><img src="https://img.shields.io/badge/debian-10+-blue.svg?maxAge=2592000" alt="Debian Buster+" /></a>
 <a href="https://apps.fedoraproject.org/packages/ddgr/overview/"><img src="https://img.shields.io/badge/fedora-26+-blue.svg?maxAge=2592000" alt="Fedora 26+" /></a>
-<a href="http://formulae.brew.sh/formula/ddgr"><img src="https://img.shields.io/homebrew/v/ddgr.svg?maxAge=600" alt="Homebrew" /></a>
+<a href="https://software.opensuse.org/package/ddgr"><img src="https://img.shields.io/badge/opensuse%20leap-15.0+-blue.svg?maxAge=2592000" alt="openSUSE Leap 15.0+" /></a>
 <a href="https://packages.ubuntu.com/search?keywords=ddgr&searchon=names&exact=1"><img src="https://img.shields.io/badge/ubuntu-18.04+-blue.svg?maxAge=2592000" alt="Ubuntu Bionic+" /></a>
+</p>
+
+<p align="center">
 <a href="https://github.com/jarun/ddgr/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-GPLv3-yellow.svg?maxAge=2592000" alt="License" /></a>
 <a href="https://travis-ci.org/jarun/ddgr"><img src="https://travis-ci.org/jarun/ddgr.svg?branch=master" alt="Build Status" /></a>
 </p>
@@ -25,7 +29,7 @@ Unlike the web interface, you can specify the number of search results you would
 
 <p align="center">
 <a href="https://saythanks.io/to/jarun"><img src="https://img.shields.io/badge/say-thanks!-ff69b4.svg" /></a>
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RMLTQ76JSXJ4Q"><img src="https://img.shields.io/badge/Donate-$5-green.svg" alt="Donate via PayPal!" /></a>
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RMLTQ76JSXJ4Q"><img src="https://img.shields.io/badge/PayPal-donate-green.svg" alt="Donate via PayPal!" /></a>
 </p>
 
 ### Table of contents
