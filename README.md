@@ -5,7 +5,7 @@
 <a href="https://aur.archlinux.org/packages/ddgr"><img src="https://img.shields.io/aur/version/ddgr.svg?maxAge=600" alt="AUR" /></a>
 <a href="http://formulae.brew.sh/formula/ddgr"><img src="https://img.shields.io/homebrew/v/ddgr.svg?maxAge=600" alt="Homebrew" /></a>
 <a href="https://packages.debian.org/search?keywords=ddgr&searchon=names&exact=1"><img src="https://img.shields.io/badge/debian-10+-blue.svg?maxAge=2592000" alt="Debian Buster+" /></a>
-<a href="https://apps.fedoraproject.org/packages/ddgr/overview/"><img src="https://img.shields.io/badge/fedora-26+-blue.svg?maxAge=2592000" alt="Fedora 26+" /></a>
+<a href="https://apps.fedoraproject.org/packages/ddgr"><img src="https://img.shields.io/badge/fedora-26+-blue.svg?maxAge=2592000" alt="Fedora 26+" /></a>
 <a href="https://software.opensuse.org/package/ddgr"><img src="https://img.shields.io/badge/opensuse%20leap-15.0+-blue.svg?maxAge=2592000" alt="openSUSE Leap 15.0+" /></a>
 <a href="https://packages.ubuntu.com/search?keywords=ddgr&searchon=names&exact=1"><img src="https://img.shields.io/badge/ubuntu-18.04+-blue.svg?maxAge=2592000" alt="Ubuntu Bionic+" /></a>
 </p>
@@ -83,7 +83,7 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 
 - [AUR](https://aur.archlinux.org/packages/ddgr/)
 - [Debian](https://packages.debian.org/search?keywords=ddgr&searchon=names&exact=1)
-- [Fedora](https://apps.fedoraproject.org/packages/ddgr/overview/) (`dnf install ddgr`)
+- [Fedora](https://apps.fedoraproject.org/packages/ddgr) (`dnf install ddgr`)
 - [FreeBSD](https://www.freshports.org/www/ddgr/) (`pkg install ddgr`)
 - [Homebrew](http://formulae.brew.sh/formula/ddgr)
 - [NixOS](https://github.com/NixOS/nixpkgs/tree/master/pkgs/applications/misc/ddgr) (`sudo nix-env -i ddgr`)
