@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import codecs
 import collections
 import functools
 import gzip
@@ -165,6 +166,62 @@ def https_post(url, data=None, headers=None, proxies=None, expected_code=None):
     finally:
         payload = payload.decode('utf-8')
     return code, payload
+
+
+def unwrap(text):
+    """Unwrap text."""
+    lines = text.split('\n')
+    result = ''
+    for i in range(len(lines) - 1):
+        result += lines[i]
+        if not lines[i]:
+            # Paragraph break
+            result += '\n\n'
+        elif lines[i + 1]:
+            # Next line is not paragraph break, add space
+            result += ' '
+    # Handle last line
+    result += lines[-1] if lines[-1] else '\n'
+    return result
+
+
+def check_stdout_encoding():
+    """Make sure stdout encoding is utf-8.
+
+    If not, print error message and instructions, then exit with
+    status 1.
+
+    This function is a no-op on win32 because encoding on win32 is
+    messy, and let's just hope for the best. /s
+    """
+    if sys.platform == 'win32':
+        return
+
+    # Use codecs.lookup to resolve text encoding alias
+    encoding = codecs.lookup(sys.stdout.encoding).name
+    if encoding != 'utf-8':
+        locale_lang, locale_encoding = locale.getlocale()
+        if locale_lang is None:
+            locale_lang = '<unknown>'
+        if locale_encoding is None:
+            locale_encoding = '<unknown>'
+        ioencoding = os.getenv('PYTHONIOENCODING', 'not set')
+        sys.stderr.write(unwrap(textwrap.dedent("""\
+        stdout encoding '{encoding}' detected. ddgr requires utf-8 to
+        work properly. The wrong encoding may be due to a non-UTF-8
+        locale or an improper PYTHONIOENCODING. (For the record, your
+        locale language is {locale_lang} and locale encoding is
+        {locale_encoding}; your PYTHONIOENCODING is {ioencoding}.)
+
+        Please set a UTF-8 locale (e.g., en_US.UTF-8) or set
+        PYTHONIOENCODING to utf-8.
+        """.format(
+            encoding=encoding,
+            locale_lang=locale_lang,
+            locale_encoding=locale_encoding,
+            ioencoding=ioencoding,
+        ))))
+        sys.exit(1)
 
 
 def printerr(msg):
@@ -1677,6 +1734,8 @@ def main():
     # Handle query completer
     if opts.complete is not None:
         completer_run(opts.complete)
+
+    check_stdout_encoding()
 
     # Add cmdline args to readline history
     if opts.keywords:
