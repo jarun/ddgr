@@ -90,6 +90,7 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 - [openSUSE](https://software.opensuse.org/package/ddgr)
 - [Slackware](http://slackbuilds.org/repository/14.2/network/ddgr/)
 - [Snap Store](https://snapcraft.io/ddgr/) (`sudo snap install ddgr`)
+- [Source Mage](http://codex.sourcemage.org/test/utils/ddgr/) (`cast ddgr`)
 - [Ubuntu](https://packages.ubuntu.com/search?keywords=ddgr&searchon=names&exact=1)
 - [Ubuntu PPA](https://launchpad.net/~twodopeshaggy/+archive/ubuntu/jarun/)
 - [Void Linux](https://github.com/voidlinux/void-packages/tree/master/srcpkgs/ddgr) (`sudo xbps-install -S ddgr`)
