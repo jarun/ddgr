@@ -1,4 +1,14 @@
-ddgr 1.2
+ddgr v1.4
+2018-04-05
+
+What's in?
+- Copy URL at omniprompt
+- Check default stdout encoding at start
+- New environment variable DISABLE_PROMPT_COLOR
+
+-------------------------------------------------------------------------------
+
+ddgr v1.2
 2017-12-08
 
 What's in?
@@ -8,7 +18,7 @@ What's in?
 
 -------------------------------------------------------------------------------
 
-ddgr 1.1
+ddgr v1.1
 2017-11-29
 
 What's in?
@@ -21,7 +31,7 @@ What's in?
 
 -------------------------------------------------------------------------------
 
-ddgr 1.0
+ddgr v1.0
 2017-11-05
 
 What's in?
