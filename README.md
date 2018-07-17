@@ -19,13 +19,13 @@
 <a href="https://asciinema.org/a/151849"><img src="https://asciinema.org/a/151849.png" alt="Asciicast" width="734"/></a>
 </p>
 
-`ddgr` is a cmdline utility to search DuckDuckGo from the terminal. While [`googler`](https://github.com/jarun/googler) is highly popular among cmdline users, in many forums the need of a similar utility for privacy-aware DuckDuckGo came up. [DuckDuckGo Bangs](https://duckduckgo.com/bang) are super-cool too! So here's `ddgr` for you!
+`ddgr` is a cmdline utility to search DuckDuckGo from the terminal. While [googler](https://github.com/jarun/googler) is highly popular among cmdline users, in many forums the need of a similar utility for privacy-aware DuckDuckGo came up. [DuckDuckGo Bangs](https://duckduckgo.com/bang) are super-cool too! So here's `ddgr` for you!
 
 Unlike the web interface, you can specify the number of search results you would like to see per page. It's more convenient than skimming through 30-odd search results per page. The default interface is carefully designed to use minimum space without sacrificing readability.
 
 `ddgr` isn't affiliated to DuckDuckGo in any way.
 
-*Love smart and efficient terminal utilities? Explore my repositories. Buy me a cup of coffee if they help you.*
+*Love smart and efficient utilities? Explore [my repositories](https://github.com/jarun?tab=repositories). Buy me a cup of coffee if they help you.*
 
 <p align="center">
 <a href="https://saythanks.io/to/jarun"><img src="https://img.shields.io/badge/say-thanks!-ff69b4.svg" /></a>
