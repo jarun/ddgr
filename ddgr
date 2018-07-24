@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#!/usr/bin/env python3
 #
 # Copyright (C) 2016-2018 Arun Prakash Jana <engineerarun@gmail.com>
 #
@@ -524,35 +524,20 @@ class DdgConnection(object):
     ------
     DDGConnectionError
 
-    Attributes
-    ----------
-    host : str
-        The currently connected host. Read-only property. Use
-        `new_connection` to change host.
-
     Methods
     -------
     fetch_page(url)
 
     """
 
-    def __init__(self, host, port=None, timeout=45, proxy=None):
+    def __init__(self, proxy=None):
         self._u = 'https://duckduckgo.com/html'
-        self._host = None
-        self._port = None
-        self._conn = None
-        self.cookie = ''
 
         self._proxies = {
             'https': proxy if proxy is not None else (os.getenv('https_proxy')
                                                       if os.getenv('https_proxy') is not None
                                                       else os.getenv('HTTPS_PROXY'))
         }
-
-    @property
-    def host(self):
-        """The host currently connected to."""
-        return self._host
 
     def fetch_page(self, url):
         """Fetch a URL.
@@ -1172,7 +1157,7 @@ class DdgCmd(object):
 
         self._ddg_url = DdgUrl(opts)
         proxy = opts.proxy if hasattr(opts, 'proxy') else None
-        self._conn = DdgConnection(self._ddg_url.hostname, proxy=proxy)
+        self._conn = DdgConnection(proxy=proxy)
 
         self.results = []
         self._urltable = {}
@@ -1660,7 +1645,8 @@ def completer_fetch_completions(prefix):
 
     # One can pass the 'hl' query param to specify the language. We
     # ignore that for now.
-    api_url = ('https://duckduckgo.com/ac/?q=%s&kl=wt-wt' % prefix)
+    api_url = ('https://duckduckgo.com/ac/?q=%s&kl=wt-wt' %
+               urllib.parse.quote(prefix, safe=''))
     # A timeout of 3 seconds seems to be overly generous already.
     resp = urllib.request.urlopen(api_url, timeout=3)
     respobj = json.loads(resp.read().decode('utf-8'))
