@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#! /usr/bin/python3
 #
 # Copyright (C) 2016-2018 Arun Prakash Jana <engineerarun@gmail.com>
 #
@@ -524,20 +524,35 @@ class DdgConnection(object):
     ------
     DDGConnectionError
 
+    Attributes
+    ----------
+    host : str
+        The currently connected host. Read-only property. Use
+        `new_connection` to change host.
+
     Methods
     -------
     fetch_page(url)
 
     """
 
-    def __init__(self, proxy=None):
+    def __init__(self, host, port=None, timeout=45, proxy=None):
         self._u = 'https://duckduckgo.com/html'
+        self._host = None
+        self._port = None
+        self._conn = None
+        self.cookie = ''
 
         self._proxies = {
             'https': proxy if proxy is not None else (os.getenv('https_proxy')
                                                       if os.getenv('https_proxy') is not None
                                                       else os.getenv('HTTPS_PROXY'))
         }
+
+    @property
+    def host(self):
+        """The host currently connected to."""
+        return self._host
 
     def fetch_page(self, url):
         """Fetch a URL.
@@ -1157,7 +1172,7 @@ class DdgCmd(object):
 
         self._ddg_url = DdgUrl(opts)
         proxy = opts.proxy if hasattr(opts, 'proxy') else None
-        self._conn = DdgConnection(proxy=proxy)
+        self._conn = DdgConnection(self._ddg_url.hostname, proxy=proxy)
 
         self.results = []
         self._urltable = {}
@@ -1503,9 +1518,12 @@ class DdgCmd(object):
                     try:
                         # try copying the url to clipboard using native utilities
                         if sys.platform.startswith(('linux', 'freebsd', 'openbsd')):
-                            if shutil.which('xsel') is None:
+                            if shutil.which('xsel') != None:
+                                copier_params = ['xsel', '-b', '-i']
+                            elif shutil.which('xclip') != None:
+                                copier_params = ['xclip', '-selection', 'clipboard']
+                            else:
                                 raise FileNotFoundError
-                            copier_params = ['xsel', '-b', '-i']
                         elif sys.platform == 'darwin':
                             copier_params = ['pbcopy']
                         elif sys.platform == 'win32':
@@ -1519,7 +1537,7 @@ class DdgCmd(object):
                             Popen(copier_params, stdin=PIPE, stdout=DEVNULL,
                                   stderr=DEVNULL).communicate(self._urltable[cmd[2:]].encode('utf-8'))
                     except FileNotFoundError:
-                        printerr('xsel missing')
+                        printerr('xsel and xclip missing')
                     except Exception:
                         raise NoKeywordsException
                 else:
@@ -1642,8 +1660,7 @@ def completer_fetch_completions(prefix):
 
     # One can pass the 'hl' query param to specify the language. We
     # ignore that for now.
-    api_url = ('https://duckduckgo.com/ac/?q=%s&kl=wt-wt' %
-               urllib.parse.quote(prefix, safe=''))
+    api_url = ('https://duckduckgo.com/ac/?q=%s&kl=wt-wt' % prefix)
     # A timeout of 3 seconds seems to be overly generous already.
     resp = urllib.request.urlopen(api_url, timeout=3)
     respobj = json.loads(resp.read().decode('utf-8'))
