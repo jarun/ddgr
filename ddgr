@@ -1503,9 +1503,12 @@ class DdgCmd(object):
                     try:
                         # try copying the url to clipboard using native utilities
                         if sys.platform.startswith(('linux', 'freebsd', 'openbsd')):
-                            if shutil.which('xsel') is None:
+                            if shutil.which('xsel') is not None:
+                                copier_params = ['xsel', '-b', '-i']
+                            elif shutil.which('xclip') is not None:
+                                copier_params = ['xclip', '-selection', 'clipboard']
+                            else:
                                 raise FileNotFoundError
-                            copier_params = ['xsel', '-b', '-i']
                         elif sys.platform == 'darwin':
                             copier_params = ['pbcopy']
                         elif sys.platform == 'win32':
@@ -1519,7 +1522,7 @@ class DdgCmd(object):
                             Popen(copier_params, stdin=PIPE, stdout=DEVNULL,
                                   stderr=DEVNULL).communicate(self._urltable[cmd[2:]].encode('utf-8'))
                     except FileNotFoundError:
-                        printerr('xsel missing')
+                        printerr('xsel and xclip missing')
                     except Exception:
                         raise NoKeywordsException
                 else:
