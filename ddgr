@@ -1503,9 +1503,9 @@ class DdgCmd(object):
                     try:
                         # try copying the url to clipboard using native utilities
                         if sys.platform.startswith(('linux', 'freebsd', 'openbsd')):
-                            if shutil.which('xsel') != None:
+                            if shutil.which('xsel') is not None:
                                 copier_params = ['xsel', '-b', '-i']
-                            elif shutil.which('xclip') != None:
+                            elif shutil.which('xclip') is not None:
                                 copier_params = ['xclip', '-selection', 'clipboard']
                             else:
                                 raise FileNotFoundError
