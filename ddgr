@@ -1502,27 +1502,44 @@ class DdgCmd(object):
                 elif cmd.startswith('c ') and cmd[2:].isdigit():
                     try:
                         # try copying the url to clipboard using native utilities
+                        copier_params = []
+                        copier_mode = 'stdin'
                         if sys.platform.startswith(('linux', 'freebsd', 'openbsd')):
                             if shutil.which('xsel') is not None:
                                 copier_params = ['xsel', '-b', '-i']
                             elif shutil.which('xclip') is not None:
                                 copier_params = ['xclip', '-selection', 'clipboard']
-                            else:
-                                raise FileNotFoundError
                         elif sys.platform == 'darwin':
                             copier_params = ['pbcopy']
                         elif sys.platform == 'win32':
                             copier_params = ['clip']
-                        else:
-                            copier_params = []
+
+                        # If native clipboard utilities are absent, try to use terminal
+                        # multiplexers, tmux/GNU screen, as fallback.
+                        if not copier_params:
+                            if os.getenv('TMUX_PANE'):
+                                copier_params = ['tmux', 'set-buffer']
+                                copier_mode = 'cmdline_arg'
+                            elif os.getenv('STY'):
+                                copier_params = ['screen', '-X', 'readbuf']
+                                copier_mode = 'ext_file'
 
                         if not copier_params:
-                            printerr('operating system not identified')
+                            printerr('failed to locate suitable clipboard utility')
                         else:
-                            Popen(copier_params, stdin=PIPE, stdout=DEVNULL,
-                                  stderr=DEVNULL).communicate(self._urltable[cmd[2:]].encode('utf-8'))
-                    except FileNotFoundError:
-                        printerr('xsel and xclip missing')
+                            content = self._urltable[cmd[2:]].encode('utf-8')
+                            if copier_mode is 'stdin':
+                                Popen(copier_params, stdin=PIPE,
+                                      stdout=DEVNULL, stderr=DEVNULL).communicate(content)
+                            elif copier_mode == 'cmdline_arg':
+                                Popen(copier_params + [content], stdin=DEVNULL, stdout=DEVNULL,
+                                      stderr=DEVNULL).communicate()
+                                print('URL copied to tmux buffer.')
+                            else:
+                                with open('/tmp/screen-exchange', 'wb') as f:
+                                    f.write(content)
+                                Popen(copier_params, stdin=DEVNULL, stdout=DEVNULL,
+                                      stderr=DEVNULL).communicate()
                     except Exception:
                         raise NoKeywordsException
                 else:
