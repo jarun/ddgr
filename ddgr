@@ -1509,6 +1509,10 @@ class DdgCmd(object):
                                 copier_params = ['xsel', '-b', '-i']
                             elif shutil.which('xclip') is not None:
                                 copier_params = ['xclip', '-selection', 'clipboard']
+                            # If we're using Termux (Android) use its 'termux-api'
+                            # add-on to set device clipboard.
+                            elif shutil.which('termux-clipboard-set') is not None:
+                                copier_params = ['termux-clipboard-set']
                         elif sys.platform == 'darwin':
                             copier_params = ['pbcopy']
                         elif sys.platform == 'win32':
