@@ -75,7 +75,7 @@ Unlike the web interface, you can specify the number of search results you would
 
 `ddgr` requires Python 3.4 or later. Only the latest patch release of each minor version is supported.
 
-To copy url to clipboard at the omniprompt, `ddgr` uses `xsel` (or `xclip` as fallback) on Linux, `pbcopy` (default installed) on OS X and `clip` (default installed) on Windows.
+To copy url to clipboard at the omniprompt, `ddgr` looks for `xsel` or `xclip` or `termux-clipboard-set` (in the same order) on Linux, `pbcopy` (default installed) on OS X and `clip` (default installed) on Windows.
 
 Note: v1.1 and below require the Python3 `requests` library to make HTTPS requests. This dependency is removed in the later releases.
 
