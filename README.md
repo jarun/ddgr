@@ -81,7 +81,7 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 
 #### From a package manager
 
-- [AUR](https://aur.archlinux.org/packages/ddgr/) (`pacman -S ddgr`)
+- [AUR](https://aur.archlinux.org/packages/ddgr/) (`yaourt -S ddgr`)
 - [Debian](https://packages.debian.org/search?keywords=ddgr&searchon=names&exact=1) (`apt-get install ddgr`)
 - [Fedora](https://apps.fedoraproject.org/packages/ddgr) (`dnf install ddgr`)
 - [FreeBSD](https://www.freshports.org/www/ddgr/) (`pkg install ddgr`)
