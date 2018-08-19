@@ -115,7 +115,7 @@ To remove `ddgr` and associated docs, run
 
 #### Running standalone
 
-`ddgr` is a standalone executable. From the containing directory:
+`ddgr` is a standalone executable (and can run even on environments like Termux). From the containing directory:
 
     $ ./ddgr
 
