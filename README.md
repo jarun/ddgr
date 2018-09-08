@@ -23,6 +23,8 @@
 
 Unlike the web interface, you can specify the number of search results you would like to see per page. It's more convenient than skimming through 30-odd search results per page. The default interface is carefully designed to use minimum space without sacrificing readability.
 
+A big advantage of `ddgr` over `googler` is DuckDuckGo works over the Tor network.
+
 `ddgr` isn't affiliated to DuckDuckGo in any way.
 
 *Love smart and efficient utilities? Explore [my repositories](https://github.com/jarun?tab=repositories). Buy me a cup of coffee if they help you.*
