@@ -1,3 +1,13 @@
+ddgr v1.5
+2018-09-10
+
+What's in?
+- Support xclip as a clipboard utility on *nix
+- Support GNU Screen and tmux as clipboard fallback
+- Support Termux clipboard on Android
+
+-------------------------------------------------------------------------------
+
 ddgr v1.4
 2018-04-05
 

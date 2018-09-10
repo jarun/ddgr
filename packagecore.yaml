@@ -20,6 +20,14 @@ packages:
     commands:
       pre:
         - yum install epel-release
+  centos7.4:
+    builddeps:
+      - make
+    deps:
+      - python
+    commands:
+      pre:
+        - yum install epel-release
   debian9:
     builddeps:
       - make
@@ -31,6 +39,11 @@ packages:
     deps:
       - python3
   fedora27:
+    builddeps:
+      - make
+    deps:
+      - python3
+  fedora28:
     builddeps:
       - make
     deps:
@@ -50,7 +63,7 @@ packages:
       - make
     deps:
       - python3
-  ubuntu17.10:
+  ubuntu18.04:
     builddeps:
       - make
     deps:
