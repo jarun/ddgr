@@ -1380,14 +1380,14 @@ class DdgCmd(object):
 
         if json_output:
             # JSON output
-            import json    
+            import json
             results_object = [r.jsonizable_object() for r in results]
             print(json.dumps(results_object, indent=2, sort_keys=True, ensure_ascii=False))
         elif not results:
             print('No results.', file=sys.stderr)
         else:
             sys.stderr.write(prelude)
-            if self.index != 0 and self._opts.num:  # Paginated output
+            if self.index != 0 and self._opts.num:  # Paginated output after the initial page
                 for i, r in enumerate(results):
                     r.print_paginated(str(i + 1))
             else:  # Regular output
