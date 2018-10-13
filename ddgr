@@ -730,13 +730,13 @@ class DdgConnection(object):
 
     def fetch_instant_answer(self, url):
         try:
-            r = https_get(url.full(), 
-                        headers={
+            r = https_get(url.full(),
+                            headers={
                                 'Accept-Encoding': 'gzip',
                                 'User-Agent': USER_AGENT,
                                 'DNT': '1',
-                                },
-                        proxies=self._proxies, expected_code=200)
+                            },
+                            proxies=self._proxies, expected_code=200)
             import json
             answer = json.loads(r[1])
             if 'Answer' in answer and type(answer['Answer']) is str and answer['Answer'].strip() != '':
@@ -1374,7 +1374,7 @@ class DdgCmd(object):
         else:
             results = self.results
 
-        if self.index == 0 and self.instant_answer != None:
+        if self.index == 0 and self.instant_answer is not None:
             answer = Result(0, 'Instant Answer', 'https://duckduckgo.com/api', self.instant_answer)
             results.insert(0, answer)
 
