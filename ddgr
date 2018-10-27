@@ -1517,6 +1517,8 @@ class DdgCmd(object):
                             copier_params = ['pbcopy']
                         elif sys.platform == 'win32':
                             copier_params = ['clip']
+                        elif sys.platform.startswith('haiku'):
+                            copier_params = ['clipboard', '-i']
 
                         # If native clipboard utilities are absent, try to use terminal
                         # multiplexers, tmux/GNU screen, as fallback.
