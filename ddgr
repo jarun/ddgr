@@ -937,10 +937,7 @@ class DdgParser(html.parser.HTMLParser):
             self.textbuf += '&' + ref
 
     def record_charref(self, ref):
-        if ref.startswith('x'):
-            char = chr(int(ref[1:], 16))
-        else:
-            char = chr(int(ref))
+        char = chr(int(ref[1:], 16) if ref.startswith('x') else int(ref));
         self.textbuf += char
 
     @staticmethod
