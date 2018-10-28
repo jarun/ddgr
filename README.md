@@ -87,6 +87,7 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 - [Debian](https://packages.debian.org/search?keywords=ddgr&searchon=names&exact=1) (`apt-get install ddgr`)
 - [Fedora](https://apps.fedoraproject.org/packages/ddgr) (`dnf install ddgr`)
 - [FreeBSD](https://www.freshports.org/www/ddgr/) (`pkg install ddgr`)
+- [Haiku](https://github.com/haikuports/haikuports/tree/master/www-client/ddgr) (`pkgman install ddgr`)
 - [Homebrew](http://formulae.brew.sh/formula/ddgr) (`brew install ddgr`)
 - [NixOS](https://github.com/NixOS/nixpkgs/tree/master/pkgs/applications/misc/ddgr) (`nix-env -i ddgr`)
 - [openSUSE](https://software.opensuse.org/package/ddgr) (`zypper in ddgr`)
@@ -95,7 +96,7 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 - [Source Mage](http://codex.sourcemage.org/test/utils/ddgr/) (`cast ddgr`)
 - [Ubuntu](https://packages.ubuntu.com/search?keywords=ddgr&searchon=names&exact=1) (`apt-get install ddgr`)
 - [Ubuntu PPA](https://launchpad.net/~twodopeshaggy/+archive/ubuntu/jarun/) (`apt-get install ddgr`)
-- [Void Linux](https://github.com/voidlinux/void-packages/tree/master/srcpkgs/ddgr) (`xbps-install -S ddgr`)
+- [Void Linux](https://github.com/void-linux/void-packages/tree/master/srcpkgs/ddgr) (`xbps-install -S ddgr`)
 
 #### Release packages
 
