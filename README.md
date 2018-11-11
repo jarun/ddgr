@@ -83,7 +83,7 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 
 #### From a package manager
 
-- [AUR](https://aur.archlinux.org/packages/ddgr/) (`yaourt -S ddgr`)
+- [AUR](https://aur.archlinux.org/packages/ddgr/) (`yay -S ddgr`)
 - [Debian](https://packages.debian.org/search?keywords=ddgr&searchon=names&exact=1) (`apt-get install ddgr`)
 - [Fedora](https://apps.fedoraproject.org/packages/ddgr) (`dnf install ddgr`)
 - [FreeBSD](https://www.freshports.org/www/ddgr/) (`pkg install ddgr`)
@@ -91,6 +91,7 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 - [Homebrew](http://formulae.brew.sh/formula/ddgr) (`brew install ddgr`)
 - [NixOS](https://github.com/NixOS/nixpkgs/tree/master/pkgs/applications/misc/ddgr) (`nix-env -i ddgr`)
 - [openSUSE](https://software.opensuse.org/package/ddgr) (`zypper in ddgr`)
+- [Raspbian Testing](https://archive.raspbian.org/raspbian/pool/main/d/ddgr/) (`apt-get install ddgr`)
 - [Slackware](http://slackbuilds.org/repository/14.2/network/ddgr/) (`slackpkg install ddgr`)
 - [Snap Store](https://snapcraft.io/ddgr/) (`snap install ddgr`)
 - [Source Mage](http://codex.sourcemage.org/test/utils/ddgr/) (`cast ddgr`)
