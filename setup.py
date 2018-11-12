@@ -4,10 +4,6 @@ import re
 import setuptools
 import shutil
 
-if sys.version_info < (3, 4):
-    print('ERROR: ddgr requires at least Python 3.4 to run.')
-    sys.exit(1)
-
 shutil.copyfile('ddgr', 'ddgr.py')
 
 with open('ddgr.py', encoding='utf-8') as fp:
@@ -22,6 +18,7 @@ setuptools.setup(
     author_email='engineerarun@gmail.com',
     description='DuckDuckGo from the terminal',
     long_description='See https://github.com/jarun/ddgr#readme.',
+    python_requires='>=3.4',
     py_modules=['ddgr'],
     entry_points={
         'console_scripts': [
