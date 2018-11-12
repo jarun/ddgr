@@ -19,6 +19,7 @@ setuptools.setup(
     description='DuckDuckGo from the terminal',
     long_description='See https://github.com/jarun/ddgr#readme.',
     python_requires='>=3.4',
+    platforms=['any'],
     py_modules=['ddgr'],
     entry_points={
         'console_scripts': [
