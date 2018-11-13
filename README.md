@@ -38,17 +38,17 @@ A big advantage of `ddgr` over `googler` is DuckDuckGo works over the Tor networ
 
 - [Features](#features)
 - [Installation](#installation)
-    - [Dependencies](#dependencies)
-    - [From a package manager](#from-a-package-manager)
-    - [Release packages](#release-packages)
-    - [From source](#from-source)
-    - [Running standalone](#running-standalone)
-- [Shell completion](#shell-completion)
+  - [Dependencies](#dependencies)
+  - [From a package manager](#from-a-package-manager)
+  - [Release packages](#release-packages)
+  - [From source](#from-source)
+  - [Running standalone](#running-standalone)
+  - [Shell completion](#shell-completion)
 - [Usage](#usage)
-    - [Cmdline options](#cmdline-options)
-    - [Configuration file](#configuration-file)
-    - [Text-based browser integration](#text-based-browser-integration)
-    - [Colors](#colors)
+  - [Cmdline options](#cmdline-options)
+  - [Configuration file](#configuration-file)
+  - [Text-based browser integration](#text-based-browser-integration)
+  - [Colors](#colors)
 - [Examples](#examples)
 - [Troubleshooting](#troubleshooting)
 - [Collaborators](#collaborators)
@@ -126,7 +126,7 @@ To remove `ddgr` and associated docs, run
 
     $ ./ddgr
 
-### Shell completion
+#### Shell completion
 
 Search keyword and option completion scripts for Bash, Fish and Zsh can be found in respective subdirectories of [`auto-completion/`](auto-completion). Please refer to your shell's manual for installation instructions.
 
