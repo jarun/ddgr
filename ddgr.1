@@ -1,4 +1,4 @@
-.TH "DDGR" "1" "10 Sep 2018" "Version 1.5" "User Commands"
+.TH "DDGR" "1" "14 Nov 2018" "Version 1.6" "User Commands"
 .SH NAME
 ddgr \- DuckDuckGo from the terminal
 .SH SYNOPSIS
@@ -55,6 +55,9 @@ Expand URLs instead of showing only the domain name (default).
 .TP
 .BI "-p, --proxy=" URI
 Tunnel traffic through an HTTP proxy. \fIURI\fR is of the form \fI[http[s]://][user:pwd@]host[:port]\fR. The proxy server must support HTTP CONNECT tunneling and must not block port 443 for the relevant DuckDuckGo hosts. If a proxy is not explicitly given, the \fIhttps_proxy\fR or \fIHTTPS_PROXY\fR environment variable (if available) is used instead.
+.TP
+.BI "-I, --noinstant"
+Disable instant answer.
 .TP
 .BI "--unsafe"
 Disable safe search.

@@ -136,8 +136,8 @@ Search keyword and option completion scripts for Bash, Fish and Zsh can be found
 
 ```
 usage: ddgr [-h] [-n N] [-r REG] [-C] [--colors COLORS] [-j] [-t SPAN]
-            [-w SITE] [-x] [-p URI] [--unsafe] [--noua] [--json] [--gb] [--np]
-            [--url-handler UTIL] [--show-browser-logs] [-v] [-d]
+            [-w SITE] [-x] [-p URI] [-I] [--unsafe] [--noua] [--json] [--gb]
+            [--np] [--url-handler UTIL] [--show-browser-logs] [-v] [-d]
             [KEYWORD [KEYWORD ...]]
 
 DuckDuckGo from the terminal.
@@ -159,6 +159,7 @@ optional arguments:
   -x, --expand          Show complete url in search results
   -p URI, --proxy URI   tunnel traffic through an HTTPS proxy; URI format:
                         [http[s]://][user:pwd@]host[:port]
+  -I, --noinstant       disable instant answer
   --unsafe              disable safe search
   --noua                disable user agent
   --json                output in JSON format; implies --np

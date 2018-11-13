@@ -48,6 +48,11 @@ packages:
       - make
     deps:
       - python3
+  fedora29:
+    builddeps:
+      - make
+    deps:
+      - python3
   opensuse42.2:
     builddeps:
       - make
