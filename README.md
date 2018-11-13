@@ -58,6 +58,7 @@ A big advantage of `ddgr` over `googler` is DuckDuckGo works over the Tor networ
 
 - Fast and clean (no ads, stray URLs or clutter), custom color
 - Designed to deliver maximum readability at minimum space
+- Instant answers (which appear in the html version of DDG)
 - Specify the number of search results to show per page
 - Navigate result pages from omniprompt, open URLs in browser
 - Search and option completion scripts for Bash, Zsh and Fish

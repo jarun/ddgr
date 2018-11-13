@@ -1375,8 +1375,13 @@ class DdgCmd(object):
             results = self.results
 
         if self.index == 0 and self.instant_answer is not None:
-            answer = Result(0, 'Instant Answer', 'https://duckduckgo.com/api', self.instant_answer)
-            results.insert(0, answer)
+            if self.colors:
+                colors = self.colors
+                print(' ' + colors.title + 'Instant Answer' + colors.reset)
+                print(colors.abstract + self.instant_answer + colors.reset)
+            else:
+                print('Instant Answer')
+                print(self.instant_answer)
 
         if json_output:
             # JSON output
@@ -1385,14 +1390,14 @@ class DdgCmd(object):
             print(json.dumps(results_object, indent=2, sort_keys=True, ensure_ascii=False))
         elif not results:
             print('No results.', file=sys.stderr)
-        else:
+        elif self._opts.num:  # Paginated output
             sys.stderr.write(prelude)
-            if self.index != 0 and self._opts.num:  # Paginated output after the initial page
-                for i, r in enumerate(results):
-                    r.print_paginated(str(i + 1))
-            else:  # Regular output
-                for r in results:
-                    r.print()
+            for i, r in enumerate(results):
+                r.print_paginated(str(i + 1))
+        else:  # Regular output
+            sys.stderr.write(prelude)
+            for r in results:
+                r.print()
 
     @require_keywords
     def fetch_and_display(self, prelude='\n', json_output=False):
@@ -1844,7 +1849,6 @@ def parse_args(args=None, namespace=None):
     addarg('-r', '--reg', dest='region', default='us-en', metavar='REG',
            help="region-specific search e.g. 'us-en' for US (default); visit https://duckduckgo.com/params")
     addarg('-C', '--nocolor', dest='colorize', action='store_false', help='disable color output')
-    addarg('-I', '--noinstantanswer', dest='instant_answer', action='store_false', help='disable instant answer')
     addarg('--colors', dest='colorstr', type=argparser.is_colorstr, default=colorstr_env if colorstr_env else 'oCdgxy', metavar='COLORS',
            help='set output colors (see man page for details)')
     addarg('-j', '--ducky', action='store_true', help='open the first result in a web browser; implies --np')
@@ -1853,6 +1857,7 @@ def parse_args(args=None, namespace=None):
     addarg('-w', '--site', dest='sites', action='append', metavar='SITE', help='search sites using DuckDuckGo')
     addarg('-x', '--expand', action='store_true', help='Show complete url in search results')
     addarg('-p', '--proxy', metavar='URI', help='tunnel traffic through an HTTPS proxy; URI format: [http[s]://][user:pwd@]host[:port]')
+    addarg('-I', '--noinstant', dest='instant_answer', action='store_false', help='disable instant answer')
     addarg('--unsafe', action='store_true', help='disable safe search')
     addarg('--noua', action='store_true', help='disable user agent')
     addarg('--json', action='store_true', help='output in JSON format; implies --np')

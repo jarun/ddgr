@@ -39,6 +39,7 @@ args=(
     '(-r --reg)'{-r,--reg}'[region-specific search]:reg-lang'
     '(-C --nocolor)'{-C,--nocolor}'[disable color output]'
     '(--colors)--colors[set output colors]:six-letter string'
+    '(-I --noinstant)'{-I,--noinstant}'[disable instant answer]'
     '(-j --ducky)'{-j,--ducky}'[open the first result in web browser]'
     '(-t --time)'{-t,--time}'[limit search duration]:d/w/m'
     '(-w --site)'{-w,--site}'[search a site using DuckDuckGo]:domain'

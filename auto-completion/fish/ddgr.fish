@@ -18,6 +18,7 @@ complete -c ddgr -s n -l num    -r       --description 'show N (0<=N<=25) result
 complete -c ddgr -s r -l reg    -r       --description 'region-specific search'
 complete -c ddgr -s C -l nocolor         --description 'disable color output'
 complete -c ddgr -l colors      -r       --description 'set output colors'
+complete -c ddgr -s I -l noinstant       --description 'disable instant answer'
 complete -c ddgr -s j -l ducky           --description 'open the first result in web browser'
 complete -c ddgr -s t -l time            --description 'limit search duration (d/w/m)'
 complete -c ddgr -s w -l site   -r       --description 'search a site using DuckDuckGo'
