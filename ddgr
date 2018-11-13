@@ -132,6 +132,37 @@ def open_url(url):
     if open_url.override_text_browser:
         open_url.suppress_browser_output = browser_output
 
+def https_get(url, headers=None, proxies=None, expected_code=None):
+    """Sends an HTTPS GET request; returns the HTTP status code and the
+    decoded response payload.
+
+    By default, HTTP 301, 302 and 303 are followed; all other non-2XX
+    responses result in a urllib.error.HTTPError. If expected_code is
+    supplied, a urllib.error.HTTPError is raised unless the status code
+    matches expected_code.
+    """
+    headers = headers or {}
+    proxies = {'https': proxies['https']} if proxies.get('https') else {}
+    opener = urllib.request.build_opener(
+        urllib.request.HTTPSHandler,
+        urllib.request.ProxyHandler(proxies),
+        urllib.request.HTTPRedirectHandler,
+    )
+    req = urllib.request.Request(
+        url,
+    )
+    resp = opener.open(req)
+    code = resp.getcode()
+    if expected_code is not None and code != expected_code:
+        raise urllib.error.HTTPError(resp.geturl(), code, resp.msg, resp.info(), resp)
+    payload = resp.read()
+    try:
+        payload = gzip.decompress(payload)
+    except OSError:
+        pass
+    finally:
+        payload = payload.decode('utf-8')
+    return code, payload
 
 def https_post(url, data=None, headers=None, proxies=None, expected_code=None):
     """Sends an HTTPS POST request; returns the HTTP status code and the
@@ -507,6 +538,84 @@ class DdgUrl(object):
         self._qrycnt = count
 
 
+class DdgAPIUrl(object):
+    """
+    This class constructs the DuckDuckGo Instant Answer API URL.
+
+    Attributes
+    ----------
+    hostname : str
+        Read-write property.
+    keywords : str or list of strs
+        Read-write property.
+    url : str
+        Read-only property.
+    netloc : str
+        Read-only property.
+
+    Methods
+    -------
+    full()
+
+    """
+
+    def __init__(self, keywords):
+        self.scheme = 'https'
+        self.path = '/'
+        self.params = ''
+        self._format = 'format=json'
+        self._keywords = keywords
+
+    def __str__(self):
+        return self.url
+
+    @property
+    def url(self):
+        """The full DuckDuckGo URL you want."""
+        return self.full()
+
+    @property
+    def hostname(self):
+        """The hostname."""
+        return self.netloc
+
+    @hostname.setter
+    def hostname(self, hostname):
+        self.netloc = hostname
+
+    @property
+    def keywords(self):
+        """The keywords, either a str or a list of strs."""
+        return self._keywords
+
+    @keywords.setter
+    def keywords(self, keywords):
+        self._keywords = keywords
+
+    @property
+    def netloc(self):
+        """The hostname."""
+        return 'api.duckduckgo.com'
+
+    def full(self):
+        """Return the full URL.
+
+        Returns
+        -------
+        str
+
+        """
+        q = ''
+        if self._keywords:
+            if isinstance(self._keywords, list):
+                q += '+'.join([kw for kw in self._keywords])
+            else:
+                q += self._keywords
+
+        url = (self.scheme + ':') if self.scheme else ''
+        url += '//' + self.netloc + '/?q=' + q + "&" + self._format
+        return url
+
 class DDGConnectionError(Exception):
     pass
 
@@ -619,6 +728,22 @@ class DdgConnection(object):
 
         return r
 
+    def fetch_instant_answer(self, url):
+        try:
+            r = https_get(url.full(),
+                            headers={
+                                'Accept-Encoding': 'gzip',
+                                'User-Agent': USER_AGENT,
+                                'DNT': '1',
+                            },
+                            proxies=self._proxies, expected_code=200)
+            import json
+            answer = json.loads(r[1])
+            if 'Answer' in answer and type(answer['Answer']) is str and answer['Answer'].strip() != '':
+                return answer['Answer']
+        except Exception as e:
+            logerr(e)
+        return None
 
 def annotate_tag(annotated_starttag_handler):
     # See parser logic within the DdgParser class for documentation.
@@ -1159,6 +1284,7 @@ class DdgCmd(object):
         proxy = opts.proxy if hasattr(opts, 'proxy') else None
         self._conn = DdgConnection(proxy=proxy)
 
+        self.instant_answer = None
         self.results = []
         self._urltable = {}
 
@@ -1193,6 +1319,9 @@ class DdgCmd(object):
 
         """
         # This method also sets self._urltable.
+        if self._opts.instant_answer:
+            self.instant_answer = self._conn.fetch_instant_answer(DdgAPIUrl(self._opts.keywords))
+
         page = self._conn.fetch_page(self._ddg_url)
 
         if page is None:
@@ -1245,6 +1374,10 @@ class DdgCmd(object):
         else:
             results = self.results
 
+        if self.index == 0 and self.instant_answer is not None:
+            answer = Result(0, 'Instant Answer', 'https://duckduckgo.com/api', self.instant_answer)
+            results.insert(0, answer)
+
         if json_output:
             # JSON output
             import json
@@ -1252,14 +1385,14 @@ class DdgCmd(object):
             print(json.dumps(results_object, indent=2, sort_keys=True, ensure_ascii=False))
         elif not results:
             print('No results.', file=sys.stderr)
-        elif self._opts.num:  # Paginated output
+        else:
             sys.stderr.write(prelude)
-            for i, r in enumerate(results):
-                r.print_paginated(str(i + 1))
-        else:  # Regular output
-            sys.stderr.write(prelude)
-            for r in results:
-                r.print()
+            if self.index != 0 and self._opts.num:  # Paginated output after the initial page
+                for i, r in enumerate(results):
+                    r.print_paginated(str(i + 1))
+            else:  # Regular output
+                for r in results:
+                    r.print()
 
     @require_keywords
     def fetch_and_display(self, prelude='\n', json_output=False):
@@ -1711,6 +1844,7 @@ def parse_args(args=None, namespace=None):
     addarg('-r', '--reg', dest='region', default='us-en', metavar='REG',
            help="region-specific search e.g. 'us-en' for US (default); visit https://duckduckgo.com/params")
     addarg('-C', '--nocolor', dest='colorize', action='store_false', help='disable color output')
+    addarg('-I', '--noinstantanswer', dest='instant_answer', action='store_false', help='disable instant answer')
     addarg('--colors', dest='colorstr', type=argparser.is_colorstr, default=colorstr_env if colorstr_env else 'oCdgxy', metavar='COLORS',
            help='set output colors (see man page for details)')
     addarg('-j', '--ducky', action='store_true', help='open the first result in a web browser; implies --np')
