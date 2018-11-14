@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#
+
 # Copyright (C) 2016-2018 Arun Prakash Jana <engineerarun@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -43,9 +43,9 @@ except ImportError:
 # Basic setup
 
 logging.basicConfig(format='[%(levelname)s] %(message)s')
-logger = logging.getLogger()
-logdbg = logger.debug
-logerr = logger.error
+LOGGER = logging.getLogger()
+LOGDBG = LOGGER.debug
+LOGERR = LOGGER.error
 
 def sigint_handler(signum, frame):
     print('\nInterrupted.', file=sys.stderr)
@@ -71,7 +71,7 @@ COLORMAP = {k: '\x1b[%sm' % v for k, v in {
 
 USER_AGENT = 'ddgr/{} (textmode; Linux x86_64; 1024x768)'.format(_VERSION_)
 
-text_browsers = ['elinks', 'links', 'lynx', 'w3m', 'www-browser']
+TEXT_BROWSERS = ['elinks', 'links', 'lynx', 'w3m', 'www-browser']
 
 # Global helper functions
 
@@ -94,20 +94,20 @@ def open_url(url):
     Note: If a GUI browser is indeed found, this option ignores the program
           option `show-browser-logs`
     """
-    logdbg('Opening %s', url)
+    LOGDBG('Opening %s', url)
 
     # Custom URL handler gets max priority
     if hasattr(open_url, 'url_handler'):
-        p = Popen([open_url.url_handler, url], stdin=PIPE)
-        p.communicate()
+        pipe = Popen([open_url.url_handler, url], stdin=PIPE)
+        pipe.communicate()
         return
 
     browser = webbrowser.get()
     if open_url.override_text_browser:
         browser_output = open_url.suppress_browser_output
-        for name in [b for b in webbrowser._tryorder if b not in text_browsers]:
+        for name in [b for b in webbrowser._tryorder if b not in TEXT_BROWSERS]:
             browser = webbrowser.get(name)
-            logdbg(browser)
+            LOGDBG(browser)
 
             # Found a GUI browser, suppress browser output
             open_url.suppress_browser_output = True
@@ -514,7 +514,7 @@ class DdgUrl(object):
         qd['curindex'] = self._curindex
         qd['page'] = self._page
         qd['safe'] = self._safe
-        if (self._curindex < 0):
+        if self._curindex < 0:
             qd['nextParams'] = self._nextParams_prev
         else:
             qd['nextParams'] = self._nextParams_next
@@ -674,56 +674,56 @@ class DdgConnection(object):
         """
         dic = url.query()
         page = dic['page']
-        logdbg('q:%s, region:%s, page:%d, curindex:%d, safe:%d', dic['q'], dic['region'], page, dic['curindex'], dic['safe'])
-        logdbg('nextParams:%s', dic['nextParams'])
-        logdbg('proxy:%s', self._proxies)
+        LOGDBG('q:%s, region:%s, page:%d, curindex:%d, safe:%d', dic['q'], dic['region'], page, dic['curindex'], dic['safe'])
+        LOGDBG('nextParams:%s', dic['nextParams'])
+        LOGDBG('proxy:%s', self._proxies)
 
         try:
             if page == 0:
                 _, r = https_post(self._u,
                                   headers={
-                                           'Accept-Encoding': 'gzip',
-                                           'User-Agent': USER_AGENT,
-                                           'DNT': '1',
-                                          },
+                                      'Accept-Encoding': 'gzip',
+                                      'User-Agent': USER_AGENT,
+                                      'DNT': '1',
+                                  },
                                   data={
-                                        'q': dic['q'],
-                                        'b': '',
-                                        'df': dic['duration'],
-                                        'kf': '-1',
-                                        'kh': '1',
-                                        'kl': dic['region'],
-                                        'kp': dic['safe'],
-                                        'k1': '-1',
-                                       },
+                                      'q': dic['q'],
+                                      'b': '',
+                                      'df': dic['duration'],
+                                      'kf': '-1',
+                                      'kh': '1',
+                                      'kl': dic['region'],
+                                      'kp': dic['safe'],
+                                      'k1': '-1',
+                                  },
                                   proxies=self._proxies,
                                   expected_code=200)
             else:
                 _, r = https_post(self._u,
                                   headers={
-                                           'Accept-Encoding': 'gzip',
-                                           'User-Agent': USER_AGENT,
-                                           'DNT': '1',
-                                          },
+                                      'Accept-Encoding': 'gzip',
+                                      'User-Agent': USER_AGENT,
+                                      'DNT': '1',
+                                  },
                                   data={
-                                        'q': dic['q'],  # The query string
-                                        's': str(50 * (page - 1) + 30),  # Page index
-                                        'nextParams': dic['nextParams'],  # nextParams from last visited page
-                                        'v': 'l',
-                                        'o': 'json',
-                                        'dc': str(dic['curindex']),  # Start from total fetched result index
-                                        'df': dic['duration'],
-                                        'api': '/d.js',
-                                        'kf': '-1',  # Disable favicons
-                                        'kh': '1',  # HTTPS always ON
-                                        'kl': dic['region'],  # Region code
-                                        'kp': dic['safe'],  # Safe search
-                                        'k1': '-1',  # Advertisements off
-                                       },
+                                      'q': dic['q'],  # The query string
+                                      's': str(50 * (page - 1) + 30),  # Page index
+                                      'nextParams': dic['nextParams'],  # nextParams from last visited page
+                                      'v': 'l',
+                                      'o': 'json',
+                                      'dc': str(dic['curindex']),  # Start from total fetched result index
+                                      'df': dic['duration'],
+                                      'api': '/d.js',
+                                      'kf': '-1',  # Disable favicons
+                                      'kh': '1',  # HTTPS always ON
+                                      'kl': dic['region'],  # Region code
+                                      'kp': dic['safe'],  # Safe search
+                                      'k1': '-1',  # Advertisements off
+                                  },
                                   proxies=self._proxies,
                                   expected_code=200)
         except Exception as e:
-            logerr(e)
+            LOGERR(e)
             return None
 
         return r
@@ -731,18 +731,18 @@ class DdgConnection(object):
     def fetch_instant_answer(self, url):
         try:
             r = https_get(url.full(),
-                            headers={
-                                'Accept-Encoding': 'gzip',
-                                'User-Agent': USER_AGENT,
-                                'DNT': '1',
-                            },
-                            proxies=self._proxies, expected_code=200)
+                          headers={
+                              'Accept-Encoding': 'gzip',
+                              'User-Agent': USER_AGENT,
+                              'DNT': '1',
+                          },
+                          proxies=self._proxies, expected_code=200)
             import json
             answer = json.loads(r[1])
             if 'Answer' in answer and type(answer['Answer']) is str and answer['Answer'].strip() != '':
                 return answer['Answer']
         except Exception as e:
-            logerr(e)
+            LOGERR(e)
         return None
 
 def annotate_tag(annotated_starttag_handler):
@@ -1241,7 +1241,7 @@ def no_argument(method):
         if arg:
             method_name = arg.__name__
             command_name = method_name[3:] if method_name.startswith('do_') else method_name
-            logger.warning("Argument to the '%s' command ignored.", command_name)
+            LOGGER.warning("Argument to the '%s' command ignored.", command_name)
         method(self)
 
     return enforced_method
@@ -1291,7 +1291,7 @@ class DdgCmd(object):
         colors = self.colors
         message = 'ddgr (? for help)'
         self.prompt = ((colors.prompt + message + colors.reset + ' ')
-                        if (colors and os.getenv('DISABLE_PROMPT_COLOR') is None) else (message + ': '))
+                       if (colors and os.getenv('DISABLE_PROMPT_COLOR') is None) else (message + ': '))
 
     @property
     def options(self):
@@ -1327,13 +1327,13 @@ class DdgCmd(object):
         if page is None:
             return
 
-        if logger.isEnabledFor(logging.DEBUG):
+        if LOGGER.isEnabledFor(logging.DEBUG):
             import tempfile
             fd, tmpfile = tempfile.mkstemp(prefix='ddgr-response-')
             os.close(fd)
             with open(tmpfile, 'w', encoding='utf-8') as fp:
                 fp.write(page)
-            logdbg("Response body written to '%s'.", tmpfile)
+            LOGDBG("Response body written to '%s'.", tmpfile)
 
         if self._opts.num:
             _index = len(self._urltable)
@@ -1354,8 +1354,8 @@ class DdgCmd(object):
 
         self._ddg_url._nextParams_prev = parser.nextParams_prevbtn
         self._ddg_url._nextParams_next = parser.nextParams_nextbtn
-        logdbg('Prev nextParams: %s', self._ddg_url._nextParams_prev)
-        logdbg('Next nextParams: %s', self._ddg_url._nextParams_next)
+        LOGDBG('Prev nextParams: %s', self._ddg_url._nextParams_prev)
+        LOGDBG('Next nextParams: %s', self._ddg_url._nextParams_next)
 
         self._ddg_url.update_num(len(parser.results))
 
@@ -1518,6 +1518,32 @@ class DdgCmd(object):
             self._ddg_url.next_page()
             self.fetch_and_display()
 
+    def handle_range(self, nav, low, high):
+        try:
+            if self._opts.num:
+                vals = [int(x) + self.index for x in nav.split('-')]
+            else:
+                vals = [int(x) for x in nav.split('-')]
+
+            if len(vals) != 2:
+                printerr('Invalid range %s.' % nav)
+                return
+
+            if vals[0] > vals[1]:
+                vals[0], vals[1] = vals[1], vals[0]
+
+            for _id in range(vals[0], vals[1] + 1):
+                if self._opts.num and _id not in range(low, high):
+                    printerr('Invalid index %s.' % (_id - self.index))
+                    continue
+
+                if str(_id) in self._urltable:
+                    open_url(self._urltable[str(_id)])
+                else:
+                    printerr('Invalid index %s.' % _id)
+        except ValueError:
+            printerr('Invalid range %s.' % nav)
+
     @require_keywords
     def do_open(self, low, high, *args):
         if not args:
@@ -1538,30 +1564,7 @@ class DdgCmd(object):
                         continue
                 open_url(self._urltable[nav])
             elif '-' in nav:
-                try:
-                    if self._opts.num:
-                        vals = [int(x) + self.index for x in nav.split('-')]
-                    else:
-                        vals = [int(x) for x in nav.split('-')]
-
-                    if (len(vals) != 2):
-                        printerr('Invalid range %s.' % nav)
-                        continue
-
-                    if vals[0] > vals[1]:
-                        vals[0], vals[1] = vals[1], vals[0]
-
-                    for _id in range(vals[0], vals[1] + 1):
-                        if self._opts.num and _id not in range(low, high):
-                            printerr('Invalid index %s.' % (_id - self.index))
-                            continue
-
-                        if str(_id) in self._urltable:
-                            open_url(self._urltable[str(_id)])
-                        else:
-                            printerr('Invalid index %s.' % _id)
-                except ValueError:
-                    printerr('Invalid range %s.' % nav)
+                self.handle_range(nav, low, high)
             else:
                 printerr('Invalid index %s.' % nav)
 
@@ -1584,6 +1587,56 @@ class DdgCmd(object):
 
         self.fetch_and_display()
 
+    def copy_url(self, id):
+        try:
+            # try copying the url to clipboard using native utilities
+            copier_params = []
+            copier_mode = 'stdin'
+            if sys.platform.startswith(('linux', 'freebsd', 'openbsd')):
+                if shutil.which('xsel') is not None:
+                    copier_params = ['xsel', '-b', '-i']
+                elif shutil.which('xclip') is not None:
+                    copier_params = ['xclip', '-selection', 'clipboard']
+                # If we're using Termux (Android) use its 'termux-api'
+                # add-on to set device clipboard.
+                elif shutil.which('termux-clipboard-set') is not None:
+                    copier_params = ['termux-clipboard-set']
+            elif sys.platform == 'darwin':
+                copier_params = ['pbcopy']
+            elif sys.platform == 'win32':
+                copier_params = ['clip']
+            elif sys.platform.startswith('haiku'):
+                copier_params = ['clipboard', '-i']
+
+            # If native clipboard utilities are absent, try to use terminal
+            # multiplexers, tmux/GNU screen, as fallback.
+            if not copier_params:
+                if os.getenv('TMUX_PANE'):
+                    copier_params = ['tmux', 'set-buffer']
+                    copier_mode = 'cmdline_arg'
+                elif os.getenv('STY'):
+                    copier_params = ['screen', '-X', 'readbuf']
+                    copier_mode = 'ext_file'
+
+            if not copier_params:
+                printerr('failed to locate suitable clipboard utility')
+            else:
+                content = self._urltable[str(id)].encode('utf-8')
+                if copier_mode == 'stdin':
+                    Popen(copier_params, stdin=PIPE,
+                          stdout=DEVNULL, stderr=DEVNULL).communicate(content)
+                elif copier_mode == 'cmdline_arg':
+                    Popen(copier_params + [content], stdin=DEVNULL, stdout=DEVNULL,
+                          stderr=DEVNULL).communicate()
+                    print('URL copied to tmux buffer.')
+                else:
+                    with open('/tmp/screen-exchange', 'wb') as f:
+                        f.write(content)
+                    Popen(copier_params, stdin=DEVNULL, stdout=DEVNULL,
+                          stderr=DEVNULL).communicate()
+        except Exception:
+            raise NoKeywordsException
+
     def cmdloop(self):
         """Run REPL."""
         if self.keywords:
@@ -1596,7 +1649,7 @@ class DdgCmd(object):
 
         while True:
             self.read_next_command()
-            # TODO: Automatic dispatcher
+            # Automatic dispatcher
             #
             # We can't write a dispatcher for now because that could
             # change behaviour of the prompt. However, we have already
@@ -1638,54 +1691,11 @@ class DdgCmd(object):
                     Result.urlexpand = not Result.urlexpand
                     printerr('url expansion toggled.')
                 elif cmd.startswith('c ') and cmd[2:].isdigit():
-                    try:
-                        # try copying the url to clipboard using native utilities
-                        copier_params = []
-                        copier_mode = 'stdin'
-                        if sys.platform.startswith(('linux', 'freebsd', 'openbsd')):
-                            if shutil.which('xsel') is not None:
-                                copier_params = ['xsel', '-b', '-i']
-                            elif shutil.which('xclip') is not None:
-                                copier_params = ['xclip', '-selection', 'clipboard']
-                            # If we're using Termux (Android) use its 'termux-api'
-                            # add-on to set device clipboard.
-                            elif shutil.which('termux-clipboard-set') is not None:
-                                copier_params = ['termux-clipboard-set']
-                        elif sys.platform == 'darwin':
-                            copier_params = ['pbcopy']
-                        elif sys.platform == 'win32':
-                            copier_params = ['clip']
-                        elif sys.platform.startswith('haiku'):
-                            copier_params = ['clipboard', '-i']
-
-                        # If native clipboard utilities are absent, try to use terminal
-                        # multiplexers, tmux/GNU screen, as fallback.
-                        if not copier_params:
-                            if os.getenv('TMUX_PANE'):
-                                copier_params = ['tmux', 'set-buffer']
-                                copier_mode = 'cmdline_arg'
-                            elif os.getenv('STY'):
-                                copier_params = ['screen', '-X', 'readbuf']
-                                copier_mode = 'ext_file'
-
-                        if not copier_params:
-                            printerr('failed to locate suitable clipboard utility')
-                        else:
-                            content = self._urltable[cmd[2:]].encode('utf-8')
-                            if copier_mode == 'stdin':
-                                Popen(copier_params, stdin=PIPE,
-                                      stdout=DEVNULL, stderr=DEVNULL).communicate(content)
-                            elif copier_mode == 'cmdline_arg':
-                                Popen(copier_params + [content], stdin=DEVNULL, stdout=DEVNULL,
-                                      stderr=DEVNULL).communicate()
-                                print('URL copied to tmux buffer.')
-                            else:
-                                with open('/tmp/screen-exchange', 'wb') as f:
-                                    f.write(content)
-                                Popen(copier_params, stdin=DEVNULL, stdout=DEVNULL,
-                                      stderr=DEVNULL).communicate()
-                    except Exception:
-                        raise NoKeywordsException
+                    id = int(cmd[2:])
+                    if id > 0 and id <= self._opts.num and id <= len(self._urltable):
+                        self.copy_url(int(self.index) + id)
+                    else:
+                        printerr("invalid index")
                 else:
                     self.do_ddg(cmd)
             except NoKeywordsException:
@@ -1879,9 +1889,9 @@ def main():
 
     # Set logging level
     if opts.debug:
-        logger.setLevel(logging.DEBUG)
-        logdbg('ddgr version %s', _VERSION_)
-        logdbg('Python version %s', python_version())
+        LOGGER.setLevel(logging.DEBUG)
+        LOGDBG('ddgr version %s', _VERSION_)
+        LOGDBG('Python version %s', python_version())
 
     # Handle query completer
     if opts.complete is not None:
@@ -1915,7 +1925,7 @@ def main():
             open_url.override_text_browser = False
 
         # Handle browser output suppression
-        if opts.show_browser_logs or (os.getenv('BROWSER') in text_browsers):
+        if opts.show_browser_logs or (os.getenv('BROWSER') in TEXT_BROWSERS):
             open_url.suppress_browser_output = False
         else:
             open_url.suppress_browser_output = True
@@ -1948,10 +1958,10 @@ def main():
     except Exception as e:
         # If debugging mode is enabled, let the exception through for a traceback;
         # otherwise, only print the exception error message.
-        if logger.isEnabledFor(logging.DEBUG):
+        if LOGGER.isEnabledFor(logging.DEBUG):
             raise
         else:
-            logerr(e)
+            LOGERR(e)
             sys.exit(1)
 
 if __name__ == '__main__':

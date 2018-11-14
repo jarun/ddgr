@@ -12,6 +12,7 @@ packages:
       - make
     deps:
       - python
+    container: "base/archlinux"
   centos7.3:
     builddeps:
       - make
