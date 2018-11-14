@@ -326,8 +326,8 @@ class DdgUrl(object):
         self._keywords = []
         self._sites = None
         self._safe = 1  # Safe search parameter value
-        self._nextParams_prev = ''  # nextParams from last html page Previous button
-        self._nextParams_next = ''  # nextParams from last html page Next button
+        self.np_prev = ''  # nextParams from last html page Previous button
+        self.np_next = ''  # nextParams from last html page Next button
         self._query_dict = {
         }
         self.update(opts, **kwargs)
@@ -515,9 +515,9 @@ class DdgUrl(object):
         qd['page'] = self._page
         qd['safe'] = self._safe
         if self._curindex < 0:
-            qd['nextParams'] = self._nextParams_prev
+            qd['nextParams'] = self.np_prev
         else:
-            qd['nextParams'] = self._nextParams_next
+            qd['nextParams'] = self.np_next
 
         # Construct the q query
         q = ''
@@ -739,7 +739,7 @@ class DdgConnection(object):
                           proxies=self._proxies, expected_code=200)
             import json
             answer = json.loads(r[1])
-            if 'Answer' in answer and type(answer['Answer']) is str and answer['Answer'].strip() != '':
+            if 'Answer' in answer and isinstance(answer['Answer'], str) and answer['Answer'].strip() != '':
                 return answer['Answer']
         except Exception as e:
             LOGERR(e)
@@ -893,9 +893,10 @@ class DdgParser(html.parser.HTMLParser):
         self.results = []
         self.index = offset
         self.textbuf = ''
+        self.click_result = ''
         self.tag_annotations = {}
-        self.nextParams_prevbtn = ''
-        self.nextParams_nextbtn = ''
+        self.np_prev_button = ''
+        self.np_next_button = ''
         self.npfound = False  # First next params found
         self.set_handlers_to('root')
 
@@ -904,6 +905,10 @@ class DdgParser(html.parser.HTMLParser):
     @annotate_tag
     def root_start(self, tag, attrs):
         if tag == 'div':
+            if 'zci__result' in self.classes(attrs):
+                self.start_populating_textbuf()
+                return 'click_result'
+
             if 'links_main' in self.classes(attrs):
                 # Initialize result field registers
                 self.title = ''
@@ -913,11 +918,16 @@ class DdgParser(html.parser.HTMLParser):
 
                 self.set_handlers_to('result')
                 return 'result'
-            elif 'nav-link' in self.classes(attrs):
+
+            if 'nav-link' in self.classes(attrs):
                 self.set_handlers_to('input')
 
     @retrieve_tag_annotation
     def root_end(self, tag, annotation):
+        if annotation == 'click_result':
+            self.stop_populating_textbuf()
+            self.click_result = self.pop_textbuf()
+            self.set_handlers_to('root')
         pass
 
     @annotate_tag
@@ -998,11 +1008,11 @@ class DdgParser(html.parser.HTMLParser):
                 # The previous button always shows before next button
                 # If there's only 1 button (page 1), it's the next button
                 if self.npfound is True:
-                    self.nextParams_prevbtn = self.nextParams_nextbtn
+                    self.np_prev_button = self.np_next_button
                 else:
                     self.npfound = True
 
-                self.nextParams_nextbtn = attrs['value']
+                self.np_next_button = attrs['value']
                 return
 
     @retrieve_tag_annotation
@@ -1072,6 +1082,9 @@ class DdgParser(html.parser.HTMLParser):
     def classes(attrs):
         """Get tag's classes from its attribute dict."""
         return attrs.get('class', '').split()
+
+    def error(self, message):
+        raise NotImplementedError("subclasses of ParserBase must override error()")
 
 
 Colors = collections.namedtuple('Colors', 'index, title, url, metadata, abstract, prompt, reset')
@@ -1352,10 +1365,12 @@ class DdgCmd(object):
         for r in parser.results:
             self._urltable.update(r.urltable())
 
-        self._ddg_url._nextParams_prev = parser.nextParams_prevbtn
-        self._ddg_url._nextParams_next = parser.nextParams_nextbtn
-        LOGDBG('Prev nextParams: %s', self._ddg_url._nextParams_prev)
-        LOGDBG('Next nextParams: %s', self._ddg_url._nextParams_next)
+        self._ddg_url.np_prev = parser.np_prev_button
+        self._ddg_url.np_next = parser.np_next_button
+        if self.index == 0 and parser.click_result:
+            print(parser.click_result.strip())
+        LOGDBG('Prev nextParams: %s', self._ddg_url.np_prev)
+        LOGDBG('Next nextParams: %s', self._ddg_url.np_next)
 
         self._ddg_url.update_num(len(parser.results))
 
@@ -1552,7 +1567,7 @@ class DdgCmd(object):
 
         for nav in args:
             if nav == 'a':
-                for key, value in sorted(self._urltable.items()):
+                for key, _ in sorted(self._urltable.items()):
                     if self._opts.num and int(key) not in range(low, high):
                         continue
                     open_url(self._urltable[key])
@@ -1587,7 +1602,7 @@ class DdgCmd(object):
 
         self.fetch_and_display()
 
-    def copy_url(self, id):
+    def copy_url(self, idx):
         try:
             # try copying the url to clipboard using native utilities
             copier_params = []
@@ -1621,7 +1636,7 @@ class DdgCmd(object):
             if not copier_params:
                 printerr('failed to locate suitable clipboard utility')
             else:
-                content = self._urltable[str(id)].encode('utf-8')
+                content = self._urltable[str(idx)].encode('utf-8')
                 if copier_mode == 'stdin':
                     Popen(copier_params, stdin=PIPE,
                           stdout=DEVNULL, stderr=DEVNULL).communicate(content)
@@ -1812,7 +1827,6 @@ def python_version():
 # mark.)
 def completer_fetch_completions(prefix):
     import json
-    import urllib.request
 
     # One can pass the 'hl' query param to specify the language. We
     # ignore that for now.
@@ -1918,11 +1932,7 @@ def main():
     if opts.url_handler is not None:
         open_url.url_handler = opts.url_handler
     else:
-        if opts.gui_browser:
-            open_url.override_text_browser = True
-        else:
-            # Initialize text browser override to False
-            open_url.override_text_browser = False
+        open_url.override_text_browser = bool(opts.gui_browser)
 
         # Handle browser output suppression
         if opts.show_browser_logs or (os.getenv('BROWSER') in TEXT_BROWSERS):
