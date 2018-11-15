@@ -1881,7 +1881,7 @@ def parse_args(args=None, namespace=None):
     addarg('-w', '--site', dest='sites', action='append', metavar='SITE', help='search sites using DuckDuckGo')
     addarg('-x', '--expand', action='store_true', help='Show complete url in search results')
     addarg('-p', '--proxy', metavar='URI', help='tunnel traffic through an HTTPS proxy; URI format: [http[s]://][user:pwd@]host[:port]')
-    addarg('-I', '--noinstant', dest='instant_answer', action='store_false', help='disable instant answer')
+    addarg('-i', '--instant', dest='instant_answer', action='store_true', help=argparse.SUPPRESS)
     addarg('--unsafe', action='store_true', help='disable safe search')
     addarg('--noua', action='store_true', help='disable user agent')
     addarg('--json', action='store_true', help='output in JSON format; implies --np')
