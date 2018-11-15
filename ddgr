@@ -1368,7 +1368,10 @@ class DdgCmd(object):
         self._ddg_url.np_prev = parser.np_prev_button
         self._ddg_url.np_next = parser.np_next_button
         if self.index == 0 and parser.click_result:
-            print(parser.click_result.strip())
+            if self.colors:
+                print(self.colors.abstract + parser.click_result.strip() + self.colors.reset)
+            else:
+                print(parser.click_result.strip())
         LOGDBG('Prev nextParams: %s', self._ddg_url.np_prev)
         LOGDBG('Next nextParams: %s', self._ddg_url.np_next)
 
