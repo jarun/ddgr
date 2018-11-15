@@ -1730,7 +1730,7 @@ class DdgCmd:
                     printerr('url expansion toggled.')
                 elif cmd.startswith('c ') and cmd[2:].isdigit():
                     idx = int(cmd[2:])
-                    if 0 < idx <= self._opts.num and idx <= len(self._urltable):
+                    if 0 < idx <= min(self._opts.num, len(self._urltable)):
                         self.copy_url(int(self.index) + idx)
                     else:
                         printerr("invalid index")
