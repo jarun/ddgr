@@ -266,7 +266,7 @@ def printerr(msg):
 
 # Classes
 
-class DdgUrl(object):
+class DdgUrl:
     """
     This class constructs the DuckDuckGo Search/News URL.
 
@@ -538,7 +538,7 @@ class DdgUrl(object):
         self._qrycnt = count
 
 
-class DdgAPIUrl(object):
+class DdgAPIUrl:
     """
     This class constructs the DuckDuckGo Instant Answer API URL.
 
@@ -620,7 +620,7 @@ class DDGConnectionError(Exception):
     pass
 
 
-class DdgConnection(object):
+class DdgConnection:
     """
     This class facilitates connecting to and fetching from DuckDuckGo.
 
@@ -1104,7 +1104,7 @@ class DdgParser(html.parser.HTMLParser):
 Colors = collections.namedtuple('Colors', 'index, title, url, metadata, abstract, prompt, reset')
 
 
-class Result(object):
+class Result:
     """
     Container for one search result, with output helpers.
 
@@ -1273,7 +1273,7 @@ def no_argument(method):
 
     return enforced_method
 
-class DdgCmd(object):
+class DdgCmd:
     """
     Command line interpreter and executor class for ddgr.
 
@@ -1715,7 +1715,7 @@ class DdgCmd(object):
                     printerr('url expansion toggled.')
                 elif cmd.startswith('c ') and cmd[2:].isdigit():
                     idx = int(cmd[2:])
-                    if idx > 0 and idx <= self._opts.num and idx <= len(self._urltable):
+                    if 0 < idx <= self._opts.num and idx <= len(self._urltable):
                         self.copy_url(int(self.index) + idx)
                     else:
                         printerr("invalid index")
