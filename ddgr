@@ -47,9 +47,11 @@ LOGGER = logging.getLogger()
 LOGDBG = LOGGER.debug
 LOGERR = LOGGER.error
 
+
 def sigint_handler(signum, frame):
     print('\nInterrupted.', file=sys.stderr)
     sys.exit(1)
+
 
 signal.signal(signal.SIGINT, sigint_handler)
 
@@ -74,6 +76,7 @@ USER_AGENT = 'ddgr/{} (textmode; Linux x86_64; 1024x768)'.format(_VERSION_)
 TEXT_BROWSERS = ['elinks', 'links', 'lynx', 'w3m', 'www-browser']
 
 # Global helper functions
+
 
 def open_url(url):
     """Open an URL in the user's default web browser.
@@ -132,6 +135,7 @@ def open_url(url):
     if open_url.override_text_browser:
         open_url.suppress_browser_output = browser_output
 
+
 def https_get(url, headers=None, proxies=None, expected_code=None):
     """Sends an HTTPS GET request; returns the HTTP status code and the
     decoded response payload.
@@ -163,6 +167,7 @@ def https_get(url, headers=None, proxies=None, expected_code=None):
     finally:
         payload = payload.decode('utf-8')
     return code, payload
+
 
 def https_post(url, data=None, headers=None, proxies=None, expected_code=None):
     """Sends an HTTPS POST request; returns the HTTP status code and the
@@ -616,6 +621,7 @@ class DdgAPIUrl:
         url += '//' + self.netloc + '/?q=' + q + "&" + self._format
         return url
 
+
 class DDGConnectionError(Exception):
     pass
 
@@ -747,6 +753,7 @@ class DdgConnection:
             LOGERR(e)
         return None
 
+
 def annotate_tag(annotated_starttag_handler):
     # See parser logic within the DdgParser class for documentation.
     #
@@ -759,6 +766,7 @@ def annotate_tag(annotated_starttag_handler):
         self.insert_annotation(tag, annotation)
 
     return handler
+
 
 def retrieve_tag_annotation(annotated_endtag_handler):
     # See parser logic within the DdgParser class for documentation.
@@ -775,6 +783,7 @@ def retrieve_tag_annotation(annotated_endtag_handler):
         annotated_endtag_handler(self, tag, annotation)
 
     return handler
+
 
 class DdgParser(html.parser.HTMLParser):
     """The members of this class parse the result HTML
@@ -1259,6 +1268,7 @@ def require_keywords(method):
 
     return enforced_method
 
+
 def no_argument(method):
     # Normalize a do_* method of DdgCmd that takes no argument to
     # one that takes an arg, but issue a warning when an nonempty
@@ -1272,6 +1282,7 @@ def no_argument(method):
         method(self)
 
     return enforced_method
+
 
 class DdgCmd:
     """
@@ -1971,6 +1982,7 @@ def main():
         else:
             LOGERR(e)
             sys.exit(1)
+
 
 if __name__ == '__main__':
     main()
