@@ -1,0 +1,15 @@
+[MESSAGES CONTROL]
+disable=
+  broad-except,
+  invalid-name,
+  missing-docstring,
+  no-self-use,
+  protected-access,
+  too-many-arguments,
+  too-many-branches,
+  too-many-function-args,
+  too-many-instance-attributes,
+  too-many-lines,
+  unused-argument,
+[FORMAT]
+max-line-length=139

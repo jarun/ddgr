@@ -639,7 +639,7 @@ class DdgConnection(object):
 
     """
 
-    def __init__(self, proxy=None):
+    def __init__(self, proxy=None, ua=''):
         self._u = 'https://duckduckgo.com/html'
 
         self._proxies = {
@@ -647,6 +647,7 @@ class DdgConnection(object):
                                                       if os.getenv('https_proxy') is not None
                                                       else os.getenv('HTTPS_PROXY'))
         }
+        self._ua = ua
 
     def fetch_page(self, url):
         """Fetch a URL.
@@ -677,13 +678,14 @@ class DdgConnection(object):
         LOGDBG('q:%s, region:%s, page:%d, curindex:%d, safe:%d', dic['q'], dic['region'], page, dic['curindex'], dic['safe'])
         LOGDBG('nextParams:%s', dic['nextParams'])
         LOGDBG('proxy:%s', self._proxies)
+        LOGDBG('ua:%s', self._ua)
 
         try:
             if page == 0:
                 _, r = https_post(self._u,
                                   headers={
                                       'Accept-Encoding': 'gzip',
-                                      'User-Agent': USER_AGENT,
+                                      'User-Agent': self._ua,
                                       'DNT': '1',
                                   },
                                   data={
@@ -702,7 +704,7 @@ class DdgConnection(object):
                 _, r = https_post(self._u,
                                   headers={
                                       'Accept-Encoding': 'gzip',
-                                      'User-Agent': USER_AGENT,
+                                      'User-Agent': self._ua,
                                       'DNT': '1',
                                   },
                                   data={
@@ -733,7 +735,7 @@ class DdgConnection(object):
             r = https_get(url.full(),
                           headers={
                               'Accept-Encoding': 'gzip',
-                              'User-Agent': USER_AGENT,
+                              'User-Agent': self._ua,
                               'DNT': '1',
                           },
                           proxies=self._proxies, expected_code=200)
@@ -890,6 +892,11 @@ class DdgParser(html.parser.HTMLParser):
     def __init__(self, offset=0):
         html.parser.HTMLParser.__init__(self)
 
+        self.title = ''
+        self.url = ''
+        self.abstract = ''
+        self.filetype = ''
+
         self.results = []
         self.index = offset
         self.textbuf = ''
@@ -921,6 +928,8 @@ class DdgParser(html.parser.HTMLParser):
 
             if 'nav-link' in self.classes(attrs):
                 self.set_handlers_to('input')
+                return 'input'
+        return ''
 
     @retrieve_tag_annotation
     def root_end(self, tag, annotation):
@@ -928,7 +937,6 @@ class DdgParser(html.parser.HTMLParser):
             self.stop_populating_textbuf()
             self.click_result = self.pop_textbuf()
             self.set_handlers_to('root')
-        pass
 
     @annotate_tag
     def result_start(self, tag, attrs):
@@ -939,6 +947,8 @@ class DdgParser(html.parser.HTMLParser):
         if tag == 'a' and 'result__snippet' in self.classes(attrs) and 'href' in attrs:
             self.start_populating_textbuf()
             return 'abstract'
+
+        return ''
 
     @retrieve_tag_annotation
     def result_end(self, tag, annotation):
@@ -958,10 +968,11 @@ class DdgParser(html.parser.HTMLParser):
             # Print a space after the filetype indicator
             self.start_populating_textbuf(lambda text: '[' + text + ']')
             return 'title_filetype'
+
         if tag == 'a' and 'href' in attrs:
             # Skip 'News for', 'Images for' search links
             if attrs['href'].startswith('/search'):
-                return
+                return ''
 
             self.url = attrs['href']
             try:
@@ -972,6 +983,8 @@ class DdgParser(html.parser.HTMLParser):
                 pass
             self.start_populating_textbuf()
             return 'title_link'
+
+        return ''
 
     @retrieve_tag_annotation
     def title_end(self, tag, annotation):
@@ -992,6 +1005,7 @@ class DdgParser(html.parser.HTMLParser):
         if tag == 'span' and 'st' in self.classes(attrs):
             self.start_populating_textbuf()
             return 'abstract_text'
+        return ''
 
     @retrieve_tag_annotation
     def abstract_end(self, tag, annotation):
@@ -1288,14 +1302,15 @@ class DdgCmd(object):
 
     """
 
-    def __init__(self, opts):
+    def __init__(self, opts, ua):
         super().__init__()
+        self.cmd = ''
         self.index = 0
         self._opts = opts
 
         self._ddg_url = DdgUrl(opts)
         proxy = opts.proxy if hasattr(opts, 'proxy') else None
-        self._conn = DdgConnection(proxy=proxy)
+        self._conn = DdgConnection(proxy=proxy, ua=ua)
 
         self.instant_answer = None
         self.results = []
@@ -1607,9 +1622,10 @@ class DdgCmd(object):
 
     def copy_url(self, idx):
         try:
+            content = self._urltable[str(idx)].encode('utf-8')
+
             # try copying the url to clipboard using native utilities
             copier_params = []
-            copier_mode = 'stdin'
             if sys.platform.startswith(('linux', 'freebsd', 'openbsd')):
                 if shutil.which('xsel') is not None:
                     copier_params = ['xsel', '-b', '-i']
@@ -1626,32 +1642,27 @@ class DdgCmd(object):
             elif sys.platform.startswith('haiku'):
                 copier_params = ['clipboard', '-i']
 
-            # If native clipboard utilities are absent, try to use terminal
-            # multiplexers, tmux/GNU screen, as fallback.
-            if not copier_params:
-                if os.getenv('TMUX_PANE'):
-                    copier_params = ['tmux', 'set-buffer']
-                    copier_mode = 'cmdline_arg'
-                elif os.getenv('STY'):
-                    copier_params = ['screen', '-X', 'readbuf']
-                    copier_mode = 'ext_file'
+            if copier_params:
+                Popen(copier_params, stdin=PIPE, stdout=DEVNULL, stderr=DEVNULL).communicate(content)
+                return
 
-            if not copier_params:
-                printerr('failed to locate suitable clipboard utility')
-            else:
-                content = self._urltable[str(idx)].encode('utf-8')
-                if copier_mode == 'stdin':
-                    Popen(copier_params, stdin=PIPE,
-                          stdout=DEVNULL, stderr=DEVNULL).communicate(content)
-                elif copier_mode == 'cmdline_arg':
-                    Popen(copier_params + [content], stdin=DEVNULL, stdout=DEVNULL,
-                          stderr=DEVNULL).communicate()
-                    print('URL copied to tmux buffer.')
-                else:
-                    with open('/tmp/screen-exchange', 'wb') as f:
-                        f.write(content)
-                    Popen(copier_params, stdin=DEVNULL, stdout=DEVNULL,
-                          stderr=DEVNULL).communicate()
+            # If native clipboard utilities are absent, try to use terminal multiplexers
+            # tmux
+            if os.getenv('TMUX_PANE'):
+                copier_params = ['tmux', 'set-buffer']
+                Popen(copier_params + [content], stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL).communicate()
+                print('URL copied to tmux buffer.')
+                return
+
+            # GNU Screen
+            if os.getenv('STY'):
+                copier_params = ['screen', '-X', 'readbuf']
+                with open('/tmp/screen-exchange', 'wb') as f:
+                    f.write(content)
+                Popen(copier_params, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL).communicate()
+                return
+
+            printerr('failed to locate suitable clipboard utility')
         except Exception:
             raise NoKeywordsException
 
@@ -1662,8 +1673,6 @@ class DdgCmd(object):
                 open_url(self._ddg_url.full())
             else:
                 self.fetch_and_display()
-        else:
-            printerr('Please initiate a query.')
 
         while True:
             self.read_next_command()
@@ -1696,11 +1705,7 @@ class DdgCmd(object):
                 elif cmd == '?':
                     self.help()
                 elif _num and cmd.isdigit() and int(cmd) in range(1, _num + 1):
-                    i = int(cmd) + self.index
-                    try:
-                        open_url(self._urltable[str(i)])
-                    except KeyError:
-                        printerr('Index out of bound. To search for the number, use d.')
+                    open_url(self._urltable[str(int(cmd) + self.index)])
                 elif _num == 0 and cmd in self._urltable:
                     open_url(self._urltable[cmd])
                 elif self.keywords and cmd.isdigit() and int(cmd) < 100:
@@ -1709,13 +1714,15 @@ class DdgCmd(object):
                     Result.urlexpand = not Result.urlexpand
                     printerr('url expansion toggled.')
                 elif cmd.startswith('c ') and cmd[2:].isdigit():
-                    id = int(cmd[2:])
-                    if id > 0 and id <= self._opts.num and id <= len(self._urltable):
-                        self.copy_url(int(self.index) + id)
+                    idx = int(cmd[2:])
+                    if idx > 0 and idx <= self._opts.num and idx <= len(self._urltable):
+                        self.copy_url(int(self.index) + idx)
                     else:
                         printerr("invalid index")
                 else:
                     self.do_ddg(cmd)
+            except KeyError:
+                printerr('Index out of bound. To search for the number, use d.')
             except NoKeywordsException:
                 printerr('Initiate a query first.')
 
@@ -1900,15 +1907,12 @@ def parse_args(args=None, namespace=None):
 
 
 def main():
-    global USER_AGENT
-
     opts = parse_args()
 
     # Set logging level
     if opts.debug:
         LOGGER.setLevel(logging.DEBUG)
-        LOGDBG('ddgr version %s', _VERSION_)
-        LOGDBG('Python version %s', python_version())
+        LOGDBG('ddgr version %s Python version %s', _VERSION_, python_version())
 
     # Handle query completer
     if opts.complete is not None:
@@ -1924,10 +1928,7 @@ def main():
             pass
 
     # Set colors
-    if opts.colorize:
-        colors = Colors(*[COLORMAP[c] for c in opts.colorstr], reset=COLORMAP['x'])
-    else:
-        colors = None
+    colors = Colors(*[COLORMAP[c] for c in opts.colorstr], reset=COLORMAP['x']) if opts.colorize else None
     Result.colors = colors
     Result.urlexpand = opts.expand
     DdgCmd.colors = colors
@@ -1938,16 +1939,10 @@ def main():
         open_url.override_text_browser = bool(opts.gui_browser)
 
         # Handle browser output suppression
-        if opts.show_browser_logs or (os.getenv('BROWSER') in TEXT_BROWSERS):
-            open_url.suppress_browser_output = False
-        else:
-            open_url.suppress_browser_output = True
-
-    if opts.noua:
-        USER_AGENT = ''
+        open_url.suppress_browser_output = not (opts.show_browser_logs or (os.getenv('BROWSER') in TEXT_BROWSERS))
 
     try:
-        repl = DdgCmd(opts)
+        repl = DdgCmd(opts, '' if opts.noua else USER_AGENT)
 
         if opts.json or opts.ducky or opts.noninteractive:
             # Non-interactive mode
