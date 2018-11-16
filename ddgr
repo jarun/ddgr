@@ -40,6 +40,12 @@ try:
 except ImportError:
     pass
 
+try:
+    import cjkwrap
+    dwrap = cjkwrap
+except ImportError:
+    dwrap = textwrap
+
 # Basic setup
 
 logging.basicConfig(format='[%(levelname)s] %(message)s')
@@ -1207,7 +1213,7 @@ class Result:
         if columns > indent + 1:
             # Try to fill to columns
             fillwidth = columns - indent - 1
-            for line in textwrap.wrap(abstract.replace('\n', ''), width=fillwidth):
+            for line in dwrap.wrap(abstract.replace('\n', ''), width=fillwidth):
                 print('%s%s' % (' ' * indent, line))
             print('')
         else:
