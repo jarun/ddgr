@@ -1164,32 +1164,32 @@ class Result:
         self.metadata = metadata
 
         self._urltable = {index: url}
+        self._indent = 5
 
-    def _print_title_and_url(self, index, title, url, indent=0):
+    def _print_title_and_url(self, index, title, url):
+        indent = self._indent - 2
         colors = self.colors
 
         if not self.urlexpand:
-            url = '  [' + urllib.parse.urlparse(url).netloc + ']'
-
-        # Pad index and url with `indent` number of spaces
-        if indent:
-            index = ' ' * indent + str(index)
-            url = ' ' * indent + url
+            url = '[' + urllib.parse.urlparse(url).netloc + ']'
 
         if colors:
-            print(colors.index + ' (' + index + ')' + colors.reset, end='')
+            # Adjust index to print result index clearly
+            print(" %s%-*s%s" % (colors.index, indent, index + '.', colors.reset), end='')
             if not self.urlexpand:
-                print(' ' + colors.title + title + colors.reset + colors.url + url + colors.reset)
+                print(' ' + colors.title + title + colors.reset + ' ' + colors.url + url + colors.reset)
             else:
                 print(' ' + colors.title + title + colors.reset)
-                print(colors.url + url + colors.reset)
+                print(' ' * (indent + 2) + colors.url + url + colors.reset)
         else:
             if self.urlexpand:
-                print(' (%s) %s\n%s' % (index, title, url))
+                print(' %-*s %s' % (indent, index + '.', title))
+                print(' %s%s' % (' ' * (indent + 1), url))
             else:
-                print(' (%s) %s%s' % (index, title, url))
+                print(' %-*s %s %s' % (indent, index + '.', title, url))
 
-    def _print_metadata_and_abstract(self, abstract, metadata=None, indent=0):
+    def _print_metadata_and_abstract(self, abstract, metadata=None):
+        indent = self._indent
         colors = self.colors
         try:
             columns, _ = os.get_terminal_size()
@@ -1198,9 +1198,9 @@ class Result:
 
         if metadata:
             if colors:
-                print(colors.metadata + metadata + colors.reset)
+                print(' ' * indent + colors.metadata + metadata + colors.reset)
             else:
-                print(metadata)
+                print(' ' * indent + metadata)
 
         if colors:
             print(colors.abstract, end='')
@@ -1398,10 +1398,11 @@ class DdgCmd:
         self._ddg_url.np_prev = parser.np_prev_button
         self._ddg_url.np_next = parser.np_next_button
         if self.index == 0 and parser.click_result:
+            # We use 5 to match the indent in class Result
             if self.colors:
-                print(self.colors.abstract + parser.click_result.strip() + self.colors.reset)
+                print(' ' * 5 + self.colors.abstract + parser.click_result.strip() + self.colors.reset)
             else:
-                print(parser.click_result.strip())
+                print(' ' * 5 + parser.click_result.strip())
         LOGDBG('Prev nextParams: %s', self._ddg_url.np_prev)
         LOGDBG('Next nextParams: %s', self._ddg_url.np_next)
 
