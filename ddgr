@@ -85,6 +85,8 @@ USER_AGENT = 'ddgr/{} (textmode; Linux x86_64; 1024x768)'.format(_VERSION_)
 
 TEXT_BROWSERS = ['elinks', 'links', 'lynx', 'w3m', 'www-browser']
 
+INDENT = 5
+
 # Global helper functions
 
 
@@ -1170,10 +1172,9 @@ class Result:
         self.metadata = metadata
 
         self._urltable = {index: url}
-        self._indent = 5
 
     def _print_title_and_url(self, index, title, url):
-        indent = self._indent - 2
+        indent = INDENT - 2
         colors = self.colors
 
         if not self.urlexpand:
@@ -1186,7 +1187,7 @@ class Result:
                 print(' ' + colors.title + title + colors.reset + ' ' + colors.url + url + colors.reset)
             else:
                 print(' ' + colors.title + title + colors.reset)
-                print(' ' * (indent + 2) + colors.url + url + colors.reset)
+                print(' ' * (INDENT) + colors.url + url + colors.reset)
         else:
             if self.urlexpand:
                 print(' %-*s %s' % (indent, index + '.', title))
@@ -1195,7 +1196,6 @@ class Result:
                 print(' %-*s %s %s' % (indent, index + '.', title, url))
 
     def _print_metadata_and_abstract(self, abstract, metadata=None):
-        indent = self._indent
         colors = self.colors
         try:
             columns, _ = os.get_terminal_size()
@@ -1204,17 +1204,17 @@ class Result:
 
         if metadata:
             if colors:
-                print(' ' * indent + colors.metadata + metadata + colors.reset)
+                print(' ' * INDENT + colors.metadata + metadata + colors.reset)
             else:
-                print(' ' * indent + metadata)
+                print(' ' * INDENT + metadata)
 
         if colors:
             print(colors.abstract, end='')
-        if columns > indent + 1:
+        if columns > INDENT + 1:
             # Try to fill to columns
-            fillwidth = columns - indent - 1
+            fillwidth = columns - INDENT - 1
             for line in dwrap.wrap(abstract.replace('\n', ''), width=fillwidth):
-                print('%s%s' % (' ' * indent, line))
+                print('%s%s' % (' ' * INDENT, line))
             print('')
         else:
             print('%s\n' % abstract.replace('\n', ' '))
@@ -1404,11 +1404,20 @@ class DdgCmd:
         self._ddg_url.np_prev = parser.np_prev_button
         self._ddg_url.np_next = parser.np_next_button
         if self.index == 0 and parser.click_result:
-            # We use 5 to match the indent in class Result
             if self.colors:
-                print(' ' * 5 + self.colors.abstract + parser.click_result.strip() + self.colors.reset)
-            else:
-                print(' ' * 5 + parser.click_result.strip())
+                print(self.colors.abstract)
+
+            try:
+                columns, _ = os.get_terminal_size()
+            except OSError:
+                columns = 0
+
+            fillwidth = columns - INDENT
+            for line in dwrap.wrap(parser.click_result.strip(), width=fillwidth):
+                print('%s%s' % (' ' * INDENT, line))
+
+            if self.colors:
+                print(self.colors.reset, end='')
         LOGDBG('Prev nextParams: %s', self._ddg_url.np_prev)
         LOGDBG('Next nextParams: %s', self._ddg_url.np_next)
 
