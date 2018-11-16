@@ -1,8 +1,9 @@
 ddgr v1.6
-2018-11-13
+2018-11-16
 
 What's in?
-- Support for DDG instant answer
+- User interface revamped
+- DDG instant answers
 - Haiku OS clipboard support
 - Packaging preparation for PyPI
 
