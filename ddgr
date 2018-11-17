@@ -46,6 +46,12 @@ try:
 except ImportError:
     dwrap = textwrap
 
+try:
+    import setproctitle
+    setproctitle.setproctitle('ddgr')
+except (ImportError, Exception):
+    pass
+
 # Basic setup
 
 logging.basicConfig(format='[%(levelname)s] %(message)s')
