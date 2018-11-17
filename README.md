@@ -57,20 +57,21 @@ A big advantage of `ddgr` over `googler` is DuckDuckGo works over the Tor networ
 
 ### Features
 
-- Fast and clean (no ads, stray URLs or clutter), custom color
-- Designed to deliver maximum readability at minimum space
-- Instant answers (which appear in the html version of DDG)
-- Specify the number of search results to show per page
-- Navigate result pages from omniprompt, open URLs in browser
-- Search and option completion scripts for Bash, Zsh and Fish
-- DuckDuckGo Bang support (along with completion)
-- Open the first result directly in browser (as in I'm Feeling Ducky)
-- Non-stop searches: fire new searches at omniprompt without exiting
-- Keywords (e.g. `filetype:mime`, `site:somesite.com`) support
+- Fast and clean; custom color
+- Designed for maximum readability at minimum space
+- Instant answers (supported by DDG html version)
+- Custom number of results per page
+- Navigation, browser integration
+- Search and option completion scripts (Bash, Fish, Zsh)
+- DuckDuckGo Bangs (along with completion)
+- Open the first result in browser (I'm Feeling Ducky)
+- REPL for continuous searches
+- Keywords (e.g. `filetype:mime`, `site:somesite.com`)
 - Limit search by time, specify region, disable safe search
-- HTTPS proxy support, Do Not Track set, optionally disable User Agent
-- Support custom url handler script or cmdline utility
-- Comprehensive documentation, man page with handy usage examples
+- HTTPS proxy support, optionally disable User Agent
+- Do Not Track set by default
+- Supports custom url handler script or cmdline utility
+- Thoroughly documented, man page with examples
 - Minimal dependencies
 
 ### Installation
