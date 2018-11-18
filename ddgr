@@ -30,6 +30,7 @@ import signal
 from subprocess import Popen, PIPE, DEVNULL
 import sys
 import textwrap
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -39,12 +40,6 @@ try:
     import readline
 except ImportError:
     pass
-
-try:
-    import cjkwrap
-    dwrap = cjkwrap
-except ImportError:
-    dwrap = textwrap
 
 try:
     import setproctitle
@@ -285,6 +280,48 @@ def printerr(msg):
     ``msg`` could be any stringifiable value.
     """
     print(msg, file=sys.stderr)
+
+
+# Monkeypatch textwrap for CJK wide characters.
+def monkeypatch_textwrap_for_cjk():
+    try:
+        if textwrap.wrap.patched:
+            return
+    except AttributeError:
+        pass
+    psl_textwrap_wrap = textwrap.wrap
+
+    def textwrap_wrap(text, width=70, **kwargs):
+        if width <= 2:
+            width = 2
+        # We first add a U+0000 after each East Asian Fullwidth or East
+        # Asian Wide character, then fill to width - 1 (so that if a NUL
+        # character ends up on a new line, we still have one last column
+        # to spare for the preceding wide character). Finally we strip
+        # all the NUL characters.
+        #
+        # East Asian Width: https://www.unicode.org/reports/tr11/
+        return [
+            line.replace('\0', '')
+            for line in psl_textwrap_wrap(
+                ''.join(
+                    ch + '\0' if unicodedata.east_asian_width(ch) in ('F', 'W') else ch
+                    for ch in unicodedata.normalize('NFC', text)
+                ),
+                width=width - 1,
+                **kwargs
+            )
+        ]
+
+    def textwrap_fill(text, width=70, **kwargs):
+        return '\n'.join(textwrap_wrap(text, width=width, **kwargs))
+    textwrap.wrap = textwrap_wrap
+    textwrap.fill = textwrap_fill
+    textwrap.wrap.patched = True
+    textwrap.fill.patched = True
+
+
+monkeypatch_textwrap_for_cjk()
 
 
 # Classes
@@ -1219,7 +1256,7 @@ class Result:
         if columns > INDENT + 1:
             # Try to fill to columns
             fillwidth = columns - INDENT - 1
-            for line in dwrap.wrap(abstract.replace('\n', ''), width=fillwidth):
+            for line in textwrap.wrap(abstract.replace('\n', ''), width=fillwidth):
                 print('%s%s' % (' ' * INDENT, line))
             print('')
         else:
@@ -1419,7 +1456,7 @@ class DdgCmd:
                 columns = 0
 
             fillwidth = columns - INDENT
-            for line in dwrap.wrap(parser.click_result.strip(), width=fillwidth):
+            for line in textwrap.wrap(parser.click_result.strip(), width=fillwidth):
                 print('%s%s' % (' ' * INDENT, line))
 
             if self.colors:

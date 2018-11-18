@@ -80,8 +80,6 @@ A big advantage of `ddgr` over `googler` is DuckDuckGo works over the Tor networ
 
 `ddgr` requires Python 3.4 or later. Only the latest patch release of each minor version is supported.
 
-`cjkwrap` is an _optional_ requirement to wrap CJK code points accurately.
-
 To copy url to clipboard at the omniprompt, `ddgr` looks for `xsel` or `xclip` or `termux-clipboard-set` (in the same order) on Linux, `pbcopy` (default installed) on OS X, `clip` (default installed) on Windows and `clipboard` (default installed) on Haiku. It also supports GNU Screen and tmux copy-paste buffers in the absence of X11.
 
 Note: v1.1 and below require the Python3 `requests` library to make HTTPS requests. This dependency is removed in the later releases.
