@@ -98,6 +98,7 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 - [Raspbian Testing](https://archive.raspbian.org/raspbian/pool/main/d/ddgr/) (`apt-get install ddgr`)
 - [Slackware](http://slackbuilds.org/repository/14.2/network/ddgr/) (`slackpkg install ddgr`)
 - [Snap Store](https://snapcraft.io/ddgr/) (`snap install ddgr`)
+- [Solus](https://packages.getsol.us/shannon/d/ddgr/) (`eopkg install ddgr`)
 - [Source Mage](http://codex.sourcemage.org/test/utils/ddgr/) (`cast ddgr`)
 - [Termux](https://pypi.org/project/ddgr/) (`pip3 install ddgr`)
 - [Ubuntu](https://packages.ubuntu.com/search?keywords=ddgr&searchon=names&exact=1) (`apt-get install ddgr`)
@@ -106,7 +107,7 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 
 #### Release packages
 
-Packages for Arch Linux, CentOS, Debian, Fedora, OpenSUSE Leap and Ubuntu are available with the [latest stable release](https://github.com/jarun/ddgr/releases/latest).
+Packages for Arch Linux, CentOS, Debian, Fedora, OpenSUSE Leap, Solus, and Ubuntu are available with the [latest stable release](https://github.com/jarun/ddgr/releases/latest).
 
 #### From source
 
