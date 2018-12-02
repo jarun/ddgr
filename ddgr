@@ -1728,12 +1728,18 @@ class DdgCmd:
                 print('URL copied to tmux buffer.')
                 return
 
-            # GNU Screen
+            # GNU Screen paste buffer
             if os.getenv('STY'):
-                copier_params = ['screen', '-X', 'readbuf']
-                with open('/tmp/screen-exchange', 'wb') as f:
-                    f.write(content)
-                Popen(copier_params, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL).communicate()
+                import tempfile
+                copier_params = ['screen', '-X', 'readbuf', '-e', 'utf8']
+                tmpfd, tmppath = tempfile.mkstemp()
+                try:
+                    with os.fdopen(tmpfd, 'wb') as fp:
+                        fp.write(content)
+                    copier_params.append(tmppath)
+                    Popen(copier_params, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL).communicate()
+                finally:
+                    os.unlink(tmppath)
                 return
 
             printerr('failed to locate suitable clipboard utility')
