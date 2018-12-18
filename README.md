@@ -90,7 +90,7 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 - [Fedora](https://apps.fedoraproject.org/packages/ddgr) (`dnf install ddgr`)
 - [FreeBSD](https://www.freshports.org/www/ddgr/) (`pkg install ddgr`)
 - [Haiku](https://github.com/haikuports/haikuports/tree/master/www-client/ddgr) (`pkgman install ddgr`)
-- [Homebrew](http://formulae.brew.sh/formula/ddgr) (`brew install ddgr`)
+- [macOS/Homebrew](http://formulae.brew.sh/formula/ddgr) (`brew install ddgr`)
 - [NixOS](https://github.com/NixOS/nixpkgs/tree/master/pkgs/applications/misc/ddgr) (`nix-env -i ddgr`)
 - [openSUSE](https://software.opensuse.org/package/ddgr) (`zypper in ddgr`)
 - [PyPI](https://pypi.org/project/ddgr/) (`pip3 install ddgr`)
