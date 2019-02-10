@@ -1792,7 +1792,7 @@ class DdgCmd:
                     printerr('Index out of bound. To search for the number, use d.')
                 elif cmd == 'x':
                     Result.urlexpand = not Result.urlexpand
-                    printerr('url expansion toggled.')
+                    self.display_results()
                 elif cmd.startswith('c ') and cmd[2:].isdigit():
                     idx = int(cmd[2:])
                     if 0 < idx <= min(self._opts.num, len(self._urltable)):
