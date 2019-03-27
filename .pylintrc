@@ -5,6 +5,7 @@ disable=
   missing-docstring,
   no-self-use,
   protected-access,
+  too-few-public-methods,
   too-many-arguments,
   too-many-branches,
   too-many-function-args,

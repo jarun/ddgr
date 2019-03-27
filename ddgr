@@ -2017,9 +2017,9 @@ def main():
         # otherwise, only print the exception error message.
         if LOGGER.isEnabledFor(logging.DEBUG):
             raise
-        else:
-            LOGERR(e)
-            sys.exit(1)
+
+        LOGERR(e)
+        sys.exit(1)
 
 
 if __name__ == '__main__':
