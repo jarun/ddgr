@@ -791,23 +791,6 @@ class DdgConnection:
 
         return r
 
-    def fetch_instant_answer(self, url):
-        try:
-            r = https_get(url.full(),
-                          headers={
-                              'Accept-Encoding': 'gzip',
-                              'User-Agent': self._ua,
-                              'DNT': '1',
-                          },
-                          proxies=self._proxies, expected_code=200)
-            import json
-            answer = json.loads(r[1])
-            if 'Answer' in answer and isinstance(answer['Answer'], str) and answer['Answer'].strip() != '':
-                return answer['Answer']
-        except Exception as e:
-            LOGERR(e)
-        return None
-
 
 def annotate_tag(annotated_starttag_handler):
     # See parser logic within the DdgParser class for documentation.
@@ -1376,7 +1359,6 @@ class DdgCmd:
         proxy = opts.proxy if hasattr(opts, 'proxy') else None
         self._conn = DdgConnection(proxy=proxy, ua=ua)
 
-        self.instant_answer = None
         self.results = []
         self._urltable = {}
 
@@ -1411,9 +1393,6 @@ class DdgCmd:
 
         """
         # This method also sets self._urltable.
-        if self._opts.instant_answer:
-            self.instant_answer = self._conn.fetch_instant_answer(DdgAPIUrl(self._opts.keywords))
-
         page = self._conn.fetch_page(self._ddg_url)
 
         if page is None:
@@ -1480,15 +1459,6 @@ class DdgCmd:
             results = self.results[self.index:(self.index + self._opts.num)]
         else:
             results = self.results
-
-        if self.index == 0 and self.instant_answer is not None:
-            if self.colors:
-                colors = self.colors
-                print(' ' + colors.title + 'Instant Answer' + colors.reset)
-                print(colors.abstract + self.instant_answer + colors.reset)
-            else:
-                print('Instant Answer')
-                print(self.instant_answer)
 
         if json_output:
             # JSON output
@@ -1971,7 +1941,6 @@ def parse_args(args=None, namespace=None):
     addarg('-w', '--site', dest='sites', action='append', metavar='SITE', help='search sites using DuckDuckGo')
     addarg('-x', '--expand', action='store_true', help='Show complete url in search results')
     addarg('-p', '--proxy', metavar='URI', help='tunnel traffic through an HTTPS proxy; URI format: [http[s]://][user:pwd@]host[:port]')
-    addarg('-i', '--instant', dest='instant_answer', action='store_true', help=argparse.SUPPRESS)
     addarg('--unsafe', action='store_true', help='disable safe search')
     addarg('--noua', action='store_true', help='disable user agent')
     addarg('--json', action='store_true', help='output in JSON format; implies --np')
