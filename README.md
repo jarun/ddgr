@@ -14,7 +14,7 @@
 <p align="center">
 <a href="https://repology.org/metapackage/ddgr"><img src="https://repology.org/badge/tiny-repos/ddgr.svg" alt="Availability"></a>
 <a href="https://github.com/jarun/ddgr/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-GPLv3-yellow.svg?maxAge=2592000" alt="License" /></a>
-<a href="https://travis-ci.org/jarun/ddgr"><img src="https://travis-ci.org/jarun/ddgr.svg?branch=master" alt="Build Status" /></a>
+<a href="https://circleci.com/gh/jarun/workflows/ddgr"><img src="https://img.shields.io/circleci/project/github/jarun/ddgr.svg" alt="Build Status" /></a>
 </p>
 
 <p align="center">
