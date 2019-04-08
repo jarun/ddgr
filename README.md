@@ -276,6 +276,7 @@ Copyright © 2016-2019 [Arun Prakash Jana](mailto:engineerarun@gmail.com)
 ### In the Press
 
 - [Fossbytes](https://fossbytes.com/search-duckduckgo-from-terminal-ddgr/)
+- [Hacker News](https://news.ycombinator.com/item?id=19606101)
 - [Information Security Squad](http://itsecforu.ru/2017/11/21/%D0%BA%D0%B0%D0%BA-%D0%B8%D1%81%D0%BA%D0%B0%D1%82%D1%8C-%D0%B2-duckduckgo-%D0%B8%D0%B7-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D0%BD%D0%BE%D0%B9-%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B8-linux/)
 - [LinOxide](https://linoxide.com/tools/search-duckduckgo-command-line/)
 - [OMG! Ubuntu!](http://www.omgubuntu.co.uk/2017/11/duck-duck-go-terminal-app)
