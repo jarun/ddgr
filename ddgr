@@ -25,6 +25,7 @@ import html.parser
 import locale
 import logging
 import os
+import platform
 import shutil
 import signal
 from subprocess import Popen, PIPE, DEVNULL
@@ -1932,7 +1933,12 @@ def parse_args(args=None, namespace=None):
            help='show N (0<=N<=25) results per page (default 10); N=0 shows actual number of results fetched per page')
     addarg('-r', '--reg', dest='region', default='us-en', metavar='REG',
            help="region-specific search e.g. 'us-en' for US (default); visit https://duckduckgo.com/params")
-    addarg('-C', '--nocolor', dest='colorize', action='store_false', help='disable color output')
+    addarg('--colorize', nargs='?', choices=['auto', 'always', 'never'],
+           const='always', default='auto',
+           help="""whether to colorize output; defaults to 'auto', which enables
+           color when stdout is a tty device; using --colorize without an argument
+           is equivalent to --colorize=always""")
+    addarg('-C', '--nocolor', action='store_true', help='equivalent to --colorize=never')
     addarg('--colors', dest='colorstr', type=argparser.is_colorstr, default=colorstr_env if colorstr_env else 'oCdgxy', metavar='COLORS',
            help='set output colors (see man page for details)')
     addarg('-j', '--ducky', action='store_true', help='open the first result in a web browser; implies --np')
@@ -1952,7 +1958,12 @@ def parse_args(args=None, namespace=None):
     addarg('-d', '--debug', action='store_true', help='enable debugging')
     addarg('keywords', nargs='*', metavar='KEYWORD', help='search keywords')
     addarg('--complete', help=argparse.SUPPRESS)
-    return argparser.parse_args(args, namespace)
+
+    parsed = argparser.parse_args(args, namespace)
+    if parsed.nocolor:
+        parsed.colorize = 'never'
+
+    return parsed
 
 
 def main():
@@ -1977,10 +1988,42 @@ def main():
             pass
 
     # Set colors
-    colors = Colors(*[COLORMAP[c] for c in opts.colorstr], reset=COLORMAP['x']) if opts.colorize else None
+    if opts.colorize == 'always':
+        colorize = True
+    elif opts.colorize == 'auto':
+        colorize = sys.stdout.isatty()
+    elif opts.colorize == 'never':
+        colorize = False
+    else:
+        raise ValueError("invalid --colorize value '%s'" % opts.colorize)
+
+    colors = Colors(*[COLORMAP[c] for c in opts.colorstr], reset=COLORMAP['x']) if colorize else None
     Result.colors = colors
     Result.urlexpand = opts.expand
     DdgCmd.colors = colors
+
+    # Try to enable ANSI color support in cmd or PowerShell on Windows 10
+    if sys.platform == 'win32' and sys.stdout.isatty() and colorize:
+        # VT100 control sequences are supported on Windows 10 Anniversary Update and later.
+        # https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+        # https://docs.microsoft.com/en-us/windows/console/setconsolemode
+        if platform.release() == '10':
+            STD_OUTPUT_HANDLE = -11
+            ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
+            try:
+                from ctypes import windll, wintypes, byref
+                kernel32 = windll.kernel32
+                stdout_handle = kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
+                old_mode = wintypes.DWORD()
+                if not kernel32.GetConsoleMode(stdout_handle, byref(old_mode)):
+                    raise RuntimeError('GetConsoleMode failed')
+                new_mode = old_mode.value | ENABLE_VIRTUAL_TERMINAL_PROCESSING
+                if not kernel32.SetConsoleMode(stdout_handle, new_mode):
+                    raise RuntimeError('SetConsoleMode failed')
+                # Note: No need to restore at exit. SetConsoleMode seems to
+                # be limited to the calling process.
+            except Exception:
+                pass
 
     if opts.url_handler is not None:
         open_url.url_handler = opts.url_handler
