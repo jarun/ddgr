@@ -1878,6 +1878,17 @@ def python_version():
     return '%d.%d.%d' % sys.version_info[:3]
 
 
+def get_colorize(colorize):
+    if colorize == 'always':
+        return True
+
+    if colorize == 'auto':
+        return sys.stdout.isatty()
+
+    # colorize = 'never'
+    return False
+
+
 def set_win_console_mode():
     # VT100 control sequences are supported on Windows 10 Anniversary Update and later.
     # https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
@@ -2013,14 +2024,7 @@ def main():
             pass
 
     # Set colors
-    if opts.colorize == 'always':
-        colorize = True
-    elif opts.colorize == 'auto':
-        colorize = sys.stdout.isatty()
-    elif opts.colorize == 'never':
-        colorize = False
-    else:
-        raise ValueError("invalid --colorize value '%s'" % opts.colorize)
+    colorize = get_colorize(opts.colorize)
 
     colors = Colors(*[COLORMAP[c] for c in opts.colorstr], reset=COLORMAP['x']) if colorize else None
     Result.colors = colors
@@ -2058,9 +2062,9 @@ def main():
                     repl.display_results(prelude='', json_output=opts.json)
 
             sys.exit(0)
-        else:
-            # Interactive mode
-            repl.cmdloop()
+
+        # Interactive mode
+        repl.cmdloop()
     except Exception as e:
         # If debugging mode is enabled, let the exception through for a traceback;
         # otherwise, only print the exception error message.
