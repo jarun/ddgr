@@ -122,7 +122,7 @@ def open_url(url):
     browser = webbrowser.get()
     if open_url.override_text_browser:
         browser_output = open_url.suppress_browser_output
-        for name in [b for b in webbrowser._tryorder if b not in TEXT_BROWSERS]:
+        for name in (b for b in webbrowser._tryorder if b not in TEXT_BROWSERS):
             browser = webbrowser.get(name)
             LOGDBG(browser)
 
@@ -302,7 +302,7 @@ def monkeypatch_textwrap_for_cjk():
         # all the NUL characters.
         #
         # East Asian Width: https://www.unicode.org/reports/tr11/
-        return [
+        return (
             line.replace('\0', '')
             for line in psl_textwrap_wrap(
                 ''.join(
@@ -312,7 +312,7 @@ def monkeypatch_textwrap_for_cjk():
                 width=width - 1,
                 **kwargs
             )
-        ]
+        )
 
     def textwrap_fill(text, width=70, **kwargs):
         return '\n'.join(textwrap_wrap(text, width=width, **kwargs))
@@ -435,7 +435,7 @@ class DdgUrl:
         q = ''
         if self._keywords:
             if isinstance(self._keywords, list):
-                q += '+'.join([kw for kw in self._keywords])
+                q += '+'.join(kw for kw in self._keywords)
             else:
                 q += self._keywords
 
@@ -586,7 +586,7 @@ class DdgUrl:
         sites = self._sites
         if keywords:
             if isinstance(keywords, list):
-                q += ' '.join([kw for kw in keywords])
+                q += ' '.join(kw for kw in keywords)
             else:
                 q += keywords
         if sites:
@@ -669,7 +669,7 @@ class DdgAPIUrl:
         q = ''
         if self._keywords:
             if isinstance(self._keywords, list):
-                q += '+'.join([kw for kw in self._keywords])
+                q += '+'.join(kw for kw in self._keywords)
             else:
                 q += self._keywords
 
@@ -1464,7 +1464,7 @@ class DdgCmd:
         if json_output:
             # JSON output
             import json
-            results_object = [r.jsonizable_object() for r in results]
+            results_object = (r.jsonizable_object() for r in results)
             print(json.dumps(results_object, indent=2, sort_keys=True, ensure_ascii=False))
         elif not results:
             print('No results.', file=sys.stderr)
@@ -1933,7 +1933,7 @@ def completer_fetch_completions(prefix):
     resp = urllib.request.urlopen(api_url, timeout=3)
     respobj = json.loads(resp.read().decode('utf-8'))
 
-    return [entry['phrase'] for entry in respobj]
+    return (entry['phrase'] for entry in respobj)
 
 
 def completer_run(prefix):
@@ -2026,7 +2026,7 @@ def main():
     # Set colors
     colorize = get_colorize(opts.colorize)
 
-    colors = Colors(*[COLORMAP[c] for c in opts.colorstr], reset=COLORMAP['x']) if colorize else None
+    colors = Colors(*(COLORMAP[c] for c in opts.colorstr), reset=COLORMAP['x']) if colorize else None
     Result.colors = colors
     Result.urlexpand = opts.expand
     DdgCmd.colors = colors
