@@ -102,7 +102,6 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 - [Source Mage](http://codex.sourcemage.org/test/utils/ddgr/) (`cast ddgr`)
 - [Termux](https://pypi.org/project/ddgr/) (`pip3 install ddgr`)
 - [Ubuntu](https://packages.ubuntu.com/search?keywords=ddgr&searchon=names&exact=1) (`apt-get install ddgr`)
-- [Ubuntu PPA](https://launchpad.net/~twodopeshaggy/+archive/ubuntu/jarun/) (`apt-get install ddgr`)
 - [Void Linux](https://github.com/void-linux/void-packages/tree/master/srcpkgs/ddgr) (`xbps-install -S ddgr`)
 
 #### Release packages
