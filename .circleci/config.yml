@@ -17,11 +17,6 @@ test-template: &test-template
           make test
 
 jobs:
-  py34:
-    docker:
-      - image: python:3.4-slim
-    <<: *test-template
-
   py35:
     docker:
       - image: python:3.5-slim
@@ -60,7 +55,6 @@ workflows:
 
   test:
     jobs: &all-tests
-      - py34
       - py35
       - py36
       - py37
