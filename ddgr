@@ -1426,6 +1426,8 @@ class DdgCmd:
 
         self._ddg_url.np_prev = parser.np_prev_button
         self._ddg_url.np_next = parser.np_next_button
+
+        # Show instant answer
         if self.index == 0 and parser.click_result:
             if self.colors:
                 print(self.colors.abstract)

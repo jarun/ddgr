@@ -161,7 +161,6 @@ optional arguments:
   -x, --expand          Show complete url in search results
   -p URI, --proxy URI   tunnel traffic through an HTTPS proxy; URI format:
                         [http[s]://][user:pwd@]host[:port]
-  -I, --noinstant       disable instant answer
   --unsafe              disable safe search
   --noua                disable user agent
   --json                output in JSON format; implies --np
