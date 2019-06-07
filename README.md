@@ -170,6 +170,7 @@ optional arguments:
   --show-browser-logs   do not suppress browser output (stdout and stderr)
   -v, --version         show program's version number and exit
   -d, --debug           enable debugging
+  -e, --exit            exit after first search
 
 omniprompt keys:
   n, p, f               fetch the next, prev or first set of search results

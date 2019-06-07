@@ -30,6 +30,7 @@ _ddgr () {
         --show-browser-logs
         -v --version
         -d --debug
+        -e --exit
     )
     opts_with_arg=(
         -n --num

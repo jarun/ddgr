@@ -53,6 +53,7 @@ args=(
     '(--show-browser-logs)--show-browser-logs[do not suppress browser output]'
     '(- : *)'{-v,--version}'[show version number and exit]'
     '(-d --debug)'{-d,--debug}'[enable debugging]'
+    '(-e --exit)'{-e,--exit}'[exit after first search]'
     '*:::query:_ddgr_complete_query'
 )
 _arguments -S -s $args

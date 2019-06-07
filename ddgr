@@ -1779,6 +1779,8 @@ class DdgCmd:
             except NoKeywordsException:
                 printerr('Initiate a query first.')
 
+            if self._opts.exit:
+                sys.exit(0)
 
 class DdgArgumentParser(argparse.ArgumentParser):
     """Custom argument parser for ddgr."""
@@ -1996,6 +1998,7 @@ def parse_args(args=None, namespace=None):
     addarg('-d', '--debug', action='store_true', help='enable debugging')
     addarg('keywords', nargs='*', metavar='KEYWORD', help='search keywords')
     addarg('--complete', help=argparse.SUPPRESS)
+    addarg('-e', '--exit', action='store_true', help='exit after first search')
 
     parsed = argparser.parse_args(args, namespace)
     if parsed.nocolor:
