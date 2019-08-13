@@ -302,7 +302,7 @@ def monkeypatch_textwrap_for_cjk():
         # all the NUL characters.
         #
         # East Asian Width: https://www.unicode.org/reports/tr11/
-        return [
+        return (
             line.replace('\0', '')
             for line in psl_textwrap_wrap(
                 ''.join(
@@ -312,7 +312,7 @@ def monkeypatch_textwrap_for_cjk():
                 width=width - 1,
                 **kwargs
             )
-        ]
+        )
 
     def textwrap_fill(text, width=70, **kwargs):
         return '\n'.join(textwrap_wrap(text, width=width, **kwargs))
