@@ -1571,7 +1571,7 @@ class DdgCmd:
         self._opts.keywords = arg
         self._ddg_url = DdgUrl(self._opts)
         # If there is a Bang, let DuckDuckGo do the work
-        if arg[0] == '!':
+        if arg[0] == '!' or (len(arg) > 1 and arg[1] == '!'):
             open_url(self._ddg_url.full())
         else:
             self.fetch_and_display()
@@ -1722,7 +1722,9 @@ class DdgCmd:
     def cmdloop(self):
         """Run REPL."""
         if self.keywords:
-            if self.keywords[0][0] == '!':
+            if self.keywords[0][0] == '!' or (
+                len(self.keywords[0]) > 1 and self.keywords[0][1] == '!'
+            ):
                 open_url(self._ddg_url.full())
             else:
                 self.fetch_and_display()
@@ -2050,7 +2052,10 @@ def main():
 
         if opts.json or opts.ducky or opts.noninteractive:
             # Non-interactive mode
-            if repl.keywords and repl.keywords[0][0] == '!':
+            if repl.keywords and (
+                repl.keywords[0][0] == '!' or
+                (len(repl.keywords[0]) > 1 and repl.keywords[0][1] == '!')
+            ):
                 # Handle bangs
                 open_url(repl._ddg_url.full())
             else:
