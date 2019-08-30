@@ -1723,7 +1723,7 @@ class DdgCmd:
         """Run REPL."""
         if self.keywords:
             if self.keywords[0][0] == '!' or (
-                len(self.keywords[0]) > 1 and self.keywords[0][1] == '!'
+                    len(self.keywords[0]) > 1 and self.keywords[0][1] == '!'
             ):
                 open_url(self._ddg_url.full())
             else:
@@ -2053,8 +2053,8 @@ def main():
         if opts.json or opts.ducky or opts.noninteractive:
             # Non-interactive mode
             if repl.keywords and (
-                repl.keywords[0][0] == '!' or
-                (len(repl.keywords[0]) > 1 and repl.keywords[0][1] == '!')
+                    repl.keywords[0][0] == '!' or
+                    (len(repl.keywords[0]) > 1 and repl.keywords[0][1] == '!')
             ):
                 # Handle bangs
                 open_url(repl._ddg_url.full())
