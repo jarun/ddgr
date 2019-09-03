@@ -137,9 +137,10 @@ Search keyword and option completion scripts for Bash, Fish and Zsh can be found
 #### Cmdline options
 
 ```
-usage: ddgr [-h] [-n N] [-r REG] [-C] [--colors COLORS] [-j] [-t SPAN]
-            [-w SITE] [-x] [-p URI] [-I] [--unsafe] [--noua] [--json] [--gb]
-            [--np] [--url-handler UTIL] [--show-browser-logs] [-v] [-d]
+usage: ddgr [-h] [-n N] [-r REG] [--colorize [{auto,always,never}]] [-C]
+            [--colors COLORS] [-j] [-t SPAN] [-w SITE] [-x] [-p URI]
+            [--unsafe] [--noua] [--json] [--gb] [--np] [--url-handler UTIL]
+            [--show-browser-logs] [-v] [-d]
             [KEYWORD [KEYWORD ...]]
 
 DuckDuckGo from the terminal.
@@ -153,7 +154,12 @@ optional arguments:
                         shows actual number of results fetched per page
   -r REG, --reg REG     region-specific search e.g. 'us-en' for US (default);
                         visit https://duckduckgo.com/params
-  -C, --nocolor         disable color output
+  --colorize [{auto,always,never}]
+                        whether to colorize output; defaults to 'auto', which
+                        enables color when stdout is a tty device; using
+                        --colorize without an argument is equivalent to
+                        --colorize=always
+  -C, --nocolor         equivalent to --colorize=never
   --colors COLORS       set output colors (see man page for details)
   -j, --ducky           open the first result in a web browser; implies --np
   -t SPAN, --time SPAN  time limit search [d (1 day), w (1 wk), m (1 month)]

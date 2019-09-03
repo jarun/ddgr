@@ -13,14 +13,6 @@ packages:
     deps:
       - python
     container: "archlinux/base"
-  centos7.3:
-    builddeps:
-      - make
-    deps:
-      - python
-    commands:
-      pre:
-        - yum install epel-release
   centos7.4:
     builddeps:
       - make
@@ -29,7 +21,28 @@ packages:
     commands:
       pre:
         - yum install epel-release
+  centos7.5:
+    builddeps:
+      - make
+    deps:
+      - python
+    commands:
+      pre:
+        - yum install epel-release
+  centos7.6:
+    builddeps:
+      - make
+    deps:
+      - python
+    commands:
+      pre:
+        - yum install epel-release
   debian9:
+    builddeps:
+      - make
+    deps:
+      - python3
+  debian10:
     builddeps:
       - make
     deps:
@@ -50,6 +63,11 @@ packages:
     deps:
       - python3
   fedora29:
+    builddeps:
+      - make
+    deps:
+      - python3
+  fedora30:
     builddeps:
       - make
     deps:

@@ -1,3 +1,16 @@
+ddgr v1.7
+2018-09-03
+
+What's in?
+- Use setproctitle to set process name
+- Monkeypatch textwrap for CJK wide characters
+- Fix write to GNU Screen paste buffer
+- Refresh current page on URL expansion toggle
+- Smarter colorization and better support for native terminals on Windows
+- Handle bangs in the form g!
+
+-------------------------------------------------------------------------------
+
 ddgr v1.6
 2018-11-16
 
