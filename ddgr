@@ -22,6 +22,7 @@ import functools
 import gzip
 import html.entities
 import html.parser
+import json
 import locale
 import logging
 import os
@@ -30,6 +31,7 @@ import shutil
 import signal
 from subprocess import Popen, PIPE, DEVNULL
 import sys
+import tempfile
 import textwrap
 import unicodedata
 import urllib.error
@@ -435,7 +437,7 @@ class DdgUrl:
         q = ''
         if self._keywords:
             if isinstance(self._keywords, list):
-                q += '+'.join([kw for kw in self._keywords])
+                q += '+'.join(list(self._keywords))
             else:
                 q += self._keywords
 
@@ -586,7 +588,7 @@ class DdgUrl:
         sites = self._sites
         if keywords:
             if isinstance(keywords, list):
-                q += ' '.join([kw for kw in keywords])
+                q += ' '.join(list(keywords))
             else:
                 q += keywords
         if sites:
@@ -669,7 +671,7 @@ class DdgAPIUrl:
         q = ''
         if self._keywords:
             if isinstance(self._keywords, list):
-                q += '+'.join([kw for kw in self._keywords])
+                q += '+'.join(list(self._keywords))
             else:
                 q += self._keywords
 
@@ -1400,7 +1402,6 @@ class DdgCmd:
             return
 
         if LOGGER.isEnabledFor(logging.DEBUG):
-            import tempfile
             fd, tmpfile = tempfile.mkstemp(prefix='ddgr-response-')
             os.close(fd)
             with open(tmpfile, 'w', encoding='utf-8') as fp:
@@ -1465,7 +1466,6 @@ class DdgCmd:
 
         if json_output:
             # JSON output
-            import json
             results_object = [r.jsonizable_object() for r in results]
             print(json.dumps(results_object, indent=2, sort_keys=True, ensure_ascii=False))
         elif not results:
@@ -1703,7 +1703,6 @@ class DdgCmd:
 
             # GNU Screen paste buffer
             if os.getenv('STY'):
-                import tempfile
                 copier_params = ['screen', '-X', 'readbuf', '-e', 'utf8']
                 tmpfd, tmppath = tempfile.mkstemp()
                 try:
@@ -1927,8 +1926,6 @@ def set_win_console_mode():
 # instance, they won't if the specified prefix ends in a punctuation
 # mark.)
 def completer_fetch_completions(prefix):
-    import json
-
     # One can pass the 'hl' query param to specify the language. We
     # ignore that for now.
     api_url = ('https://duckduckgo.com/ac/?q=%s&kl=wt-wt' %
