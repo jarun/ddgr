@@ -32,6 +32,11 @@ jobs:
       - image: python:3.7-slim
     <<: *test-template
 
+  py38:
+    docker:
+      - image: python:3.8-slim
+    <<: *test-template
+
   package-and-publish:
     machine: true
     working_directory: ~/ddgr
@@ -58,6 +63,7 @@ workflows:
       - py35
       - py36
       - py37
+      - py38
 
   nightly:
     triggers:
