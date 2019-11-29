@@ -2,19 +2,11 @@
 
 <p align="center">
 <a href="https://github.com/jarun/ddgr/releases/latest"><img src="https://img.shields.io/github/release/jarun/ddgr.svg?maxAge=600" alt="Latest release" /></a>
-<a href="https://aur.archlinux.org/packages/ddgr"><img src="https://img.shields.io/aur/version/ddgr.svg?maxAge=600" alt="AUR" /></a>
-<a href="http://formulae.brew.sh/formula/ddgr"><img src="https://img.shields.io/homebrew/v/ddgr.svg?maxAge=600" alt="Homebrew" /></a>
-<a href="https://pypi.python.org/pypi/ddgr"><img src="https://img.shields.io/pypi/v/ddgr.svg?maxAge=600" alt="PyPI" /></a>
-<a href="https://packages.debian.org/search?keywords=ddgr&searchon=names&exact=1"><img src="https://img.shields.io/badge/debian-10+-blue.svg?maxAge=2592000" alt="Debian Buster+" /></a>
-<a href="https://apps.fedoraproject.org/packages/ddgr"><img src="https://img.shields.io/badge/fedora-26+-blue.svg?maxAge=2592000" alt="Fedora 26+" /></a>
-<a href="https://software.opensuse.org/package/ddgr"><img src="https://img.shields.io/badge/opensuse%20leap-15.0+-blue.svg?maxAge=2592000" alt="openSUSE Leap 15.0+" /></a>
-<a href="https://packages.ubuntu.com/search?keywords=ddgr&searchon=names&exact=1"><img src="https://img.shields.io/badge/ubuntu-18.04+-blue.svg?maxAge=2592000" alt="Ubuntu Bionic+" /></a>
-</p>
-
-<p align="center">
 <a href="https://repology.org/metapackage/ddgr"><img src="https://repology.org/badge/tiny-repos/ddgr.svg" alt="Availability"></a>
-<a href="https://github.com/jarun/ddgr/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-GPLv3-yellow.svg?maxAge=2592000" alt="License" /></a>
+<a href="https://pypi.python.org/pypi/ddgr"><img src="https://img.shields.io/pypi/v/ddgr.svg?maxAge=600" alt="PyPI" /></a>
 <a href="https://circleci.com/gh/jarun/workflows/ddgr"><img src="https://img.shields.io/circleci/project/github/jarun/ddgr.svg" alt="Build Status" /></a>
+<a href="https://en.wikipedia.org/wiki/Privacy-invasive_software"><img src="https://img.shields.io/badge/privacy-aware-brown" alt="Privacy Awareness" /></a>
+<a href="https://github.com/jarun/ddgr/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-GPLv3-yellow.svg?maxAge=2592000" alt="License" /></a>
 </p>
 
 <p align="center">
@@ -71,6 +63,7 @@ A big advantage of `ddgr` over `googler` is DuckDuckGo works over the Tor networ
 - HTTPS proxy support, optionally disable User Agent
 - Do Not Track set by default
 - Supports custom url handler script or cmdline utility
+- Privacy-aware (no unconfirmed user data collection)
 - Thoroughly documented, man page with examples
 - Minimal dependencies
 
