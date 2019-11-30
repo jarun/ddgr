@@ -9,6 +9,9 @@ shutil.copyfile('ddgr', 'ddgr.py')
 with open('ddgr.py', encoding='utf-8') as fp:
     version = re.search(r'_VERSION_ = \'(.*?)\'', fp.read()).group(1)
 
+with open('README.md', encoding='utf-8') as f:
+    long_description = f.read()
+
 setuptools.setup(
     name='ddgr',
     version=version,
@@ -17,7 +20,8 @@ setuptools.setup(
     author='Arun Prakash Jana',
     author_email='engineerarun@gmail.com',
     description='DuckDuckGo from the terminal',
-    long_description='See https://github.com/jarun/ddgr#readme.',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     python_requires='>=3.5',
     platforms=['any'],
     py_modules=['ddgr'],
