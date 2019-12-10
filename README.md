@@ -7,7 +7,7 @@
 <a href="https://circleci.com/gh/jarun/workflows/ddgr"><img src="https://img.shields.io/circleci/project/github/jarun/ddgr.svg" alt="Build Status" /></a>
 <a href="https://en.wikipedia.org/wiki/Privacy-invasive_software"><img src="https://img.shields.io/badge/privacy-aware-crimson" alt="Privacy Awareness" /></a>
 <a href="https://github.com/jarun/ddgr/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-GPLv3-yellow.svg?maxAge=2592000" alt="License" /></a>
-<a href="https://repl.it/github/jarun/googler"><img src="https://repl.it/badge/github/jarun/googler" alt="Repl.it" /></a>
+<a href="https://repl.it/github/jarun/ddgr"><img src="https://repl.it/badge/github/jarun/ddgr?maxAge=2592000" alt="Repl.it" /></a>
 </p>
 
 <p align="center">
