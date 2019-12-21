@@ -2,10 +2,10 @@
 
 <p align="center">
 <a href="https://github.com/jarun/ddgr/releases/latest"><img src="https://img.shields.io/github/release/jarun/ddgr.svg?maxAge=600" alt="Latest release" /></a>
-<a href="https://repology.org/metapackage/ddgr"><img src="https://repology.org/badge/tiny-repos/ddgr.svg" alt="Availability"></a>
-<a href="https://pypi.python.org/pypi/ddgr"><img src="https://img.shields.io/pypi/v/ddgr.svg?maxAge=600" alt="PyPI" /></a>
+<a href="https://repology.org/project/ddgr/versions"><img src="https://repology.org/badge/tiny-repos/ddgr.svg" alt="Availability"></a>
+<a href="https://pypi.org/project/ddgr/"><img src="https://img.shields.io/pypi/v/ddgr.svg?maxAge=600" alt="PyPI" /></a>
 <a href="https://circleci.com/gh/jarun/workflows/ddgr"><img src="https://img.shields.io/circleci/project/github/jarun/ddgr.svg" alt="Build Status" /></a>
-<a href="https://en.wikipedia.org/wiki/Privacy-invasive_software"><img src="https://img.shields.io/badge/privacy-aware-crimson" alt="Privacy Awareness" /></a>
+<a href="https://en.wikipedia.org/wiki/Privacy-invasive_software"><img src="https://img.shields.io/badge/privacy-✓-crimson" alt="Privacy Awareness" /></a>
 <a href="https://github.com/jarun/ddgr/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-GPLv3-yellow.svg?maxAge=2592000" alt="License" /></a>
 <a href="https://repl.it/github/jarun/ddgr"><img src="https://repl.it/badge/github/jarun/ddgr?maxAge=2592000" alt="Repl.it" /></a>
 </p>
@@ -80,24 +80,22 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 
 #### From a package manager
 
-- [AUR](https://aur.archlinux.org/packages/ddgr/) (`yay -S ddgr`)
-- [CRUX](https://crux.nu/portdb/?a=search&q=ddgr) (`prt-get depinst ddgr`)
-- [Debian](https://packages.debian.org/search?keywords=ddgr&searchon=names&exact=1) (`apt-get install ddgr`)
-- [Fedora](https://apps.fedoraproject.org/packages/ddgr) (`dnf install ddgr`)
-- [FreeBSD](https://www.freshports.org/www/ddgr/) (`pkg install ddgr`)
-- [Haiku](https://github.com/haikuports/haikuports/tree/master/www-client/ddgr) (`pkgman install ddgr`)
-- [macOS/Homebrew](http://formulae.brew.sh/formula/ddgr) (`brew install ddgr`)
-- [NixOS](https://github.com/NixOS/nixpkgs/tree/master/pkgs/applications/misc/ddgr) (`nix-env -i ddgr`)
-- [openSUSE](https://software.opensuse.org/package/ddgr) (`zypper in ddgr`)
-- [PyPI](https://pypi.org/project/ddgr/) (`pip3 install ddgr`)
-- [Raspbian Testing](https://archive.raspbian.org/raspbian/pool/main/d/ddgr/) (`apt-get install ddgr`)
-- [Slackware](http://slackbuilds.org/repository/14.2/network/ddgr/) (`slackpkg install ddgr`)
-- [Snap Store](https://snapcraft.io/ddgr/) (`snap install ddgr`)
-- [Solus](https://packages.getsol.us/shannon/d/ddgr/) (`eopkg install ddgr`)
-- [Source Mage](http://codex.sourcemage.org/test/utils/ddgr/) (`cast ddgr`)
-- [Termux](https://pypi.org/project/ddgr/) (`pip3 install ddgr`)
-- [Ubuntu](https://packages.ubuntu.com/search?keywords=ddgr&searchon=names&exact=1) (`apt-get install ddgr`)
-- [Void Linux](https://github.com/void-linux/void-packages/tree/master/srcpkgs/ddgr) (`xbps-install -S ddgr`)
+Install `ddgr` from your package manager. If the version available is dated try an alternative installation method.
+
+<details><summary>Packaging status (expand)</summary>
+<p>
+<br>
+<a href="https://repology.org/project/ddgr/versions"><img src="https://repology.org/badge/vertical-allrepos/ddgr.svg" alt="Packaging status"></a>
+</p>
+Unlisted packagers:
+<p>
+<br>
+● <a href="https://pypi.org/project/ddgr/">PyPI</a> (<code>pip3 install ddgr</code>)<br>
+● <a href="https://snapcraft.io/ddgr/">Snap Store</a> (<code>snap install ddgr</code>)<br>
+● <a href="http://codex.sourcemage.org/test/utils/ddgr/">Source Mage</a> (<code>cast ddgr</code>)<br>
+● Termux (<code>pip3 install ddgr</code>)<br>
+</p>
+</details>
 
 #### Release packages
 
