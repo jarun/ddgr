@@ -17,6 +17,7 @@ setuptools.setup(
     version=version,
     url='https://github.com/jarun/ddgr',
     license='GPLv3',
+    license_file='LICENSE',
     author='Arun Prakash Jana',
     author_email='engineerarun@gmail.com',
     description='DuckDuckGo from the terminal',
