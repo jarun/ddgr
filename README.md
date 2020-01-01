@@ -7,7 +7,6 @@
 <a href="https://circleci.com/gh/jarun/workflows/ddgr"><img src="https://img.shields.io/circleci/project/github/jarun/ddgr.svg" alt="Build Status" /></a>
 <a href="https://en.wikipedia.org/wiki/Privacy-invasive_software"><img src="https://img.shields.io/badge/privacy-✓-crimson" alt="Privacy Awareness" /></a>
 <a href="https://github.com/jarun/ddgr/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-GPLv3-yellow.svg?maxAge=2592000" alt="License" /></a>
-<a href="https://repl.it/github/jarun/ddgr"><img src="https://repl.it/badge/github/jarun/ddgr?maxAge=2592000" alt="Repl.it" /></a>
 </p>
 
 <p align="center">
@@ -268,7 +267,7 @@ The color configuration is similar to that of [`googler` colors](https://github.
 - [SZ Lin](https://github.com/szlin)
 - [Alex Gontar](https://github.com/mosegontar)
 
-Copyright © 2016-2019 [Arun Prakash Jana](mailto:engineerarun@gmail.com)
+Copyright © 2016-2020 [Arun Prakash Jana](mailto:engineerarun@gmail.com)
 
 ### In the Press
 
