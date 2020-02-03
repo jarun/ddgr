@@ -1381,10 +1381,15 @@ class DdgCmd:
         return self._ddg_url.keywords
 
     @require_keywords
-    def fetch(self):
+    def fetch(self, json_output=False):
         """Fetch a page and parse for results.
 
         Results are stored in ``self.results``.
+
+        Parameters
+        ----------
+        json_output : bool, optional
+            Whether to dump results in JSON format. Default is False.
 
         Raises
         ------
@@ -1429,7 +1434,7 @@ class DdgCmd:
         self._ddg_url.np_next = parser.np_next_button
 
         # Show instant answer
-        if self.index == 0 and parser.click_result:
+        if self.index == 0 and parser.click_result and not json_output:
             if self.colors:
                 print(self.colors.abstract)
 
@@ -2056,7 +2061,7 @@ def main():
                 # Handle bangs
                 open_url(repl._ddg_url.full())
             else:
-                repl.fetch()
+                repl.fetch(opts.json)
                 if opts.ducky:
                     if repl.results:
                         open_url(repl.results[0].url)
