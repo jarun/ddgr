@@ -72,7 +72,12 @@ packages:
       - make
     deps:
       - python3
-  opensuse42.3:
+  fedora31:
+    builddeps:
+      - make
+    deps:
+      - python3
+  opensuse15.1:
     builddeps:
       - make
     deps:

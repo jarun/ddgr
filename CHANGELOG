@@ -1,5 +1,14 @@
+ddgr v1.8
+2020-04-08
+
+- Ignore instant results in JSON output
+- Support year in duration
+- Support Python 3.8
+
+-------------------------------------------------------------------------------
+
 ddgr v1.7
-2018-09-03
+2019-09-03
 
 What's in?
 - Use setproctitle to set process name
