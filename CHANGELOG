@@ -1,6 +1,15 @@
+ddgr v1.8.1
+2020-04-10
+
+- Bump version
+- Update docs
+
+-------------------------------------------------------------------------------
+
 ddgr v1.8
 2020-04-08
 
+What's in?
 - Ignore instant results in JSON output
 - Support year in duration
 - Support Python 3.8

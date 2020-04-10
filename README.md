@@ -154,7 +154,7 @@ optional arguments:
   -C, --nocolor         equivalent to --colorize=never
   --colors COLORS       set output colors (see man page for details)
   -j, --ducky           open the first result in a web browser; implies --np
-  -t SPAN, --time SPAN  time limit search [d (1 day), w (1 wk), m (1 month)]
+  -t SPAN, --time SPAN  time limit search [d (1 day), w (1 wk), m (1 month), y (1 year)]
   -w SITE, --site SITE  search sites using DuckDuckGo
   -x, --expand          Show complete url in search results
   -p URI, --proxy URI   tunnel traffic through an HTTPS proxy; URI format:
