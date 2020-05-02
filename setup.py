@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import re
+import os.path
 import setuptools
 import shutil
 
-shutil.copyfile('ddgr', 'ddgr.py')
+if os.path.isfile('ddgr'):
+    shutil.copyfile('ddgr', 'ddgr.py')
 
 with open('ddgr.py', encoding='utf-8') as fp:
     version = re.search(r'_VERSION_ = \'(.*?)\'', fp.read()).group(1)
