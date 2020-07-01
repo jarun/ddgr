@@ -705,7 +705,7 @@ class DdgConnection:
     """
 
     def __init__(self, proxy=None, ua=''):
-        self._u = 'https://duckduckgo.com/html'
+        self._u = 'https://html.duckduckgo.com/html'
 
         self._proxies = {
             'https': proxy if proxy is not None else (os.getenv('https_proxy')
