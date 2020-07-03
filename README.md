@@ -217,7 +217,7 @@ The color configuration is similar to that of [`googler` colors](https://github.
 
        $ ddgr !w hello world
        $ ddgr \!w hello world // bash-specific, need to escape ! on bash
-    Bangs work at the omniprompt too. To look up bangs, visit https://duck‐duckgo.com/bang?#bangs-list.
+    Bangs work at the omniprompt too. To look up bangs, visit https://duckduckgo.com/bang?#bangs-list.
 4. **Bang alias** to fire from the cmdline, open results in a GUI browser and exit:
 
        alias bang='ddgr --gb --np'
