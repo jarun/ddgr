@@ -392,6 +392,7 @@ class DdgUrl:
         self._safe = 1  # Safe search parameter value
         self.np_prev = ''  # nextParams from last html page Previous button
         self.np_next = ''  # nextParams from last html page Next button
+        self.vqd = ''  #vqd parameter (from next/prev button)
         self._query_dict = {
         }
         self.update(opts, **kwargs)
@@ -582,6 +583,7 @@ class DdgUrl:
             qd['nextParams'] = self.np_prev
         else:
             qd['nextParams'] = self.np_next
+        qd['vqd'] = self.vqd
 
         # Construct the q query
         q = ''
@@ -742,6 +744,7 @@ class DdgConnection:
         page = dic['page']
         LOGDBG('q:%s, region:%s, page:%d, curindex:%d, safe:%d', dic['q'], dic['region'], page, dic['curindex'], dic['safe'])
         LOGDBG('nextParams:%s', dic['nextParams'])
+        LOGDBG('vqd:%s', dic['vqd'])
         LOGDBG('proxy:%s', self._proxies)
         LOGDBG('ua:%s', self._ua)
 
@@ -786,6 +789,7 @@ class DdgConnection:
                                       'kl': dic['region'],  # Region code
                                       'kp': dic['safe'],  # Safe search
                                       'k1': '-1',  # Advertisements off
+                                      'vqd': dic['vqd'],   #vqd string from button
                                   },
                                   proxies=self._proxies,
                                   expected_code=200)
@@ -957,6 +961,7 @@ class DdgParser(html.parser.HTMLParser):
         self.np_next_button = ''
         self.npfound = False  # First next params found
         self.set_handlers_to('root')
+        self.vqd = ''   # vqd returned from button, required for search query to get next set of results
 
     # Tag handlers
 
@@ -1069,7 +1074,7 @@ class DdgParser(html.parser.HTMLParser):
     @annotate_tag
     def input_start(self, tag, attrs):
         if tag == 'input' and 'name' in attrs:
-            if attrs['name'] == 'nextParams' and attrs['value'] != '':
+            if attrs['name'] == 'nextParams':
                 # The previous button always shows before next button
                 # If there's only 1 button (page 1), it's the next button
                 if self.npfound is True:
@@ -1078,6 +1083,10 @@ class DdgParser(html.parser.HTMLParser):
                     self.npfound = True
 
                 self.np_next_button = attrs['value']
+                return
+            elif attrs['name'] == 'vqd' and attrs['value'] != '':
+                # vqd required to be passed for next/previous search page
+                self.vqd = attrs['value']
                 return
 
     @retrieve_tag_annotation
@@ -1433,6 +1442,7 @@ class DdgCmd:
 
         self._ddg_url.np_prev = parser.np_prev_button
         self._ddg_url.np_next = parser.np_next_button
+        self._ddg_url.vqd = parser.vqd
 
         # Show instant answer
         if self.index == 0 and parser.click_result and not json_output:
@@ -1452,6 +1462,7 @@ class DdgCmd:
                 print(self.colors.reset, end='')
         LOGDBG('Prev nextParams: %s', self._ddg_url.np_prev)
         LOGDBG('Next nextParams: %s', self._ddg_url.np_next)
+        LOGDBG('VQD: %s', self._ddg_url.vqd)
 
         self._ddg_url.update_num(len(parser.results))
 
