@@ -392,7 +392,7 @@ class DdgUrl:
         self._safe = 1  # Safe search parameter value
         self.np_prev = ''  # nextParams from last html page Previous button
         self.np_next = ''  # nextParams from last html page Next button
-        self.vqd = ''  #vqd parameter (from next/prev button)
+        self.vqd = ''  # vqd parameter (from next/prev button)
         self._query_dict = {
         }
         self.update(opts, **kwargs)
@@ -789,7 +789,7 @@ class DdgConnection:
                                       'kl': dic['region'],  # Region code
                                       'kp': dic['safe'],  # Safe search
                                       'k1': '-1',  # Advertisements off
-                                      'vqd': dic['vqd'],   #vqd string from button
+                                      'vqd': dic['vqd'],  # vqd string from button
                                   },
                                   proxies=self._proxies,
                                   expected_code=200)
@@ -1084,7 +1084,7 @@ class DdgParser(html.parser.HTMLParser):
 
                 self.np_next_button = attrs['value']
                 return
-            elif attrs['name'] == 'vqd' and attrs['value'] != '':
+            if attrs['name'] == 'vqd' and attrs['value'] != '':
                 # vqd required to be passed for next/previous search page
                 self.vqd = attrs['value']
                 return
