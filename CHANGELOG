@@ -1,10 +1,11 @@
 ddgr v1.9
-2020-07-21
+2020-07-26
 
 - Fix breakage due to changes required in POST method
 - Support wayland native copier `wl-copy` for url copy
 - Unblock GUI browsers on WSL
 - Update auto-generated package list
+- Skip broken Arch Linux packaging (https://github.com/BytePackager issue #204)
 
 -------------------------------------------------------------------------------
 
