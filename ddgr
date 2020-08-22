@@ -1734,8 +1734,8 @@ class DdgCmd:
                 return
 
             printerr('failed to locate suitable clipboard utility')
-        except Exception:
-            raise NoKeywordsException
+        except Exception as e:
+            raise NoKeywordsException from e
 
     def cmdloop(self):
         """Run REPL."""
@@ -1853,8 +1853,8 @@ class DdgArgumentParser(argparse.ArgumentParser):
             n = int(arg)
             assert n > 0
             return n
-        except (ValueError, AssertionError):
-            raise argparse.ArgumentTypeError('%s is not a positive integer' % arg)
+        except (ValueError, AssertionError) as e:
+            raise argparse.ArgumentTypeError('%s is not a positive integer' % arg) from e
 
     @staticmethod
     def nonnegative_int(arg):
@@ -1864,8 +1864,8 @@ class DdgArgumentParser(argparse.ArgumentParser):
             assert n >= 0
             assert n <= 25
             return n
-        except (ValueError, AssertionError):
-            raise argparse.ArgumentTypeError('%s is not a non-negative integer <= 25' % arg)
+        except (ValueError, AssertionError) as e:
+            raise argparse.ArgumentTypeError('%s is not a non-negative integer <= 25' % arg) from e
 
     @staticmethod
     def is_duration(arg):
@@ -1878,8 +1878,8 @@ class DdgArgumentParser(argparse.ArgumentParser):
         try:
             if arg[0] not in ('h', 'd', 'w', 'm', 'y') or int(arg[1:]) < 0:
                 raise ValueError
-        except (TypeError, IndexError, ValueError):
-            raise argparse.ArgumentTypeError('%s is not a valid duration' % arg)
+        except (TypeError, IndexError, ValueError) as e:
+            raise argparse.ArgumentTypeError('%s is not a valid duration' % arg) from e
         return arg
 
     @staticmethod
@@ -1889,8 +1889,8 @@ class DdgArgumentParser(argparse.ArgumentParser):
             assert len(arg) == 6
             for c in arg:
                 assert c in COLORMAP
-        except AssertionError:
-            raise argparse.ArgumentTypeError('%s is not a valid color string' % arg)
+        except AssertionError as e:
+            raise argparse.ArgumentTypeError('%s is not a valid color string' % arg) from e
         return arg
 
 
