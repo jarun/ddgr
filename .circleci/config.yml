@@ -17,11 +17,6 @@ test-template: &test-template
           make test
 
 jobs:
-  py35:
-    docker:
-      - image: python:3.5-slim
-    <<: *test-template
-
   py36:
     docker:
       - image: python:3.6-slim
@@ -35,6 +30,11 @@ jobs:
   py38:
     docker:
       - image: python:3.8-slim
+    <<: *test-template
+
+  py39:
+    docker:
+      - image: python:3.9-slim
     <<: *test-template
 
   package-and-publish:
@@ -60,10 +60,10 @@ workflows:
 
   test:
     jobs: &all-tests
-      - py35
       - py36
       - py37
       - py38
+      - py39
 
   nightly:
     triggers:
