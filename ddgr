@@ -1927,7 +1927,7 @@ def set_win_console_mode():
                 old_mode = wintypes.DWORD()
                 if not kernel32.GetConsoleMode(handle, byref(old_mode)):
                     raise RuntimeError('GetConsoleMode failed')
-                new_mode = old_mode.value | ENABLE_VIRTUAL_TERMINAL_PROCESSING
+                new_mode = bin(old_mode.value) | ENABLE_VIRTUAL_TERMINAL_PROCESSING
                 if not kernel32.SetConsoleMode(handle, new_mode):
                     raise RuntimeError('SetConsoleMode failed')
             # Note: No need to restore at exit. SetConsoleMode seems to
