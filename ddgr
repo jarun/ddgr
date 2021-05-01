@@ -117,8 +117,8 @@ def open_url(url):
 
     # Custom URL handler gets max priority
     if hasattr(open_url, 'url_handler'):
-        pipe = Popen([open_url.url_handler, url], stdin=PIPE)
-        pipe.communicate()
+        with Popen([open_url.url_handler, url], stdin=PIPE) as pipe:
+            pipe.communicate()
         return
 
     browser = webbrowser.get()
@@ -296,8 +296,7 @@ def monkeypatch_textwrap_for_cjk():
     psl_textwrap_wrap = textwrap.wrap
 
     def textwrap_wrap(text, width=70, **kwargs):
-        if width <= 2:
-            width = 2
+        width = max(width, 2)
         # We first add a U+0000 after each East Asian Fullwidth or East
         # Asian Wide character, then fill to width - 1 (so that if a NUL
         # character ends up on a new line, we still have one last column
@@ -1950,10 +1949,9 @@ def completer_fetch_completions(prefix):
     api_url = ('https://duckduckgo.com/ac/?q=%s&kl=wt-wt' %
                urllib.parse.quote(prefix, safe=''))
     # A timeout of 3 seconds seems to be overly generous already.
-    resp = urllib.request.urlopen(api_url, timeout=3)
-    respobj = json.loads(resp.read().decode('utf-8'))
-
-    return [entry['phrase'] for entry in respobj]
+    with urllib.request.urlopen(api_url, timeout=3) as resp:
+        with json.loads(resp.read().decode('utf-8')) as respobj:
+            return [entry['phrase'] for entry in respobj]
 
 
 def completer_run(prefix):
