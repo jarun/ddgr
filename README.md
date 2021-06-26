@@ -21,8 +21,6 @@ A big advantage of `ddgr` over `googler` is DuckDuckGo works over the Tor networ
 
 `ddgr` isn't affiliated to DuckDuckGo in any way.
 
-*Love smart and efficient utilities? Explore [my repositories](https://github.com/jarun?tab=repositories). Buy me a cup of coffee if they help you.*
-
 <p align="center">
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RMLTQ76JSXJ4Q"><img src="https://img.shields.io/badge/donate-@PayPal-1eb0fc.svg" alt="Donate via PayPal!" /></a>
 </p>
