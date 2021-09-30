@@ -87,6 +87,7 @@ Install `ddgr` from your package manager. If the version available is dated try 
 Unlisted packagers:
 <p>
 <br>
+● <a href="https://github.com/shinokada/awesome">Awesome</a> (<code>awesome -install jarun/ddgr</code>)<br>
 ● <a href="https://pypi.org/project/ddgr/">PyPI</a> (<code>pip3 install ddgr</code>)<br>
 ● <a href="https://snapcraft.io/ddgr/">Snap Store</a> (<code>snap install ddgr</code>)<br>
 ● <a href="http://codex.sourcemage.org/test/utils/ddgr/">Source Mage</a> (<code>cast ddgr</code>)<br>
