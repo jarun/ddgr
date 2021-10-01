@@ -1,6 +1,8 @@
 [MESSAGES CONTROL]
 disable=
   broad-except,
+  consider-using-f-string,
+  consider-using-with,
   import-outside-toplevel,
   invalid-name,
   missing-docstring,
