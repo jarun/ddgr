@@ -1480,20 +1480,31 @@ class DdgCmd:
         else:
             results = self.results
 
+        if self._opts.reverse:
+            results.reverse()
+
         if json_output:
             # JSON output
             results_object = [r.jsonizable_object() for r in results]
             print(json.dumps(results_object, indent=2, sort_keys=True, ensure_ascii=False))
         elif not results:
             print('No results.', file=sys.stderr)
-        elif self._opts.num:  # Paginated output
-            sys.stderr.write(prelude)
-            for i, r in enumerate(results):
-                r.print_paginated(str(i + 1))
-        else:  # Regular output
-            sys.stderr.write(prelude)
-            for r in results:
-                r.print()
+        else:
+            if not self._opts.reverse:
+                sys.stderr.write(prelude)
+
+            if self._opts.num:  # Paginated output
+                for i, r in enumerate(results):
+                    if self._opts.reverse:
+                        r.print_paginated(str(len(results) - i))
+                    else:
+                        r.print_paginated(str(i + 1))
+            else:  # Regular output
+                for r in results:
+                    r.print()
+
+            if self._opts.reverse:
+                sys.stderr.write(prelude)
 
     @require_keywords
     def fetch_and_display(self, prelude='\n', json_output=False):
@@ -2006,6 +2017,7 @@ def parse_args(args=None, namespace=None):
     addarg('--json', action='store_true', help='output in JSON format; implies --np')
     addarg('--gb', '--gui-browser', dest='gui_browser', action='store_true', help='open a bang directly in gui browser')
     addarg('--np', '--noprompt', dest='noninteractive', action='store_true', help='perform search and exit, do not prompt')
+    addarg('--rev', '--reverse', dest='reverse', action='store_true', help='list entries in reversed order')
     addarg('--url-handler', metavar='UTIL', help='custom script or cli utility to open results')
     addarg('--show-browser-logs', action='store_true', help='do not suppress browser output (stdout and stderr)')
     addarg('-v', '--version', action='version', version=_VERSION_)
