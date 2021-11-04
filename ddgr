@@ -1443,6 +1443,8 @@ class DdgCmd:
 
         if parser.click_result:
             self.instant_answer = parser.click_result.strip()
+        else:
+            self.instant_answer = ''
 
         self._ddg_url.update_num(len(parser.results))
 
@@ -1476,6 +1478,9 @@ class DdgCmd:
             if self.colors:
                 print(self.colors.reset, end='')
 
+            if self._opts.reverse:
+                print('')
+
 
     @require_keywords
     def display_results(self, prelude='\n', json_output=False):
@@ -1502,8 +1507,7 @@ class DdgCmd:
         elif not results:
             print('No results.', file=sys.stderr)
         else:
-            if not self._opts.reverse:
-                sys.stderr.write(prelude)
+            sys.stderr.write(prelude)
 
             if self._opts.num:  # Paginated output
                 for i, r in enumerate(results):
@@ -1514,9 +1518,6 @@ class DdgCmd:
             else:  # Regular output
                 for r in results:
                     r.print()
-
-            if self._opts.reverse:
-                sys.stderr.write(prelude)
 
     @require_keywords
     def fetch_and_display(self, prelude='\n', json_output=False):
