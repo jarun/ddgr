@@ -1481,7 +1481,6 @@ class DdgCmd:
             if self._opts.reverse:
                 print('')
 
-
     @require_keywords
     def display_results(self, prelude='\n', json_output=False):
         """Display results stored in ``self.results``.
@@ -1551,7 +1550,6 @@ class DdgCmd:
         else:
             self.display_results(prelude=prelude, json_output=json_output)
             self.display_instant_answer()
-
 
     def read_next_command(self):
         """Show omniprompt and read user command line.
