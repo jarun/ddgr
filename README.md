@@ -79,6 +79,8 @@ Note: v1.1 and below require the Python3 `requests` library to make HTTPS reques
 
 Install `ddgr` from your package manager. If the version available is dated try an alternative installation method.
 
+For macOS, install via `brew install ddgr`
+
 <details><summary>Packaging status (expand)</summary>
 <p>
 <br>
