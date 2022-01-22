@@ -266,7 +266,7 @@ The color configuration is similar to that of [`googler` colors](https://github.
 - [SZ Lin](https://github.com/szlin)
 - [Alex Gontar](https://github.com/mosegontar)
 
-Copyright © 2016-2021 [Arun Prakash Jana](mailto:engineerarun@gmail.com)
+Copyright © 2016-2022 [Arun Prakash Jana](mailto:engineerarun@gmail.com)
 
 ### In the Press
 
