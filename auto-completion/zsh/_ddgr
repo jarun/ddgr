@@ -49,6 +49,7 @@ args=(
     '(--json)--json[output in JSON format; implies --np]'
     '(--gb --gui-browser)'{--gb,--gui-browser}'[open a bang directly in gui browser]'
     '(--np --noprompt)'{--np,--noprompt}'[perform search and exit]'
+    '(--rev --reverse)'{--rev,--reverse}'[list entries in reversed order]'
     '(--url-handler)--url-handler[cli script or utility]:url opener'
     '(--show-browser-logs)--show-browser-logs[do not suppress browser output]'
     '(- : *)'{-v,--version}'[show version number and exit]'

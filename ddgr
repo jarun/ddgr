@@ -1353,6 +1353,7 @@ class DdgCmd:
     Methods
     -------
     fetch()
+    display_instant_answer(json_output=False)
     display_results(prelude='\n', json_output=False)
     fetch_and_display(prelude='\n', json_output=False)
     read_next_command()
@@ -1372,6 +1373,7 @@ class DdgCmd:
         self._conn = DdgConnection(proxy=proxy, ua=ua)
 
         self.results = []
+        self.instant_answer = ''
         self._urltable = {}
 
         colors = self.colors
@@ -1390,15 +1392,11 @@ class DdgCmd:
         return self._ddg_url.keywords
 
     @require_keywords
-    def fetch(self, json_output=False):
+    def fetch(self):
         """Fetch a page and parse for results.
 
         Results are stored in ``self.results``.
-
-        Parameters
-        ----------
-        json_output : bool, optional
-            Whether to dump results in JSON format. Default is False.
+        Instant answer is stored in ``self.instant_answer``.
 
         Raises
         ------
@@ -1443,8 +1441,28 @@ class DdgCmd:
         self._ddg_url.np_next = parser.np_next_button
         self._ddg_url.vqd = parser.vqd
 
-        # Show instant answer
-        if self.index == 0 and parser.click_result and not json_output:
+        if parser.click_result:
+            self.instant_answer = parser.click_result.strip()
+        else:
+            self.instant_answer = ''
+
+        self._ddg_url.update_num(len(parser.results))
+
+    @require_keywords
+    def display_instant_answer(self, json_output=False):
+        """Display instant answer stored in ``self.instant_answer``.
+
+        Parameters
+        ----------
+        json_output : bool, optional
+            Whether to dump results in JSON format. Default is False.
+
+        See Also
+        --------
+        fetch_and_display
+
+        """
+        if self.index == 0 and self.instant_answer and not json_output:
             if self.colors:
                 print(self.colors.abstract)
 
@@ -1454,16 +1472,14 @@ class DdgCmd:
                 columns = 0
 
             fillwidth = columns - INDENT
-            for line in textwrap.wrap(parser.click_result.strip(), width=fillwidth):
+            for line in textwrap.wrap(self.instant_answer, width=fillwidth):
                 print('%s%s' % (' ' * INDENT, line))
 
             if self.colors:
                 print(self.colors.reset, end='')
-        LOGDBG('Prev nextParams: %s', self._ddg_url.np_prev)
-        LOGDBG('Next nextParams: %s', self._ddg_url.np_next)
-        LOGDBG('VQD: %s', self._ddg_url.vqd)
 
-        self._ddg_url.update_num(len(parser.results))
+            if self._opts.reverse:
+                print('')
 
     @require_keywords
     def display_results(self, prelude='\n', json_output=False):
@@ -1480,20 +1496,27 @@ class DdgCmd:
         else:
             results = self.results
 
+        if self._opts.reverse:
+            results.reverse()
+
         if json_output:
             # JSON output
             results_object = [r.jsonizable_object() for r in results]
             print(json.dumps(results_object, indent=2, sort_keys=True, ensure_ascii=False))
         elif not results:
             print('No results.', file=sys.stderr)
-        elif self._opts.num:  # Paginated output
+        else:
             sys.stderr.write(prelude)
-            for i, r in enumerate(results):
-                r.print_paginated(str(i + 1))
-        else:  # Regular output
-            sys.stderr.write(prelude)
-            for r in results:
-                r.print()
+
+            if self._opts.num:  # Paginated output
+                for i, r in enumerate(results):
+                    if self._opts.reverse:
+                        r.print_paginated(str(len(results) - i))
+                    else:
+                        r.print_paginated(str(i + 1))
+            else:  # Regular output
+                for r in results:
+                    r.print()
 
     @require_keywords
     def fetch_and_display(self, prelude='\n', json_output=False):
@@ -1516,11 +1539,17 @@ class DdgCmd:
         See Also
         --------
         fetch
+        display_instant_answer
         display_results
 
         """
         self.fetch()
-        self.display_results(prelude=prelude, json_output=json_output)
+        if not self._opts.reverse:
+            self.display_instant_answer()
+            self.display_results(prelude=prelude, json_output=json_output)
+        else:
+            self.display_results(prelude=prelude, json_output=json_output)
+            self.display_instant_answer()
 
     def read_next_command(self):
         """Show omniprompt and read user command line.
@@ -2006,6 +2035,7 @@ def parse_args(args=None, namespace=None):
     addarg('--json', action='store_true', help='output in JSON format; implies --np')
     addarg('--gb', '--gui-browser', dest='gui_browser', action='store_true', help='open a bang directly in gui browser')
     addarg('--np', '--noprompt', dest='noninteractive', action='store_true', help='perform search and exit, do not prompt')
+    addarg('--rev', '--reverse', dest='reverse', action='store_true', help='list entries in reversed order')
     addarg('--url-handler', metavar='UTIL', help='custom script or cli utility to open results')
     addarg('--show-browser-logs', action='store_true', help='do not suppress browser output (stdout and stderr)')
     addarg('-v', '--version', action='version', version=_VERSION_)
@@ -2073,14 +2103,19 @@ def main():
                 # Handle bangs
                 open_url(repl._ddg_url.full())
             else:
-                repl.fetch(opts.json)
+                repl.fetch()
                 if opts.ducky:
                     if repl.results:
                         open_url(repl.results[0].url)
                     else:
                         print('No results.', file=sys.stderr)
                 else:
-                    repl.display_results(prelude='', json_output=opts.json)
+                    if not opts.reverse:
+                        repl.display_instant_answer(json_output=opts.json)
+                        repl.display_results(prelude='', json_output=opts.json)
+                    else:
+                        repl.display_results(prelude='', json_output=opts.json)
+                        repl.display_instant_answer(json_output=opts.json)
 
             sys.exit(0)
 
