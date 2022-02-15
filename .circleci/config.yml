@@ -37,6 +37,11 @@ jobs:
       - image: python:3.9-slim
     <<: *test-template
 
+  py310:
+    docker:
+      - image: python:3.10-slim
+    <<: *test-template
+
   package-and-publish:
     machine: true
     working_directory: ~/ddgr
