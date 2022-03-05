@@ -1,3 +1,11 @@
+ddgr v2.0
+2022-03-05
+
+- Display results in reversed order (`--rev`, `--reverse`)
+- Support Python v3.10 (dropped v3.6)
+
+-------------------------------------------------------------------------------
+
 ddgr v1.9
 2020-07-26
 

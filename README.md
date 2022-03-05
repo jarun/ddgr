@@ -31,7 +31,6 @@ A big advantage of `ddgr` over `googler` is DuckDuckGo works over the Tor networ
 - [Installation](#installation)
   - [Dependencies](#dependencies)
   - [From a package manager](#from-a-package-manager)
-  - [Release packages](#release-packages)
   - [From source](#from-source)
   - [Running standalone](#running-standalone)
   - [Shell completion](#shell-completion)
@@ -94,10 +93,6 @@ Unlisted packagers:
 ● Termux (<code>pip3 install ddgr</code>)<br>
 </p>
 </details>
-
-#### Release packages
-
-Packages for Arch Linux, CentOS, Debian, Fedora, OpenSUSE Leap, Solus, and Ubuntu are available with the [latest stable release](https://github.com/jarun/ddgr/releases/latest).
 
 #### From source
 
@@ -163,6 +158,7 @@ optional arguments:
   --json                output in JSON format; implies --np
   --gb, --gui-browser   open a bang directly in gui browser
   --np, --noprompt      perform search and exit, do not prompt
+  --rev, --reverse      list entries in reversed order
   --url-handler UTIL    custom script or cli utility to open results
   --show-browser-logs   do not suppress browser output (stdout and stderr)
   -v, --version         show program's version number and exit
