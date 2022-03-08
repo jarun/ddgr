@@ -38,6 +38,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import webbrowser
+import re
 
 try:
     import readline
@@ -1332,6 +1333,103 @@ def no_argument(method):
     return enforced_method
 
 
+class Clipboard:
+    """
+    Handler for copying events.
+
+    Parameters
+    ----------
+    N/A
+
+    Attributes
+    ----------
+    __lines : list[str]
+
+    Class Variables
+    ---------------
+    N/A
+
+    Methods
+    -------
+    add_line(str)
+    clear()
+    write()
+
+    Properties
+    -------
+    lines : list[str]
+    content : bytes
+
+    """
+    def __init__(self):
+        self.clear()
+
+    def add_line(self, string):
+        self.__lines.append(string)
+
+    def clear(self):
+        self.__lines = []
+
+    @property
+    def content(self):
+        return os.linesep.join(self.lines).encode('utf-8')
+
+    @property
+    def lines(self):
+        return self.__lines
+
+    def write(self):
+        try:
+            # try copying the url to clipboard using native utilities
+            copier_params = []
+            if sys.platform.startswith(('linux', 'freebsd', 'openbsd')):
+                if shutil.which('xsel') is not None:
+                    copier_params = ['xsel', '-b', '-i']
+                elif shutil.which('xclip') is not None:
+                    copier_params = ['xclip', '-selection', 'clipboard']
+                elif shutil.which('wl-copy') is not None:
+                    copier_params = ['wl-copy']
+                # If we're using Termux (Android) use its 'termux-api'
+                # add-on to set device clipboard.
+                elif shutil.which('termux-clipboard-set') is not None:
+                    copier_params = ['termux-clipboard-set']
+            elif sys.platform == 'darwin':
+                copier_params = ['pbcopy']
+            elif sys.platform == 'win32':
+                copier_params = ['clip']
+            elif sys.platform.startswith('haiku'):
+                copier_params = ['clipboard', '-i']
+
+            if copier_params:
+                Popen(copier_params, stdin=PIPE, stdout=DEVNULL, stderr=DEVNULL).communicate(self.content)
+                return
+
+            # If native clipboard utilities are absent, try to use terminal multiplexers
+            # tmux
+            if os.getenv('TMUX_PANE'):
+                copier_params = ['tmux', 'set-buffer']
+                Popen(copier_params + [self.content], stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL).communicate()
+                print('URL copied to tmux buffer.')
+                return
+
+            # GNU Screen paste buffer
+            if os.getenv('STY'):
+                copier_params = ['screen', '-X', 'readbuf', '-e', 'utf8']
+                tmpfd, tmppath = tempfile.mkstemp()
+                try:
+                    with os.fdopen(tmpfd, 'wb') as fp:
+                        fp.write(self.content)
+                    copier_params.append(tmppath)
+                    Popen(copier_params, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL).communicate()
+                finally:
+                    os.unlink(tmppath)
+                return
+
+            printerr('failed to locate suitable clipboard utility')
+        except Exception as e:
+            raise NoKeywordsException from e
+
+
 class DdgCmd:
     """
     Command line interpreter and executor class for ddgr.
@@ -1380,6 +1478,8 @@ class DdgCmd:
         message = 'ddgr (? for help)'
         self.prompt = ((colors.prompt + message + colors.reset + ' ')
                        if (colors and os.getenv('DISABLE_PROMPT_COLOR') is None) else (message + ': '))
+
+        self.clipboard = Clipboard()
 
     @property
     def options(self):
@@ -1712,58 +1812,16 @@ class DdgCmd:
 
         self.fetch_and_display()
 
-    def copy_url(self, idx):
-        try:
-            content = self._urltable[str(idx)].encode('utf-8')
+    def copy_urls(self, indices):
+        self.clipboard.clear()
 
-            # try copying the url to clipboard using native utilities
-            copier_params = []
-            if sys.platform.startswith(('linux', 'freebsd', 'openbsd')):
-                if shutil.which('xsel') is not None:
-                    copier_params = ['xsel', '-b', '-i']
-                elif shutil.which('xclip') is not None:
-                    copier_params = ['xclip', '-selection', 'clipboard']
-                elif shutil.which('wl-copy') is not None:
-                    copier_params = ['wl-copy']
-                # If we're using Termux (Android) use its 'termux-api'
-                # add-on to set device clipboard.
-                elif shutil.which('termux-clipboard-set') is not None:
-                    copier_params = ['termux-clipboard-set']
-            elif sys.platform == 'darwin':
-                copier_params = ['pbcopy']
-            elif sys.platform == 'win32':
-                copier_params = ['clip']
-            elif sys.platform.startswith('haiku'):
-                copier_params = ['clipboard', '-i']
+        for idx in indices:
+            if 0 < idx <= min(self._opts.num, len(self._urltable)):
+                self.clipboard.add_line(self._urltable[str(idx)])
+            else:
+                printerr("invalid index")
 
-            if copier_params:
-                Popen(copier_params, stdin=PIPE, stdout=DEVNULL, stderr=DEVNULL).communicate(content)
-                return
-
-            # If native clipboard utilities are absent, try to use terminal multiplexers
-            # tmux
-            if os.getenv('TMUX_PANE'):
-                copier_params = ['tmux', 'set-buffer']
-                Popen(copier_params + [content], stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL).communicate()
-                print('URL copied to tmux buffer.')
-                return
-
-            # GNU Screen paste buffer
-            if os.getenv('STY'):
-                copier_params = ['screen', '-X', 'readbuf', '-e', 'utf8']
-                tmpfd, tmppath = tempfile.mkstemp()
-                try:
-                    with os.fdopen(tmpfd, 'wb') as fp:
-                        fp.write(content)
-                    copier_params.append(tmppath)
-                    Popen(copier_params, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL).communicate()
-                finally:
-                    os.unlink(tmppath)
-                return
-
-            printerr('failed to locate suitable clipboard utility')
-        except Exception as e:
-            raise NoKeywordsException from e
+        self.clipboard.write()
 
     def cmdloop(self):
         """Run REPL."""
@@ -1814,14 +1872,11 @@ class DdgCmd:
                 elif cmd == 'x':
                     Result.urlexpand = not Result.urlexpand
                     self.display_results()
-                elif cmd.startswith('c ') and cmd[2:].isdigit():
-                    idx = int(cmd[2:])
-                    if 0 < idx <= min(self._opts.num, len(self._urltable)):
-                        self.copy_url(int(self.index) + idx)
-                    else:
-                        printerr("invalid index")
+                elif re.match("c [ 1-9]+", cmd):
+                    self.copy_urls(map(int, cmd[2:].split()))
                 else:
                     self.do_ddg(cmd)
+
             except KeyError:
                 printerr('Index out of bound. To search for the number, use d.')
             except NoKeywordsException:
