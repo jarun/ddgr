@@ -41,6 +41,7 @@ A big advantage of `ddgr` over `googler` is DuckDuckGo works over the Tor networ
   - [Colors](#colors)
 - [Examples](#examples)
 - [Troubleshooting](#troubleshooting)
+- [Notes](#notes)
 - [Collaborators](#collaborators)
 - [In the Press](#in-the-press)
 
@@ -254,6 +255,13 @@ The color configuration is similar to that of [`googler` colors](https://github.
 1. Some users have reported problems with a colored omniprompt (refer to issue [#40](https://github.com/jarun/ddgr/issues/40)) with iTerm2 on OS X. To force a plain omniprompt:
 
        export DISABLE_PROMPT_COLOR=1
+
+### Notes
+
+1. The Albert Launcher python plugins repo
+([awesome-albert-plugins](https://github.com/bergercookie/awesome-albert-plugins))
+includes suggestions-enabled search plugins for a variety of websites using
+`ddgr`. Refer to the latter for demos and usage instructions.
 
 ### Collaborators
 
