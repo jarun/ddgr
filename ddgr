@@ -85,7 +85,7 @@ COLORMAP = {k: '\x1b[%sm' % v for k, v in {
     'x': '0', 'X': '1', 'y': '7', 'Y': '7;1',
 }.items()}
 
-USER_AGENT = 'ddgr/{} (textmode; Linux x86_64; 1024x768)'.format(_VERSION_)
+USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:105.0) Gecko/20100101 Firefox/105.0'
 
 TEXT_BROWSERS = ['elinks', 'links', 'lynx', 'w3m', 'www-browser']
 
