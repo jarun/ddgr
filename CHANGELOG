@@ -1,3 +1,12 @@
+ddgr v2.1
+2022-10-22
+
+- Change user agent
+- Remove python 3.6 support
+- Minor documentation changes
+
+-------------------------------------------------------------------------------
+
 ddgr v2.0
 2022-03-05
 
