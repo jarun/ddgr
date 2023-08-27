@@ -69,7 +69,7 @@ A big advantage of `ddgr` over `googler` is DuckDuckGo works over the Tor networ
 
 #### Dependencies
 
-`ddgr` requires Python 3.7 or later. Only the latest patch release of each minor version is supported.
+`ddgr` requires Python 3.8 or later. Only the latest patch release of each minor version is supported.
 
 To copy url to clipboard at the omniprompt, `ddgr` looks for `xsel` or `xclip` or `termux-clipboard-set` (in the same order) on Linux, `pbcopy` (default installed) on OS X, `clip` (default installed) on Windows and `clipboard` (default installed) on Haiku. It also supports GNU Screen and tmux copy-paste buffers in the absence of X11.
 
