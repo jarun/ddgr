@@ -58,7 +58,7 @@ jobs:
 workflows:
   version: 2
 
-  test:
+  CircleCI:
     jobs: &all-tests
       - py38
       - py39
