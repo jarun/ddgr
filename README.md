@@ -212,13 +212,13 @@ The color configuration is similar to that of [`googler` colors](https://github.
 3. **DuckDuckGo Bang** search `hello world` in Wikipedia:
 
        $ ddgr !w hello world
-       $ ddgr \!w hello world // bash-specific, need to escape ! on bash
+       $ ddgr \!w hello world // in (some) shells (e.g. bash, zsh, tcsh) '!' character need to be escaped
     Bangs work at the omniprompt too. To look up bangs, visit https://duckduckgo.com/bang?#bangs-list.
 4. **Bang alias** to fire from the cmdline, open results in a GUI browser and exit:
 
        alias bang='ddgr --gb --np'
        $ bang !w hello world
-       $ bang \!w hello world // bash-specific, need to escape ! on bash
+       $ bang \!w hello world // in (some) shells (e.g. bash, zsh, tcsh) '!' character need to be escaped
 5. **Website specific** search:
 
        $ ddgr -w amazon.com digital camera
