@@ -270,7 +270,7 @@ includes suggestions-enabled search plugins for a variety of websites using
 - [SZ Lin](https://github.com/szlin)
 - [Alex Gontar](https://github.com/mosegontar)
 
-Copyright © 2016-2023 [Arun Prakash Jana](mailto:engineerarun@gmail.com)
+Copyright © 2016-2024 [Arun Prakash Jana](mailto:engineerarun@gmail.com)
 
 ### In the Press
 
