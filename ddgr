@@ -1719,12 +1719,12 @@ class DdgCmd:
             # try copying the url to clipboard using native utilities
             copier_params = []
             if sys.platform.startswith(('linux', 'freebsd', 'openbsd')):
-                if shutil.which('xsel') is not None:
+                if os.getenv('WAYLAND_DISPLAY') is not None and shutil.which('wl-copy') is not None:
+                    copier_params = ['wl-copy']
+                elif shutil.which('xsel') is not None:
                     copier_params = ['xsel', '-b', '-i']
                 elif shutil.which('xclip') is not None:
                     copier_params = ['xclip', '-selection', 'clipboard']
-                elif shutil.which('wl-copy') is not None:
-                    copier_params = ['wl-copy']
                 # If we're using Termux (Android) use its 'termux-api'
                 # add-on to set device clipboard.
                 elif shutil.which('termux-clipboard-set') is not None:
