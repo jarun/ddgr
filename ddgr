@@ -731,7 +731,7 @@ class DdgConnection:
         DDGConnectionError
             When not getting HTTP 200 even after the allowed one
             reconnection and/or one redirection, or when DuckDuckGo is
-            blocking query due to unsual activity.
+            blocking query due to unusual activity.
 
         Returns
         -------
