@@ -1478,7 +1478,7 @@ class DdgCmd:
             if self.colors:
                 print(self.colors.reset, end='')
 
-            if self._opts.reverse:
+            if self._opts.reverse or self._opts.instant:
                 print('')
 
     @require_keywords
@@ -2025,6 +2025,7 @@ def parse_args(args=None, namespace=None):
     addarg('--colors', dest='colorstr', type=argparser.is_colorstr, default=colorstr_env if colorstr_env else 'oCdgxy', metavar='COLORS',
            help='set output colors (see man page for details)')
     addarg('-j', '--ducky', action='store_true', help='open the first result in a web browser; implies --np')
+    addarg('-i', '--instant', action='store_true', help='show only the instant answer')
     addarg('-t', '--time', dest='duration', metavar='SPAN', default='', choices=('d', 'w', 'm', 'y'), help='time limit search '
            '[d (1 day), w (1 wk), m (1 month), y (1 year)]')
     addarg('-w', '--site', dest='sites', action='append', metavar='SITE', help='search sites using DuckDuckGo')
@@ -2094,7 +2095,7 @@ def main():
     try:
         repl = DdgCmd(opts, '' if opts.noua else USER_AGENT)
 
-        if opts.json or opts.ducky or opts.noninteractive:
+        if opts.json or opts.ducky or opts.noninteractive or opts.instant:
             # Non-interactive mode
             if repl.keywords and (
                     repl.keywords[0][0] == '!' or
@@ -2109,6 +2110,8 @@ def main():
                         open_url(repl.results[0].url)
                     else:
                         print('No results.', file=sys.stderr)
+                elif opts.instant:
+                    repl.display_instant_answer(json_output=opts.json)
                 else:
                     if not opts.reverse:
                         repl.display_instant_answer(json_output=opts.json)
