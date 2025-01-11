@@ -2,7 +2,7 @@
 
 <p align="center">
 <a href="https://github.com/jarun/ddgr/releases/latest"><img src="https://img.shields.io/github/release/jarun/ddgr.svg?maxAge=600" alt="Latest release" /></a>
-<a href="https://repology.org/project/ddgr/versions"><img src="https://repology.org/badge/tiny-repos/ddgr.svg" alt="Availability"></a>
+<a href="https://repology.org/project/ddgr/versions"><img src="https://repology.org/badge/tiny-repos/ddgr.svg?header=repos" alt="Availability"></a>
 <a href="https://pypi.org/project/ddgr/"><img src="https://img.shields.io/pypi/v/ddgr.svg?maxAge=600" alt="PyPI" /></a>
 <a href="https://circleci.com/gh/jarun/workflows/ddgr"><img src="https://img.shields.io/circleci/project/github/jarun/ddgr.svg" alt="Build Status" /></a>
 <a href="https://en.wikipedia.org/wiki/Privacy-invasive_software"><img src="https://img.shields.io/badge/privacy-✓-crimson" alt="Privacy Awareness" /></a>
