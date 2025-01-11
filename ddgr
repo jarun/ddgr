@@ -1342,6 +1342,8 @@ class DdgCmd:
     ----------
     opts : argparse.Namespace
         Options and/or arguments.
+    ua : str, optional
+        User agent
 
     Attributes
     ----------
