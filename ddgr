@@ -1981,8 +1981,9 @@ def completer_fetch_completions(prefix):
                urllib.parse.quote(prefix, safe=''))
     # A timeout of 3 seconds seems to be overly generous already.
     with urllib.request.urlopen(api_url, timeout=3) as resp:
-        with json.loads(resp.read().decode('utf-8')) as respobj:
-            return [entry['phrase'] for entry in respobj]
+        resptxt = resp.read().decode('utf-8')
+        respobj = json.loads(resptxt)
+        return [entry['phrase'] for entry in respobj]
 
 
 def completer_run(prefix):
