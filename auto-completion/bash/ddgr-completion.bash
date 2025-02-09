@@ -17,6 +17,7 @@ _ddgr () {
         -C --nocolor
         --colors
         -j --ducky
+        -i --instant
         -t --time
         -w --site
         -x --expand
