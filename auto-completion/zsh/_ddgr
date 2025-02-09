@@ -40,6 +40,7 @@ args=(
     '(-C --nocolor)'{-C,--nocolor}'[disable color output]'
     '(--colors)--colors[set output colors]:six-letter string'
     '(-j --ducky)'{-j,--ducky}'[open the first result in web browser]'
+    '(-i --instant)'{-i,--instant}'[retrieve only an instant answer]'
     '(-t --time)'{-t,--time}'[limit search duration]:d/w/m'
     '(-w --site)'{-w,--site}'[search a site using DuckDuckGo]:domain'
     '(-x --expand)'{-x,--expand}'[show complete URL in results]'
