@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-<a href="https://asciinema.org/a/212198"><img src="https://asciinema.org/a/212198.svg" alt="Asciicast" width="734"/></a>
+<a href="https://github.com/user-attachments/assets/e5b4c6bb-c81f-4753-a58f-bcbc4c1910b4"><img src="https://github.com/user-attachments/assets/52a51b1c-656e-41c6-85ec-3d20319fda70" alt="Asciicast" width="734"/></a>
 </p>
 
 `ddgr` is a cmdline utility to search DuckDuckGo ([html version](https://html.duckduckgo.com/html/)) from the terminal. While [googler](https://github.com/jarun/googler) is extremely popular among cmdline users, in many forums the need of a similar utility for privacy-aware DuckDuckGo came up. [DuckDuckGo Bangs](https://duckduckgo.com/bang) are super-cool too! So here's `ddgr` for you!
