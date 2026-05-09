@@ -117,7 +117,7 @@ def open_url(url):
 
     # Custom URL handler gets max priority
     if hasattr(open_url, 'url_handler'):
-        with Popen([open_url.url_handler, url], stdin=PIPE) as pipe:
+        with Popen([open_url.url_handler, url]) as pipe:
             pipe.communicate()
         return
 
