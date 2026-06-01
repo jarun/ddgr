@@ -838,7 +838,8 @@ class DdgConnection:
                                   expected_code=200)
         except Exception as e:
             LOGERR(e)
-            sys.exit(1)
+            return None
+
         return r
 
 
