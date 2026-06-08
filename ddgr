@@ -87,7 +87,7 @@ COLORMAP = {k: '\x1b[%sm' % v for k, v in {
 
 USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 
-TEXT_BROWSERS = ['elinks', 'links', 'lynx', 'w3m', 'www-browser']
+TEXT_BROWSERS = ['elinks', 'links', 'lynx', 'w3m', 'www-browser', 'cha', 'chawan']
 
 INDENT = 5
 
@@ -141,7 +141,7 @@ def open_url(url):
     depends on the boolean attribute ``open_url.suppress_browser_output``.
     If the attribute is not set upon a call, set it to a default value,
     which means False if BROWSER is set to a known text-based browser --
-    elinks, links, lynx, w3m or 'www-browser'; or True otherwise.
+    elinks, links, lynx, w3m, www-browser, cha or chawan; or True otherwise.
 
     The string attribute ``open_url.override_text_browser`` can be used to
     ignore env var BROWSER as well as some known text-based browsers and
@@ -838,8 +838,7 @@ class DdgConnection:
                                   expected_code=200)
         except Exception as e:
             LOGERR(e)
-            return None
-
+            sys.exit(1)
         return r
 
 
