@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 
 test-template: &test-template
   working_directory: ~/ddgr
@@ -61,8 +61,6 @@ jobs:
 #            ghr -t ${GITHUB_API_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -replace ${CIRCLE_TAG} ./dist/
 
 workflows:
-  version: 2
-
   CircleCI:
     jobs: &all-tests
       - py38
