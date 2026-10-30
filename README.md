@@ -7,6 +7,7 @@
 <a href="https://circleci.com/gh/jarun/workflows/ddgr"><img src="https://img.shields.io/circleci/project/github/jarun/ddgr.svg" alt="Build Status" /></a>
 <a href="https://en.wikipedia.org/wiki/Privacy-invasive_software"><img src="https://img.shields.io/badge/privacy-✓-crimson" alt="Privacy Awareness" /></a>
 <a href="https://github.com/jarun/ddgr/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-GPLv3-yellowgreen.svg?maxAge=2592000" alt="License" /></a>
+<a href="https://github.com/sponsors/jarun" target="_blank"><img src="https://img.shields.io/badge/sponsor-ddgr-deeppink.svg" alt="GitHub Sponsors"></a>
 </p>
 
 <p align="center">
@@ -20,10 +21,6 @@ Unlike the web interface, you can specify the number of search results you would
 A big advantage of `ddgr` over `googler` is DuckDuckGo works over the Tor network.
 
 `ddgr` isn't affiliated to DuckDuckGo in any way.
-
-<p align="center">
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RMLTQ76JSXJ4Q"><img src="https://img.shields.io/badge/donate-@PayPal-1eb0fc.svg" alt="Donate via PayPal!" /></a>
-</p>
 
 ### Table of contents
 
