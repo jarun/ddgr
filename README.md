@@ -42,6 +42,7 @@ A big advantage of `ddgr` over `googler` is DuckDuckGo works over the Tor networ
 - [Examples](#examples)
 - [Troubleshooting](#troubleshooting)
 - [Notes](#notes)
+- [Sponsors](#sponsors)
 - [Collaborators](#collaborators)
 - [In the Press](#in-the-press)
 
@@ -269,6 +270,16 @@ The color configuration is similar to that of [`googler` colors](https://github.
 ([awesome-albert-plugins](https://github.com/bergercookie/awesome-albert-plugins))
 includes suggestions-enabled search plugins for a variety of websites using
 `ddgr`. Refer to the latter for demos and usage instructions.
+
+### Sponsors
+
+<a href="https://proxy-seller.com/?partner=1481B868D09E45A6" target="_blank">
+<img width="25%" height="auto" alt="Proxy-Seller" src="https://github.com/user-attachments/assets/ff4b2761-c247-4e46-9e72-71b341b1fd96" />
+</a>
+
+Proxy-Seller gives you reliable proxy infrastructure for any workflow: private residential, mobile (4G/5G/LTE), ISP, and datacenter IPv4/IPv6 proxies, all with HTTP(S) and SOCKS5 support. Tap into 47M+ residential IPs across 220+ locations, target exactly the country, city, or ISP you need, and count on 99.7% uptime backed by 24/7 support. Get 15% off with promo code **`JARUN`**.
+
+Join [here](https://proxy-seller.com/?partner=1481B868D09E45A6).
 
 ### Collaborators
 
