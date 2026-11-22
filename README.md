@@ -121,10 +121,17 @@ Search keyword and option completion scripts for Bash, Fish and Zsh can be found
 
 #### Cmdline options
 
+When no keywords are given, ddgr reads a piped query from standard input,
+combining multiple lines into one search. If output is a terminal, ddgr resumes
+the omniprompt using the controlling terminal when available; otherwise it
+performs the search and exits. Command-line keywords take precedence over input.
+For programmatic use, `--spawn` ignores standard input and requires the query
+as command-line keywords; it never opens the omniprompt.
+
 ```
 usage: ddgr [-h] [-n N] [-r REG] [--colorize [{auto,always,never}]] [-C]
             [--colors COLORS] [-j] [-t SPAN] [-w SITE] [-x] [-p URI]
-            [--unsafe] [--noua] [--json] [--gb] [--np] [--url-handler UTIL]
+            [--unsafe] [--noua] [--json] [--gb] [--np] [-s] [--url-handler UTIL]
             [--show-browser-logs] [-v] [-d]
             [KEYWORD [KEYWORD ...]]
 
@@ -158,6 +165,7 @@ optional arguments:
   --json                output in JSON format; implies --np
   --gb, --gui-browser   open a bang directly in gui browser
   --np, --noprompt      perform search and exit, do not prompt
+  -s, --spawn           do not read stdin or prompt; requires command-line keywords
   --rev, --reverse      list entries in reversed order
   --url-handler UTIL    custom script or cli utility to open results
   --show-browser-logs   do not suppress browser output (stdout and stderr)
@@ -254,6 +262,10 @@ The color configuration is similar to that of [`googler` colors](https://github.
         d n
         d g keywords
         d 1
+13. Search text from **standard input**:
+
+        $ echo "hello world" | ddgr
+        $ printf 'hello\nworld\n' | ddgr --json
 
 ### Troubleshooting
 

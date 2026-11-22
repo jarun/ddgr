@@ -2082,6 +2082,7 @@ def parse_args(args=None, namespace=None):
     addarg('--json', action='store_true', help='output in JSON format; implies --np')
     addarg('--gb', '--gui-browser', dest='gui_browser', action='store_true', help='open a bang directly in gui browser')
     addarg('--np', '--noprompt', dest='noninteractive', action='store_true', help='perform search and exit, do not prompt')
+    addarg('-s', '--spawn', action='store_true', help='do not read stdin or prompt; requires command-line keywords')
     addarg('--rev', '--reverse', dest='reverse', action='store_true', help='list entries in reversed order')
     addarg('--url-handler', metavar='UTIL', help='custom script or cli utility to open results')
     addarg('--show-browser-logs', action='store_true', help='do not suppress browser output (stdout and stderr)')
@@ -2108,6 +2109,23 @@ def main():
     # Handle query completer
     if opts.complete is not None:
         completer_run(opts.complete)
+
+    if opts.spawn:
+        opts.noninteractive = True
+    elif not opts.keywords and not sys.stdin.isatty():
+        opts.keywords = sys.stdin.read().split()
+        interactive = not (opts.noninteractive or opts.json or opts.ducky or opts.instant)
+        opts.noninteractive = True
+        if opts.keywords and sys.stdout.isatty() and interactive:
+            try:
+                terminal = os.open('/dev/tty', os.O_RDONLY)
+                try:
+                    os.dup2(terminal, sys.stdin.fileno())
+                finally:
+                    os.close(terminal)
+                opts.noninteractive = False
+            except (OSError, ValueError):
+                pass
 
     check_stdout_encoding()
 

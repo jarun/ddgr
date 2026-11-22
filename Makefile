@@ -24,3 +24,4 @@ uninstall:
 
 test:
 	./ddgr --help
+	python3 -m unittest discover -s tests

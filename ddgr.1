@@ -7,6 +7,8 @@ ddgr \- DuckDuckGo from the terminal
 .B ddgr
 is a command-line tool to search DuckDuckGo (html version). \fBddgr\fR shows the title, URL and text context for each result. Results are fetched in pages. Keyboard shortcuts are available for page navigation. Results are indexed and a result URL can be opened in a browser using the index number. There is no configuration file as aliases serve the same purpose for this utility. Supports sequential searches in a single instance.
 .PP
+When no keywords are given and standard input is not a terminal, ddgr reads it as one search query, combining whitespace-separated lines. If output is a terminal, ddgr resumes the omniprompt on the controlling terminal when available; otherwise it performs the search and exits. Command-line keywords take precedence over standard input.
+.PP
 .B Features
 .PP
   * Fast and clean; custom color
@@ -74,6 +76,9 @@ Open a bang directly in a GUI browser.
 .TP
 .BI "--np, --noprompt"
 Perform search and exit; do not prompt for further interactions.
+.TP
+.BI "-s, --spawn"
+Do not read standard input or prompt. Requires search keywords on the command line and exits after searching.
 .TP
 .BI "--rev, --reverse"
 List the entries in reversed order.

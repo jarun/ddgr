@@ -27,6 +27,7 @@ _ddgr () {
         --json
         --gb --gui-browser
         --np --noprompt
+        -s --spawn
         --rev --reverse
         --url-handler
         --show-browser-logs
