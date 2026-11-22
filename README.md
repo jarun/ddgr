@@ -208,7 +208,14 @@ If you need to use a GUI browser with `BROWSER` set, use the omniprompt key `O`.
 
 Try the included url handler and report broken links
 
-  ddgr --url-handler urlhandler
+    $ ddgr --url-handler urlhandler
+
+The optional [pyreader](pyreader/pyreader) terminal article reader is not installed with `ddgr`. From the repository directory, install its dependencies and use it as a URL handler:
+
+    $ pip3 install requests html2text feedparser readability-lxml textual
+    $ ddgr --url-handler ./pyreader/pyreader "hello world"
+
+Select a result at the omniprompt to open it in pyreader. Press `t` to toggle the table of contents and `q` to return to ddgr.
 
 #### Colors
 

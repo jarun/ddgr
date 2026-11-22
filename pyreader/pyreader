@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+# Terminal article reader, distributed separately from the ddgr installation.
+# Install dependencies: pip3 install requests html2text feedparser readability-lxml textual
+# Run directly: ./pyreader/pyreader https://example.com/article
+# Use with ddgr: ddgr --url-handler ./pyreader/pyreader "hello world"
+# Select a result at the ddgr prompt. In the reader, press t to toggle the table
+# of contents and q to quit and return to ddgr.
+
+import sys
+import requests
+import html2text
+from readability import Document
+from textual.app import App, ComposeResult
+from textual.binding import Binding
+from textual.containers import Container
+from textual.widgets import Header, Footer, MarkdownViewer
+
+
+class TerminalReaderApp(App):
+    """A distraction-free terminal reader view for web articles."""
+
+    CSS = """
+    Screen {
+        align: center middle;
+        background: $surface;
+    }
+    #reader-container {
+        width: 85;
+        max-width: 95%;
+        height: 100%;
+        padding: 1 2;
+        background: $panel;
+    }
+    MarkdownViewer {
+        scrollbar-gutter: stable;
+    }
+    """
+
+    BINDINGS = [
+        Binding("q", "quit", "Quit", priority=True),
+        Binding("t,T", "toggle_toc", "Table of Contents", priority=True),
+    ]
+
+    def __init__(self, title: str, markdown_content: str):
+        super().__init__()
+        self.article_title = title
+        self.markdown_content = markdown_content
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        with Container(id="reader-container"):
+            yield MarkdownViewer(self.markdown_content, show_table_of_contents=False)
+        yield Footer()
+
+    def on_mount(self) -> None:
+        self.title = self.article_title
+
+    def action_toggle_toc(self) -> None:
+        viewer = self.query_one(MarkdownViewer)
+        viewer.show_table_of_contents = not viewer.show_table_of_contents
+
+
+def fetch_article(url: str) -> tuple[str, str]:
+    headers = {"User-Agent": "Mozilla/5.0 (TerminalReader/1.0)"}
+    response = requests.get(url, headers=headers, timeout=10)
+    response.raise_for_status()
+
+    # Extract clean article HTML
+    doc = Document(response.text)
+    title = doc.title()
+    clean_html = doc.summary()
+
+    # Convert HTML to Markdown
+    converter = html2text.HTML2Text()
+    converter.ignore_links = False
+    converter.ignore_images = True
+    converter.body_width = 0  # Let Textual handle word wrapping
+    markdown_text = f"# {title}\n\n" + converter.handle(clean_html)
+
+    return title, markdown_text
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: pyreader <URL>")
+        sys.exit(1)
+
+    target_url = sys.argv[1]
+    try:
+        article_title, content = fetch_article(target_url)
+        app = TerminalReaderApp(article_title, content)
+        app.run()
+    except Exception as e:
+        print(f"Error loading article: {e}")
+        sys.exit(1)
+

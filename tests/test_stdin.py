@@ -4,7 +4,7 @@ import subprocess
 import sys
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 
 module = runpy.run_path(str(Path(__file__).resolve().parents[1] / 'ddgr'))
@@ -28,6 +28,16 @@ class InputStream(io.StringIO):
 
 
 class StdinTests(unittest.TestCase):
+    def test_url_handler_inherits_stdin(self):
+        open_url = module['open_url']
+        process = MagicMock()
+        with patch.object(open_url, 'url_handler', 'pyreader', create=True), \
+             patch.dict(open_url.__globals__, {'Popen': process}):
+            open_url('https://example.com')
+
+        process.assert_called_once_with(['pyreader', 'https://example.com'])
+        process.return_value.__enter__.return_value.communicate.assert_called_once_with()
+
     def run_main(self, args, stdin, stdout_terminal=False, terminal_error=None):
         with patch.object(sys, 'argv', ['ddgr', *args]), \
              patch.object(sys, 'stdin', stdin), \
