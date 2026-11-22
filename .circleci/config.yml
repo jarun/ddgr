@@ -17,11 +17,6 @@ test-template: &test-template
           make test
 
 jobs:
-  py310:
-    docker:
-      - image: python:3.10-slim
-    <<: *test-template
-
   py311:
     docker:
       - image: python:3.11-slim
@@ -40,6 +35,11 @@ jobs:
   py314:
     docker:
       - image: python:3.14-slim
+    <<: *test-template
+
+  py315:
+    docker:
+      - image: python:3.15-slim
     <<: *test-template
 
 #  package-and-publish:
@@ -63,13 +63,11 @@ jobs:
 workflows:
   CircleCI:
     jobs: &all-tests
-      - py310
       - py311
       - py312
       - py313
       - py314
-
-
+      - py315
 
   nightly:
     triggers:
